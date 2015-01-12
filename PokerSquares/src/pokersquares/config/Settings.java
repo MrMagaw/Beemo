@@ -10,7 +10,7 @@ public class Settings {
         public static int deckSampleMax = 52;
         
         public static Algorithm simAlgoritm = new GRB();
-        private static Algorithm[] algorithm = new Algorithm[] {new IIMC()};
+        private static Algorithm[] algorithm = new Algorithm[] {new GRB(), new IIMC(), new GRB()};
         
         
         
@@ -20,7 +20,7 @@ public class Settings {
         }
     }
     public static class BMO {
-        public static int[] turnSplits = new int[]{100000000};
+        public static int[] turnSplits = new int[]{5, 25, 25};
     }
     public static class Evaluations {
         public static double pairExp = 1;

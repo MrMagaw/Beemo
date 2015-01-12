@@ -41,6 +41,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
     public void init() {
         board = new Board();
         //Shuffle deck?
+        //(new Scanner(System.in)).next();
     }
 
     @Override
@@ -66,6 +67,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         //
         
         board.playCard(card, bestPos);
+        //PokerSquares.printGrid(board.getGrid());
         return bestPos;
     }
     

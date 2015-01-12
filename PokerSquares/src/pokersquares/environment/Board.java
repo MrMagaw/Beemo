@@ -25,7 +25,9 @@ public class Board {
         playPos = new ArrayList(ALL_POS);
     }
     public Board(Board parent){
-        grid = parent.grid.clone(); //May have to clone each array
+        grid = new Card[5][5];
+        for(int i = 0; i < 5; ++i) 
+            grid[i] = parent.grid[i].clone(); //May have to clone each array
         deck.clear();
         deck.addAll(parent.deck);
         playPos = new ArrayList(parent.playPos);

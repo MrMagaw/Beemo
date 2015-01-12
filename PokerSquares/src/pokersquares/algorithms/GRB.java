@@ -5,18 +5,14 @@ import pokersquares.environment.Card;
 import pokersquares.evaluations.PatternPolicy;
 
 public class GRB extends Algorithm{
-    private double[] preEvaluations;
-    private double[] postEvaluations;
-    private double evaluation;
-    
     @Override
     public int[] search(Card card, Board board, long millisRemaining) {
-        postEvaluations = new double[10];
-        preEvaluations = new double[10];
-        evaluation = Integer.MIN_VALUE;
+        double[] postEvaluations = new double[10];
+        double[] preEvaluations = new double[10];
+        double evaluation = Integer.MIN_VALUE;
         Integer[] bestPos = {2, 2};
         
-        evaluate(card, board);
+        evaluate(card, board, preEvaluations, postEvaluations);
         
         //FOR EACH pos represented by intersecting hands
         for (Integer[] pos : board.getPlayPos()) {
@@ -25,8 +21,8 @@ public class GRB extends Algorithm{
             
             //SCORE the Position
             double score = 
-                    (-this.preEvaluations[row] - this.preEvaluations[col + 5]) +
-                    (this.postEvaluations[row] + this.postEvaluations[col + 5]);
+                    (-preEvaluations[row] - preEvaluations[col + 5]) +
+                    (postEvaluations[row] + postEvaluations[col + 5]);
             if(evaluation < score){
                 evaluation = score;
                 bestPos = pos;
@@ -36,7 +32,7 @@ public class GRB extends Algorithm{
         return new int[] {bestPos[0], bestPos[1]};
     }
     
-    public void evaluate(Card card, Board board)  {
+    private void evaluate(Card card, Board board, double[] preEvaluations, double[] postEvaluations)  {
         //Pre Evaluates Hands
         //Places Card
         //Post Evaluates Hands
