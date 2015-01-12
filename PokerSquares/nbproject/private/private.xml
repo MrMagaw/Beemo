@@ -2,6 +2,19 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+<<<<<<< HEAD
         <group/>
+=======
+        <group>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/config/Settings.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/algorithms/GRB.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/players/BeemoV2.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/environment/Card.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/Main.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/evaluations/PatternPolicy.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/algorithms/Algorithm.java</file>
+            <file>file:/home/william/Dropbox/School%20Stuffs/CMPT%20498/PokerSquares/src/pokersquares/environment/Grid.java</file>
+        </group>
+>>>>>>> 09c980052abae1ee021726db54bf44fdc766d04a
     </open-files>
 </project-private>
