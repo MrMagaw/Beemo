@@ -134,7 +134,7 @@ public class Beemo  implements PokerSquaresPlayer {
         Algorithm grb = new GRB(this);
         Algorithm ox = new OX(this);
         //theory : the first 8 moves can be played optimally by a rule base
-        int opTurns = 0;
+        int opTurns = 8;
         if (turn < opTurns) bestPos = grb.search(card, millisRemaining); //first moves
         //else if (turn > 22) bestPos = ox.search(card, millisRemaining); //last moves
         else if (algorithmID == "rb") bestPos = rb.search(card, millisRemaining);

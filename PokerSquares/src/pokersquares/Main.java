@@ -7,6 +7,6 @@ import pokersquares.players.BeemoV2;
 public class Main {
     public static void main(String[] args){
         //Start Here
-        new PokerSquares(new BeemoV2(), GAME_MILLIS).playSequence(10000, 0, false);
+        new PokerSquares(new BeemoV2(), GAME_MILLIS).playSequence(50000, 0, false);
     }
 }
