@@ -1,5 +1,7 @@
 *.class
 */nbproject/*
 */build/*
+*/dist/*
 manifest.mf
 build.xml
+/PokerSquares/dist/

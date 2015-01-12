@@ -5,7 +5,7 @@ import pokersquares.algorithms.*;
 public class Settings {
     public static class Algorithms {
         public static int searchDepth = 2;
-        public static int simulationSampleSize = 10;
+        public static int simulationSampleSize = 1000;
         public static int playSampleSize = 52;
         public static int deckSampleMax = 52;
         
