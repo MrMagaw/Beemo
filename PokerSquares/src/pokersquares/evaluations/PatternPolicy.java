@@ -3,6 +3,7 @@ package pokersquares.evaluations;
 import java.util.Map;
 import pokersquares.config.Settings;
 import pokersquares.environment.Card;
+import pokersquares.environment.Board;
 
 public class PatternPolicy {
     private static Map<String, Double> patternEvaluations = new java.util.HashMap();
@@ -23,8 +24,14 @@ public class PatternPolicy {
         private int[] rankCountCounts = new int[6];
     }
     
-    //Evaluation
-    //double evaluation = 0;
+    public static double evaluate(Board grid){
+        double evaluation = 0;
+        for(int i = 0; i < 5; ++i){
+            evaluation += evaluate(grid.getRow(i), false);
+            evaluation += evaluate(grid.getColumn(i), true);
+        }
+        return evaluation;
+    }
     
     public static double evaluate(Card[] hand, boolean col) {
         Info info = new Info();
