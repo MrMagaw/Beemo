@@ -6,7 +6,7 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Board;
 
 public class PatternPolicy {
-    private static Map<String, Double> patternEvaluations = new java.util.HashMap();
+    private static final Map<String, Double> patternEvaluations = new java.util.HashMap();
     //Hand Analysis
     
     
@@ -17,11 +17,9 @@ public class PatternPolicy {
         private double numCards = 0;
         private double handWeight = 0;
         private double numSuits = 0;
-        private int maxRank = 0;
-        private double maxOfAKind = 0;
-        private int[] suitCounts = new int[Card.NUM_SUITS];
-        private int[] rankCounts = new int[Card.NUM_RANKS];
-        private int[] rankCountCounts = new int[6];
+        private final int[] suitCounts = new int[Card.NUM_SUITS];
+        private final int[] rankCounts = new int[Card.NUM_RANKS];
+        private final int[] rankCountCounts = new int[6];
     }
     
     public static double evaluate(Board grid){
@@ -55,13 +53,12 @@ public class PatternPolicy {
         
         //if col build suit pattern
         if (col) {
-            if (info.numCards > 0)
-                if (info.numSuits == 1)
-                    if (info.numCards == 1) info.pattern = info.pattern + "a";
-                    else if (info.numCards == 2) info.pattern = info.pattern + "aa";
-                    else if (info.numCards == 3) info.pattern = info.pattern + "aaa";
-                    else if (info.numCards == 4) info.pattern = info.pattern + "aaaa";
-                    else if (info.numCards == 5) info.pattern = info.pattern + "aaaaa";
+            if (info.numSuits == 1)
+                if (info.numCards == 1) info.pattern = info.pattern + "a";
+                else if (info.numCards == 2) info.pattern = info.pattern + "aa";
+                else if (info.numCards == 3) info.pattern = info.pattern + "aaa";
+                else if (info.numCards == 4) info.pattern = info.pattern + "aaaa";
+                else info.pattern = info.pattern + "aaaaa";
         }
         //if row build rank pattern
         else {
@@ -74,16 +71,16 @@ public class PatternPolicy {
             
             if (info.numCards > 0)
                 //for the maximum number of rank multiples
-                for (int i = 5; i > 0; i--) {
+                for (int i = 5; i > 0; --i) {
                     //for each rank multiple occuring at least once
                     //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
                     if (info.rankCountCounts[i] > 0) {
                         //for each occurance of a rank multiple
-                        for (int j = 0; j < info.rankCountCounts[i]; j++) {
-                            for (int k = 0; k < i; k++) {
-                                info.pattern = info.pattern + nums[iNums];
+                        for (int j = 0; j < info.rankCountCounts[i]; ++j) {
+                            for (int k = 0; k < i; ++k) {
+                                info.pattern += nums[iNums];
                             }
-                            iNums++;
+                            ++iNums;
                         }
                     }
                 }
@@ -94,28 +91,28 @@ public class PatternPolicy {
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
         //double[] handScores = {0,0,0,0,0,0,0,0,0}; //records a score for each poker hand from pair [0] to royal flush [8]
-        double handScore = 0, evaluation;
+        double tempScore, handScore;
         //Policy Scores should relate to probability, 
         //They are currently assigned by intuition,
         //The probability should be calculated or else learned 
         
         if(!col){
             //if (!col) handScores[0] = 2 * Math.pow(scorePairPolicy(hand, n), Settings.Evaluations.pairExp);
-            evaluation = 5 * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
-            handScore = 10 * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
-            evaluation = evaluation < handScore ? handScore : evaluation;
+            handScore = 5 * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
+            tempScore = 10 * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
+            handScore = handScore < tempScore ? tempScore : handScore;
             //handScores[3] = 15 * Math.pow(scoreStraightPolicy(), Settings.Evaluations.straightExp);
-            handScore = 25 * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
-            evaluation = evaluation < handScore ? handScore : evaluation;
-            handScore = 50 * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
-            evaluation = evaluation < handScore ? handScore : evaluation;
+            tempScore = 25 * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
+            handScore = handScore < tempScore ? tempScore : handScore;
+            tempScore = 50 * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
+            handScore = handScore < tempScore ? tempScore : handScore;
         }else{
-            evaluation = 20 * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
+            handScore = 20 * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
         }
         
-        if (info.pattern != null) patternEvaluations.put(info.pattern, evaluation);
+        if (info.pattern != null) patternEvaluations.put(info.pattern, handScore);
         
-        return evaluation;
+        return handScore;
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
@@ -218,31 +215,16 @@ public class PatternPolicy {
     }
     
     private static void analyzeHand(Info info, Card[] hand) {
-        //TRY to combine all for loops
-        
-        //Count suits, ranks, cards
         for (Card card : hand) {
             if (card != null) {
 		++info.suitCounts[card.getSuit()];
                 ++info.rankCounts[card.getRank()];
                 ++info.numCards;
-                //suitRep = card;
             }
         }
         
-        //Count number of ranks occuring multiple times,
-        //number of ranks, suits
 	for (int i = 0; i < Card.NUM_RANKS; ++i) {
             ++info.rankCountCounts[info.rankCounts[i]];
-            if (info.rankCounts[i] > info.maxOfAKind) {
-                info.maxOfAKind = info.rankCounts[i];
-                info.maxRank = i;
-            }
-            
-            //if (rankCounts[i] > 0) {
-                //numRanks ++;
-            //}
-            
             if (i < Card.NUM_SUITS) {
                 if (info.suitCounts[i] > 0) {
                     ++info.numSuits;

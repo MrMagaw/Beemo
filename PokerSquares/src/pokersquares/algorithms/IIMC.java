@@ -5,40 +5,38 @@ import pokersquares.config.Settings;
 import pokersquares.environment.Card;
 import pokersquares.environment.Board;
 import pokersquares.environment.PokerSquares;
+import pokersquares.evaluations.PatternPolicy;
 
 public class IIMC extends Algorithm{
 
     @Override
-    public int[] search(Card card, Board board, long millisRemaining) {
+    public int[] search(final Card card, final Board board, long millisRemaining) {
         Double bestScore = Double.MIN_VALUE;
         Integer[] bestPos = {2, 2};
         int playPosCount = Settings.Algorithms.playSampleSize;
-                
-        for(int i = board.getPlayPos().size()-1; i >= 0; --i){
-            Integer[] pos = board.getPlayPos().get(i);
-            int numSimulations = Settings.Algorithms.simulationSampleSize;
+        
+        for(Integer[] pos : board.getPlayPos()){
+            int numSimulations = Settings.Algorithms.simSampleSize;
             double score = 0;
+            
             Board tb = new Board(board);
             tb.playCard(card, new int[]{pos[0], pos[1]});
             
             while(--numSimulations > 0){
                 Board b = new Board(tb);
-                
                 Random r = new Random();
+                
                 while (b.getTurn() < 25) {
                     Card c = b.getDeck().remove(r.nextInt(b.getDeck().size()));
                     int[] p = Settings.Algorithms.simAlgoritm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
                 
-                //PokerSquares.printGrid(grid.getGrid());
-                //(new Scanner(System.in)).next();
-                
-                //double score = PatternPolicy.evaluate(grid);
                 score += PokerSquares.getScore(b.getGrid());
             }
-            //System.out.println("{" + pos[0] + ", " + pos[1] + "} - " + score);
-            //score += Pattern
+            //Maybe remove this? v
+            score += (PatternPolicy.evaluate(tb) * Settings.Algorithms.simSampleSize); //Add the score of the move to the evaluation
+            //Or decrease the multiplier (ie simSampleSize / 2) ^
             if(score > bestScore){
                 bestScore = score;
                 bestPos = pos;
