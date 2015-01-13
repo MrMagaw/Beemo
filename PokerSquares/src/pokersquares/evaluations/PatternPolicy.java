@@ -9,7 +9,6 @@ public class PatternPolicy {
     private static final Map<String, Double> patternEvaluations = new java.util.HashMap();
     //Hand Analysis
     
-    
     private static class Info{
         private String pattern;
         private boolean straight;
@@ -39,8 +38,10 @@ public class PatternPolicy {
         
         double evaluation;
         
-        if (patternEvaluations.containsKey(info.pattern)) evaluation = patternEvaluations.get(info.pattern);
-        else evaluation = scoreHand(info, hand, col);
+        if (patternEvaluations.containsKey(info.pattern)) 
+            evaluation = patternEvaluations.get(info.pattern);
+        else 
+            evaluation = scoreHand(info, hand, col);
         
         return evaluation;
     }
@@ -90,18 +91,19 @@ public class PatternPolicy {
     }
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
-        //double[] handScores = {0,0,0,0,0,0,0,0,0}; //records a score for each poker hand from pair [0] to royal flush [8]
         double tempScore, handScore;
         //Policy Scores should relate to probability, 
         //They are currently assigned by intuition,
         //The probability should be calculated or else learned 
         
         if(!col){
-            //if (!col) handScores[0] = 2 * Math.pow(scorePairPolicy(hand, n), Settings.Evaluations.pairExp);
+            //Missing:
+            //Pair
+            //Straight
+            //Royals
             handScore = 5 * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
             tempScore = 10 * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
             handScore = handScore < tempScore ? tempScore : handScore;
-            //handScores[3] = 15 * Math.pow(scoreStraightPolicy(), Settings.Evaluations.straightExp);
             tempScore = 25 * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
             handScore = handScore < tempScore ? tempScore : handScore;
             tempScore = 50 * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
