@@ -22,11 +22,11 @@ public class PatternPolicy {
         private final int[] rankCountCounts = new int[6];
     }
     
-    public static double evaluate(Board grid){
+    public static double evaluate(Board board){
         double evaluation = 0;
         for(int i = 0; i < 5; ++i){
-            evaluation += evaluate(grid.getRow(i), false);
-            evaluation += evaluate(grid.getColumn(i), true);
+            evaluation += evaluate(board.getRow(i), false);
+            evaluation += evaluate(board.getColumn(i), true);
         }
         return evaluation;
     }

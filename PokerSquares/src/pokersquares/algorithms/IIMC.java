@@ -1,5 +1,7 @@
 package pokersquares.algorithms;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 import pokersquares.config.Settings;
 import pokersquares.environment.Card;
@@ -8,14 +10,41 @@ import pokersquares.environment.PokerSquares;
 import pokersquares.evaluations.PatternPolicy;
 
 public class IIMC extends Algorithm{
-
+    private static class Filter implements Comparator<Integer[]>{
+        private final Card card;
+        private final Board board;
+        @Override
+        public int compare(Integer[] o1, Integer[] o2) {
+            //o1-o2
+            Board tb = new Board(board);
+            tb.playCard(card, new int[]{o2[0], o2[1]});
+            double s1 = PatternPolicy.evaluate(tb);
+            tb = new Board(board);
+            tb.playCard(card, new int[]{o1[0], o1[1]});
+            return ((int)(s1 * 1000)) - ((int)(PatternPolicy.evaluate(tb) * 1000));
+        }
+        public Filter(Board b, Card c){
+            card = c;
+            board = b;
+        }
+    }
+    
     @Override
     public int[] search(final Card card, final Board board, long millisRemaining) {
-        Double bestScore = Double.MIN_VALUE;
         Integer[] bestPos = {2, 2};
-        int playPosCount = Settings.Algorithms.playSampleSize;
         
-        for(Integer[] pos : board.getPlayPos()){
+        Double bestScore = Double.MIN_VALUE;
+        
+        Integer[][] positions = new Integer[board.getPlayPos().size()][];
+        positions = board.getPlayPos().toArray(positions);
+        
+        if(Settings.Algorithms.playSampleSize < positions.length){
+            Arrays.sort(positions, new Filter(board, card));
+            positions[Settings.Algorithms.playSampleSize] = null;
+        }
+        
+        for(Integer[] pos : positions){
+            if(pos == null) break;
             int numSimulations = Settings.Algorithms.simSampleSize;
             double score = 0;
             
@@ -41,7 +70,6 @@ public class IIMC extends Algorithm{
                 bestScore = score;
                 bestPos = pos;
             }
-            if(--playPosCount <= 0) break;
         }
         
         return new int[] {bestPos[0], bestPos[1]};
