@@ -5,9 +5,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Board {
-    private Card[][] grid;
-    private ArrayList<Integer[]> playPos;
-    private final LinkedList<Card> deck = new LinkedList();
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
     static{
         ALL_POS.addAll(Arrays.asList(new Integer[][]{
@@ -18,6 +15,10 @@ public class Board {
                 {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4},
             }));
     }
+    
+    private final Card[][] grid;
+    private final ArrayList<Integer[]> playPos;
+    private final LinkedList<Card> deck = new LinkedList();
     
     public Board(){
         grid = new Card[5][5];

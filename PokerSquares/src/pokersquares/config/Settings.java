@@ -1,7 +1,6 @@
 package pokersquares.config;
 
 import pokersquares.algorithms.*;
-import pokersquares.evaluations.PatternPolicy;
 
 public class Settings {
     public static class Main {
