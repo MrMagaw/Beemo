@@ -121,9 +121,9 @@ public class PatternPolicy {
         double pairScore = 0;
         
         //if there is a pair
-        if (info.rankCountCounts[2] == 1) pairScore = 1;
+        if (info.rankCountCounts[2] == 1) pairScore = Settings.Evaluations.pairPolicy[0];
         //if there is a possibility of a pair
-        else if (info.numCards < 5) pairScore = 0.1;
+        else if (info.numCards < 5) pairScore = Settings.Evaluations.pairPolicy[1];
         
         return pairScore;
     }
@@ -132,12 +132,12 @@ public class PatternPolicy {
         double twoPairScore = 0;
         
         //if there is a two pair
-        if (info.rankCountCounts[2] == 2) twoPairScore = 1;
+        if (info.rankCountCounts[2] == 2) twoPairScore = Settings.Evaluations.twoPairPolicy[0];
         //if there is the possibility of a two pair
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5))twoPairScore = 0.5;
-        else if (info.numCards < 4) twoPairScore = 0.1;
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5))twoPairScore = Settings.Evaluations.twoPairPolicy[1];
+        else if (info.numCards < 4) twoPairScore = Settings.Evaluations.twoPairPolicy[2];
         //if the hand has no chance of a two pair
-        else if (info.numCards > 3) twoPairScore = -0.1;
+        else if (info.numCards > 3) twoPairScore = Settings.Evaluations.twoPairPolicy[3];
         
         return twoPairScore;
     }
@@ -146,10 +146,12 @@ public class PatternPolicy {
         double threeOfAKindScore = 0;
         
         //if there is a three of a kind
-        if (info.rankCountCounts[3] == 1) threeOfAKindScore = 1;
+        if (info.rankCountCounts[3] == 1) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[0];
         //if there is the possibility of a three of a kind
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) threeOfAKindScore = 0.7 - Math.pow((info.numCards/10),2);
-        else if (info.numCards < 4) threeOfAKindScore = 0.5 - Math.pow((info.numCards/10),31);
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) 
+            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[1] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[2]);
+        else if (info.numCards < 4) 
+            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[3] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[4]);
         
         //System.out.println(numCards + " " + n + " " + threeOfAKindScore);
         
@@ -161,7 +163,7 @@ public class PatternPolicy {
         
         //this still works amazingly but I dont know 
         if ((info.numSuits == 1) && (info.numCards <= 5)) 
-            flushScore = ((double)Math.pow(info.handWeight, 1/2))*info.handWeight*info.handWeight;
+            flushScore = Math.pow(info.handWeight,Settings.Evaluations.flushPolicy[0]);
         
         return flushScore;
     }
@@ -169,16 +171,16 @@ public class PatternPolicy {
     private static double scoreFullHousePolicy(Info info, Card hand[]) {
         double fullHouseScore = 0;
         
-        if ((info.rankCountCounts[3] == 1) && (info.rankCountCounts[2] == 1)) fullHouseScore = 1;
+        if ((info.rankCountCounts[3] == 1) && (info.rankCountCounts[2] == 1)) fullHouseScore = Settings.Evaluations.fullHousePolicy[0];
         //if there is the possibility of a Full House
-        else if ((info.rankCountCounts[2] == 2) && (info.numCards == 4)) fullHouseScore = 0.7;
-        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 4)) fullHouseScore = 0.7;
-        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 3)) fullHouseScore = 0.8;
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) fullHouseScore = 0.55;
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) fullHouseScore = 0.6;
-        else if (info.numCards == 2) fullHouseScore = 0.4;
-        else if (info.numCards == 1) fullHouseScore = 0.4;
-        else fullHouseScore = 0.0;
+        else if ((info.rankCountCounts[2] == 2) && (info.numCards == 4)) fullHouseScore = Settings.Evaluations.fullHousePolicy[1];
+        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 4)) fullHouseScore = Settings.Evaluations.fullHousePolicy[2];
+        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 3)) fullHouseScore = Settings.Evaluations.fullHousePolicy[3];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) fullHouseScore = Settings.Evaluations.fullHousePolicy[4];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) fullHouseScore = Settings.Evaluations.fullHousePolicy[5];
+        else if (info.numCards == 2) fullHouseScore = Settings.Evaluations.fullHousePolicy[6];
+        else if (info.numCards == 1) fullHouseScore = Settings.Evaluations.fullHousePolicy[7];
+        else fullHouseScore = Settings.Evaluations.fullHousePolicy[8];
         
         return fullHouseScore;
     }
@@ -186,14 +188,14 @@ public class PatternPolicy {
     private static double scoreFourOfAKindPolicy(Info info, Card hand[]) {
         double fourOfAKindScore = 0;
         
-        if (info.rankCountCounts[4] == 1) fourOfAKindScore = 1;
+        if (info.rankCountCounts[4] == 1) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[0];
         //if there is a possibility of a four of a kind
-        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 4)) fourOfAKindScore = 0.466;
-        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 3)) fourOfAKindScore = 0.51;
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) fourOfAKindScore = 0.01;
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) fourOfAKindScore = 0.01;
-        else if ((info.numCards == 1)) fourOfAKindScore = 0.01;
-        else fourOfAKindScore = 0.0;
+        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 4)) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[1];
+        else if ((info.rankCountCounts[3] == 1) && (info.numCards == 3)) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[2];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[3];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[4];
+        else if ((info.numCards == 1)) fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[5];
+        else fourOfAKindScore = Settings.Evaluations.fourOfAKindPolicy[6];
         
         return fourOfAKindScore;
     }

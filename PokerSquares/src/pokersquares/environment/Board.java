@@ -67,7 +67,7 @@ public class Board {
     
     public int getTurn(){
         return 25 - playPos.size();
-    }
+    }   
     public LinkedList<Card> getDeck(){
         return deck;
     }
