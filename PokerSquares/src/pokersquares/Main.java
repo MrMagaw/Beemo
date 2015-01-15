@@ -3,11 +3,12 @@ package pokersquares;
 import pokersquares.environment.PokerSquares;
 import static pokersquares.environment.PokerSquares.GAME_MILLIS;
 import pokersquares.players.BeemoV2;
+import pokersquares.config.Settings;
 
 public class Main {
     public static void main(String[] args){
-        int games = 10;
-        int seed = 0;
+        int games = Settings.Main.games;
+        int seed = Settings.Main.seed;
         if(args.length > 0){
             for(String arg : args){
                 if(arg.startsWith("-s=")){
@@ -18,6 +19,6 @@ public class Main {
             }
         }
         System.out.println("Games: " + games + ", Start Seed: " + seed);
-        new PokerSquares(new BeemoV2(), GAME_MILLIS).playSequence(games, seed, false);
+        new PokerSquares(new BeemoV2(), GAME_MILLIS).playSequence(games, seed, Settings.Main.verbose);
     }
 }

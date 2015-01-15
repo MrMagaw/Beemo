@@ -4,6 +4,11 @@ import pokersquares.algorithms.*;
 import pokersquares.evaluations.PatternPolicy;
 
 public class Settings {
+    public static class Main {
+        public static int games = 1;
+        public static int seed = 0;
+        public static boolean verbose = false;
+    }
     public static class Algorithms {
         public static int searchDepth = 2;      //Currently unused.
         public static int simSampleSize = 1000; 
