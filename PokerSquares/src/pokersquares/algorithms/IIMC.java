@@ -2,7 +2,6 @@ package pokersquares.algorithms;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Random;
 import pokersquares.config.Settings;
 import pokersquares.environment.Card;
 import pokersquares.environment.Board;
@@ -53,10 +52,9 @@ public class IIMC extends Algorithm{
             
             while(--numSimulations > 0){
                 Board b = new Board(tb);
-                Random r = new Random();
                 
                 while (b.getTurn() < 25) {
-                    Card c = b.getDeck().remove(r.nextInt(b.getDeck().size()));
+                    Card c = b.getDeck().remove(numSimulations % b.getDeck().size());
                     int[] p = Settings.Algorithms.simAlgoritm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
@@ -64,7 +62,7 @@ public class IIMC extends Algorithm{
                 score += PokerSquares.getScore(b.getGrid());
             }
             //Maybe remove this? v
-            score += (PatternPolicy.evaluate(tb) * Settings.Algorithms.simSampleSize); //Add the score of the move to the evaluation
+            //score += (PatternPolicy.evaluate(tb) * Settings.Algorithms.simSampleSize); //Add the score of the move to the evaluation
             //Or decrease the multiplier (ie simSampleSize / 2) ^
             if(score > bestScore){
                 bestScore = score;
