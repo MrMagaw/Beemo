@@ -3,26 +3,30 @@ package pokersquares.config;
 import pokersquares.algorithms.*;
 
 public class Settings {
+    //Holds all CONSTANTS for all classes for easy reference and tweaking
+    
     public static class Main {
         public static int games = 1;
         public static int seed = 0;
         public static boolean verbose = false;
     }
+    
     public static class Algorithms {
         public static int searchDepth = 2;      //Currently unused.
         public static int simSampleSize = 1000; 
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
-        public static Algorithm simAlgoritm = new GRB();
+        public static Algorithm simAlgoritm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new GRB(), new GRB(), new GRB()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
     }
+    
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
     }
+    
     public static class Evaluations {
-        
         //Pattern Policy
         public static double pairExp = 1;
         public static double twoPairExp = 1;

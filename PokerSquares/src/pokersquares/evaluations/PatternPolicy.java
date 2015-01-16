@@ -2,15 +2,16 @@ package pokersquares.evaluations;
 
 import java.util.Map;
 import pokersquares.config.Settings;
-import pokersquares.environment.Card;
 import pokersquares.environment.Board;
+import pokersquares.environment.Card;
+import pokersquares.environment.Hand;
 
 public class PatternPolicy {
-    private static final Map<String, Double> patternEvaluations = new java.util.HashMap();
+    public static final Map<String, Double> patternEvaluations = new java.util.HashMap();
     //Hand Analysis
     
     private static class Info{
-        private String pattern;
+        private String pattern = "p";
         private boolean straight;
         private boolean royal;
         private double numCards = 0;
@@ -24,29 +25,46 @@ public class PatternPolicy {
     public static double evaluate(Board board){
         double evaluation = 0;
         for(int i = 0; i < 5; ++i){
-            evaluation += evaluate(board.getRow(i), false);
-            evaluation += evaluate(board.getColumn(i), true);
+            evaluation += evaluate(board.hands.get(i), false);
+            evaluation += evaluate(board.hands.get(i+5), true);
         }
         return evaluation;
     }
     
-    public static double evaluate(Card[] hand, boolean col) {
+    public static double evaluate(Hand hand, boolean col) {
         Info info = new Info();
         
-        analyzeHand(info, hand);
+        analyzeHand(info, hand.cards);
         buildPattern(info, hand, col);
+        
+        //System.out.println(info.pattern);
         
         double evaluation;
         
         if (patternEvaluations.containsKey(info.pattern)) 
             evaluation = patternEvaluations.get(info.pattern);
         else 
-            evaluation = scoreHand(info, hand, col);
+            evaluation = scoreHand(info, hand.cards, col);
+        
+        hand.evaluation = evaluation;
         
         return evaluation;
     }
     
-    private static void buildPattern(Info info, Card[] hand, boolean col) {
+    public static String patternate(Hand hand, boolean col) {
+        Info info = new Info();
+         
+        //PROCESS
+        analyzeHand(info, hand.cards);
+        buildPattern(info, hand, col);
+        
+        //RECORD
+        hand.pattern = info.pattern;
+        
+        return info.pattern;
+    }
+    
+    private static String buildPattern(Info info, Hand hand, boolean col) {
         //PATTERN NOTE 
         //Current Pattern builds based on the assumption that 
         //only suits are dealt with in columns 
@@ -54,12 +72,20 @@ public class PatternPolicy {
         
         //if col build suit pattern
         if (col) {
-            if (info.numSuits == 1)
+            if (info.numSuits == 1) {
                 if (info.numCards == 1) info.pattern = info.pattern + "a";
                 else if (info.numCards == 2) info.pattern = info.pattern + "aa";
                 else if (info.numCards == 3) info.pattern = info.pattern + "aaa";
                 else if (info.numCards == 4) info.pattern = info.pattern + "aaaa";
                 else info.pattern = info.pattern + "aaaaa";
+            }
+            else if (info.numSuits > 1) {
+                if (info.numCards == 1) info.pattern = info.pattern + "x";
+                else if (info.numCards == 2) info.pattern = info.pattern + "xx";
+                else if (info.numCards == 3) info.pattern = info.pattern + "xxx";
+                else if (info.numCards == 4) info.pattern = info.pattern + "xxxx";
+                else info.pattern = info.pattern + "xxxxx";
+            }
         }
         //if row build rank pattern
         else {
@@ -88,6 +114,8 @@ public class PatternPolicy {
                 
         }
         
+        return info.pattern;
+        
     }
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
@@ -112,7 +140,7 @@ public class PatternPolicy {
             handScore = 20 * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
         }
         
-        if (info.pattern != null) patternEvaluations.put(info.pattern, handScore);
+        if (info.pattern != "p") patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
     }

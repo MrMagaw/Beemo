@@ -2,10 +2,20 @@ package pokersquares.environment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
+import pokersquares.evaluations.PatternPolicy;
 
 public class Board {
+<<<<<<< Updated upstream
+=======
+    private Card[][] grid;
+    private ArrayList<Integer[]> openPos;
+    private final LinkedList<Card> deck = new LinkedList();
+>>>>>>> Stashed changes
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
+    public ArrayList <Hand> hands = new ArrayList <Hand> ();
+    public String pattern;
     static{
         ALL_POS.addAll(Arrays.asList(new Integer[][]{
                 {0, 0}, {0, 1}, {0, 2}, {0, 3}, {0, 4},
@@ -15,15 +25,20 @@ public class Board {
                 {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4},
             }));
     }
+<<<<<<< Updated upstream
     
     private final Card[][] grid;
     private final ArrayList<Integer[]> playPos;
     private final LinkedList<Card> deck = new LinkedList();
     
+=======
+   
+>>>>>>> Stashed changes
     public Board(){
         grid = new Card[5][5];
         deck.addAll(Arrays.asList(Card.allCards));
-        playPos = new ArrayList(ALL_POS);
+        openPos = new ArrayList(ALL_POS);
+        buildHands();
     }
     public Board(Board parent){
         grid = new Card[5][5];
@@ -31,19 +46,61 @@ public class Board {
             grid[i] = parent.grid[i].clone(); //May have to clone each array
         deck.clear();
         deck.addAll(parent.deck);
-        playPos = new ArrayList(parent.playPos);
+        openPos = new ArrayList(parent.openPos);
+        buildHands();
     }
+    public void buildHands(){
+        //check each row 
+        for (int row = 0; row < 5; ++row) {
+            
+            Hand hand = new Hand(new Card[5], false);
+            
+            for (int col = 0; col < 5; ++col) {
+                //build hand
+                hand.cards[col] = getCard(row, col);
+                //check for null pos
+                if (getCard(row, col) == null) hand.openPos.add(col);
+            }
+            
+            hands.add(hand);
+        }
+        
+        //check each column
+        for (int col = 0; col < 5; ++col) {
+            
+            Hand hand = new Hand(new Card[5], true);
+            
+            for (int row = 0; row < 5; ++row) {
+                //build hand
+                hand.cards[row] = getCard(row, col);
+                
+                //check for null pos
+                if (getCard(row, col) == null) hand.openPos.add(row);
+            }
+            
+            hands.add(hand);
+        }
+    }
+    
     public void playCard(Card card, int[] pos){
+        //UPDATE GRID
         grid[pos[0]][pos[1]] = card;
-        for(Integer[] i : playPos){
+        for(Integer[] i : openPos){
             if(i[0] == pos[0] && i[1] == pos[1]){
-                playPos.remove(i);
+                openPos.remove(i);
                 break;
             }
         }
+        
+        //UPDATE HANDS
+        hands.get(pos[0]).cards[pos[1]] = card;
+        hands.get(pos[0]).openPos.remove((Integer) pos[1]);
+        hands.get(pos[1] + 5).cards[pos[0]] = card;
+        hands.get(pos[1] + 5).openPos.remove((Integer) pos[0]);
     }
-    public ArrayList<Integer[]> getPlayPos(){
-        return playPos;
+    
+    public ArrayList<Integer[]> getOpenPos(){
+        return openPos;
     }
     public Card getCard(int[] pos){
         return getCard(pos[0], pos[1]);
@@ -67,7 +124,7 @@ public class Board {
     }
     
     public int getTurn(){
-        return 25 - playPos.size();
+        return 25 - openPos.size();
     }   
     public LinkedList<Card> getDeck(){
         return deck;

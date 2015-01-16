@@ -95,6 +95,7 @@ public class PokerSquares {
 			}
 			if (play.length != 2 || play[0] < 0 || play[0] >= SIZE || play[1] < 0 || play[1] >= SIZE || grid[play[0]][play[1]] != null) { // illegal play
 				System.err.printf("Illegal play: %s\n", Arrays.toString(play));
+                                System.exit(0);
 				return 0;
 			}
 			grid[play[0]][play[1]] = card;

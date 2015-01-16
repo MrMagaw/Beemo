@@ -15,7 +15,9 @@ public class IIMC extends Algorithm{
         @Override
         public int compare(Integer[] o1, Integer[] o2) {
             //o1-o2
-            Board tb = new Board(board);
+            Board tb = new Board(board); 
+            //Optimize by building, evaluating and comparing only at corresponding hands, not the entire board
+            
             tb.playCard(card, new int[]{o2[0], o2[1]});
             double s1 = PatternPolicy.evaluate(tb);
             tb = new Board(board);
@@ -34,8 +36,8 @@ public class IIMC extends Algorithm{
         
         Double bestScore = Double.MIN_VALUE;
         
-        Integer[][] positions = new Integer[board.getPlayPos().size()][];
-        positions = board.getPlayPos().toArray(positions);
+        Integer[][] positions = new Integer[board.getOpenPos().size()][];
+        positions = board.getOpenPos().toArray(positions);
         
         if(Settings.Algorithms.playSampleSize < positions.length){
             Arrays.sort(positions, new Filter(board, card));
@@ -54,14 +56,15 @@ public class IIMC extends Algorithm{
                 Board b = new Board(tb);
                 
                 while (b.getTurn() < 25) {
-                    Card c = b.getDeck().remove(numSimulations % b.getDeck().size());
+                    Card c = b.getDeck().remove(numSimulations % b.getDeck().size()); 
                     int[] p = Settings.Algorithms.simAlgoritm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
                 
                 score += PokerSquares.getScore(b.getGrid());
             }
-            //Maybe remove this? v
+            
+            //Maybe remove this? 
             //score += (PatternPolicy.evaluate(tb) * Settings.Algorithms.simSampleSize); //Add the score of the move to the evaluation
             //Or decrease the multiplier (ie simSampleSize / 2) ^
             if(score > bestScore){
