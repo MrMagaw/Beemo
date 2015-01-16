@@ -7,12 +7,10 @@ import java.util.LinkedList;
 import pokersquares.evaluations.PatternPolicy;
 
 public class Board {
-<<<<<<< Updated upstream
-=======
+
     private Card[][] grid;
     private ArrayList<Integer[]> openPos;
     private final LinkedList<Card> deck = new LinkedList();
->>>>>>> Stashed changes
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
     public ArrayList <Hand> hands = new ArrayList <Hand> ();
     public String pattern;
@@ -25,15 +23,8 @@ public class Board {
                 {4, 0}, {4, 1}, {4, 2}, {4, 3}, {4, 4},
             }));
     }
-<<<<<<< Updated upstream
     
-    private final Card[][] grid;
-    private final ArrayList<Integer[]> playPos;
-    private final LinkedList<Card> deck = new LinkedList();
-    
-=======
    
->>>>>>> Stashed changes
     public Board(){
         grid = new Card[5][5];
         deck.addAll(Arrays.asList(Card.allCards));
