@@ -44,6 +44,6 @@ public class Hand {
             if (card == null) System.out.print("--");
             else System.out.print(card.toString());
         }
-        System.out.print(" " + pattern + " " + isCol + " " + openPos + "\n");
+        System.out.println(" " + pattern + " " + isCol + " " + openPos + "\n");
     }
 }

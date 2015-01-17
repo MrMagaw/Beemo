@@ -7,9 +7,11 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Board;
 import pokersquares.environment.PokerSquares;
 import pokersquares.evaluations.PatternPolicy;
+import pokersquares.evaluations.PositionRank;
 
 public class IIMC extends Algorithm{
     private static class Filter implements Comparator<Integer[]>{
+        //Compartor class to filter positions by they're static evaluation value 
         private final Card card;
         private final Board board;
         @Override
@@ -44,6 +46,13 @@ public class IIMC extends Algorithm{
             positions[Settings.Algorithms.playSampleSize] = null;
         }
         
+        //POSITION RANK OPTIMIZATION
+        if (Settings.Algorithms.positionRankEnabled) {
+            board.patternateHands();
+            board.patternatePositions(card);
+        }
+        
+        //FOR EACH POSITION available in the board
         for(Integer[] pos : positions){
             if(pos == null) break;
             int numSimulations = Settings.Algorithms.simSampleSize;
@@ -52,6 +61,7 @@ public class IIMC extends Algorithm{
             Board tb = new Board(board);
             tb.playCard(card, new int[]{pos[0], pos[1]});
             
+            //SIMULATE Games
             while(--numSimulations > 0){
                 Board b = new Board(tb);
                 
@@ -64,14 +74,14 @@ public class IIMC extends Algorithm{
                 score += PokerSquares.getScore(b.getGrid());
             }
             
-            //Maybe remove this? 
-            //score += (PatternPolicy.evaluate(tb) * Settings.Algorithms.simSampleSize); //Add the score of the move to the evaluation
-            //Or decrease the multiplier (ie simSampleSize / 2) ^
             if(score > bestScore){
                 bestScore = score;
                 bestPos = pos;
             }
         }
+        
+        if (Settings.Algorithms.positionRankEnabled)
+            PositionRank.update(board, bestPos); 
         
         return new int[] {bestPos[0], bestPos[1]};
     }

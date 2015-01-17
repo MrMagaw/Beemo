@@ -12,7 +12,8 @@ public class Board {
     private ArrayList<Integer[]> openPos;
     private final LinkedList<Card> deck = new LinkedList();
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
-    public ArrayList <Hand> hands = new ArrayList <Hand> ();
+    public ArrayList <Hand> hands = new ArrayList();
+    public ArrayList <String> posPatterns = new ArrayList();
     public String pattern;
     static{
         ALL_POS.addAll(Arrays.asList(new Integer[][]{
@@ -40,6 +41,7 @@ public class Board {
         openPos = new ArrayList(parent.openPos);
         buildHands();
     }
+    
     public void buildHands(){
         //check each row 
         for (int row = 0; row < 5; ++row) {
@@ -89,7 +91,25 @@ public class Board {
         hands.get(pos[1] + 5).cards[pos[0]] = card;
         hands.get(pos[1] + 5).openPos.remove((Integer) pos[0]);
     }
-    
+    public void patternateHands() {
+        for (Hand hand : hands) hand.patternate();
+    }
+    public void patternatePositions(Card card) {
+        posPatterns.clear();
+        for (Integer[] pos : openPos) {
+            posPatterns.add(new String (hands.get(pos[0]).pattern + hands.get(pos[1] + 5).pattern ) + card.toString());
+        }
+    }
+    public String getPosPattern(Integer[] pos) {
+        int i = 0;
+        
+        for (Integer[] rpos : openPos) {
+            if ((rpos[0] == pos[0]) && (rpos[1] == pos[1])) return posPatterns.get(i);
+            ++i;
+        }
+        
+        return null;
+    }
     public ArrayList<Integer[]> getOpenPos(){
         return openPos;
     }
@@ -119,5 +139,11 @@ public class Board {
     }   
     public LinkedList<Card> getDeck(){
         return deck;
+    }
+    public void debug() {
+        PokerSquares.printGrid(grid);
+        for (Integer[] pos: openPos) System.out.print("(" + pos[0] + ", " + pos[1] + ") ");
+        System.out.println("");
+        for (String posPattern : posPatterns) System.out.println(posPattern);
     }
 }

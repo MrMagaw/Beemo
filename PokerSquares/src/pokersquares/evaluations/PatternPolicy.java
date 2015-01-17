@@ -1,6 +1,10 @@
 package pokersquares.evaluations;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import pokersquares.config.Settings;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
@@ -17,9 +21,15 @@ public class PatternPolicy {
         private double numCards = 0;
         private double handWeight = 0;
         private double numSuits = 0;
+        private int[] ranks = new int[5];
         private final int[] suitCounts = new int[Card.NUM_SUITS];
         private final int[] rankCounts = new int[Card.NUM_RANKS];
         private final int[] rankCountCounts = new int[6];
+        
+        Info(boolean col) {
+            if (col == true) pattern = "c";
+            else pattern = "r";
+        }
     }
     
     public static double evaluate(Board board){
@@ -32,12 +42,10 @@ public class PatternPolicy {
     }
     
     public static double evaluate(Hand hand, boolean col) {
-        Info info = new Info();
+        Info info = new Info(col);
         
-        analyzeHand(info, hand.cards);
+        analyzeHand(info, hand.cards, col);
         buildPattern(info, hand, col);
-        
-        //System.out.println(info.pattern);
         
         double evaluation;
         
@@ -52,19 +60,29 @@ public class PatternPolicy {
     }
     
     public static String patternate(Hand hand, boolean col) {
-        Info info = new Info();
+        Info info = new Info(col);
          
-        //PROCESS
-        analyzeHand(info, hand.cards);
+        //PROCESS hand
+        analyzeHand(info, hand.cards, col);
         buildPattern(info, hand, col);
-        
-        //RECORD
-        hand.pattern = info.pattern;
         
         return info.pattern;
     }
     
     private static String buildPattern(Info info, Hand hand, boolean col) {
+        //BUILD Pattern
+        
+        if (Settings.Algorithms.positionRankEnabled) patternB(info, hand, col);
+        else patternA(info, hand, col);
+        
+        //RECORD Pattern
+        hand.pattern = info.pattern;
+        
+        return info.pattern;
+        
+    }
+    
+    private static String patternA(Info info, Hand hand, boolean col) {
         //PATTERN NOTE 
         //Current Pattern builds based on the assumption that 
         //only suits are dealt with in columns 
@@ -113,9 +131,53 @@ public class PatternPolicy {
                 }
                 
         }
+        return info.pattern;
+    }
+    
+    private static String patternB(Info info, Hand hand, boolean col) {
+        //Build row pattern from hand rank and suit information
+        
+        if (col) {
+            if (info.numSuits == 1) {
+                for (Card card : hand.cards) {
+                    if (card != null) info.pattern += card.getSuit();
+                }
+            }
+            else if (info.numSuits > 1) {
+                if (info.numCards == 1) info.pattern = info.pattern + "x";
+                else if (info.numCards == 2) info.pattern = info.pattern + "xx";
+                else if (info.numCards == 3) info.pattern = info.pattern + "xxx";
+                else if (info.numCards == 4) info.pattern = info.pattern + "xxxx";
+                else info.pattern = info.pattern + "xxxxx";
+            }
+        }
+        else {
+            
+            int iRanks = 0;
+            
+            //Iterates through num CountCounts, 
+            //recording a rank identifier for each rank
+            
+            if (info.numCards > 0)
+                //for the maximum number of rank multiples
+                for (int i = 5; i > 0; --i) {
+                    //for each rank multiple occuring at least once
+                    //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+                    if (info.rankCountCounts[i] > 0) {
+                        //for each occurance of a rank multiple
+                        for (int j = 0; j < info.rankCountCounts[i]; ++j) {
+                            for (int k = 0; k < i; ++k) {
+                                info.pattern += info.ranks[iRanks];
+                                info.pattern += "-";
+                            }
+                            ++iRanks;
+                        }
+                    }
+                }
+                
+        }
         
         return info.pattern;
-        
     }
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
@@ -246,13 +308,20 @@ public class PatternPolicy {
         return royalFlushScore;
     }
     
-    private static void analyzeHand(Info info, Card[] hand) {
+    private static void analyzeHand(Info info, Card[] hand, boolean col) {
+        
+        SortedMap <Integer, LinkedList> sortedRankCounts = new TreeMap ();
+        
+        int ii = 0;
         for (Card card : hand) {
             if (card != null) {
 		++info.suitCounts[card.getSuit()];
                 ++info.rankCounts[card.getRank()];
                 ++info.numCards;
             }
+            
+            if (!col && Settings.Algorithms.positionRankEnabled) sortedRankCounts.put(ii, new LinkedList <Integer>());
+            ++ii;
         }
         
 	for (int i = 0; i < Card.NUM_RANKS; ++i) {
@@ -262,7 +331,34 @@ public class PatternPolicy {
                     ++info.numSuits;
                 }
             }
+            
+            if (!col && Settings.Algorithms.positionRankEnabled) if (info.rankCounts[i] > 0) sortedRankCounts.get(4 - info.rankCounts[i]).add(i);
         }
+        
+        if (!col && Settings.Algorithms.positionRankEnabled) {
+            int i = 0;
+            for (LinkedList <Integer> rankList : sortedRankCounts.values()) {
+                Collections.sort(rankList);
+                for (Integer rank : rankList) {
+                    info.ranks[i] = rank;
+                    ++i;
+                }
+            }
+        }
+        
+        //DEBUG ranks
+        /*
+        //System.out.print("\n");
+        for(Card card : hand) {
+            if (card == null) System.out.print("--");
+            else System.out.print(card.toString());
+        }
+        System.out.print(" / ");
+        for(int j = 0; j < 5; ++j) {
+            System.out.print(info.ranks[j]);
+        }
+        System.out.print("\n");
+        */
         
         //STRAIGHT AND ROYAL CHECKING 
         /*

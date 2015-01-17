@@ -17,9 +17,11 @@ public class Settings {
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
+        public static boolean positionRankEnabled = false;
+        
         public static Algorithm simAlgoritm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
+                new Algorithm[] {new OBF(), new OBF(), new OBF()};
     }
     
     public static class BMO {
@@ -27,6 +29,7 @@ public class Settings {
     }
     
     public static class Evaluations {
+        
         //Pattern Policy
         public static double pairExp = 1;
         public static double twoPairExp = 1;
