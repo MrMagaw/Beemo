@@ -6,14 +6,14 @@ public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
     
     public static class Main {
-        public static int games = 1;
+        public static int games = 10;
         public static int seed = 0;
         public static boolean verbose = false;
     }
     
     public static class Algorithms {
         public static int searchDepth = 2;      //Currently unused.
-        public static int simSampleSize = 1000; 
+        public static int simSampleSize = 2000; 
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
@@ -21,7 +21,7 @@ public class Settings {
         
         public static Algorithm simAlgoritm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
     }
     
     public static class BMO {

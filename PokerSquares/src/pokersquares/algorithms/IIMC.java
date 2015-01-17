@@ -80,6 +80,7 @@ public class IIMC extends Algorithm{
             }
         }
         
+        //UPDATE Position Rank
         if (Settings.Algorithms.positionRankEnabled)
             PositionRank.update(board, bestPos); 
         
