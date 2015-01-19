@@ -1,3 +1,5 @@
+package pokersquares.environment;
+
 
 /**
  * PokerHand - An enumeration of Poker hand classes along with associated identification numbers and Strings. 

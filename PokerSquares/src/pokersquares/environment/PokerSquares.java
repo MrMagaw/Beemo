@@ -1,9 +1,12 @@
+package pokersquares.environment;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Stack;
+import pokersquares.players.*;
 
 /* A parameterized version of the solitaire game "Poker Squares" with variable point systems.
  * Author: Todd W. Neller

@@ -1,3 +1,5 @@
+package pokersquares.environment;
+
 import java.util.Random;
 
 

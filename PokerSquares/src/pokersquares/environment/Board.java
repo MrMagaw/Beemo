@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import pokersquares.evaluations.PatternPolicy;
+import pokersquares.config.Settings;
 
 public class Board {
 
@@ -28,7 +29,7 @@ public class Board {
    
     public Board(){
         grid = new Card[5][5];
-        deck.addAll(Arrays.asList(Card.allCards));
+        deck.addAll(Arrays.asList(Card.getAllCards()));
         openPos = new ArrayList(ALL_POS);
         buildHands();
     }
@@ -141,7 +142,7 @@ public class Board {
         return deck;
     }
     public void debug() {
-        PokerSquares.printGrid(grid);
+        Settings.Environment.psps.printGrid(grid);
         for (Integer[] pos: openPos) System.out.print("(" + pos[0] + ", " + pos[1] + ") ");
         System.out.println("");
         for (String posPattern : posPatterns) System.out.println(posPattern);

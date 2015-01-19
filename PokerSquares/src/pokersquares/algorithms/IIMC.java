@@ -3,9 +3,7 @@ package pokersquares.algorithms;
 import java.util.Arrays;
 import java.util.Comparator;
 import pokersquares.config.Settings;
-import pokersquares.environment.Card;
-import pokersquares.environment.Board;
-import pokersquares.environment.PokerSquares;
+import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 import pokersquares.evaluations.PositionRank;
 
@@ -71,7 +69,7 @@ public class IIMC extends Algorithm{
                     b.playCard(c, p);
                 }
                 
-                score += PokerSquares.getScore(b.getGrid());
+                score += Settings.Environment.psps.getScore(b.getGrid());
             }
             
             if(score > bestScore){

@@ -2,8 +2,7 @@ package pokersquares.players;
 
 import java.util.Map;
 import pokersquares.config.Settings;
-import pokersquares.environment.Board;
-import pokersquares.environment.Card;
+import pokersquares.environment.*;
 import pokersquares.evaluations.BoardPolicy;
 import pokersquares.evaluations.PatternPolicy;
 
@@ -28,6 +27,11 @@ public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
     
     public BeemoV2(){
+    }
+    
+    @Override
+    public void setPointSystem(PokerSquaresPointSystem system, long millis){
+        Settings.Environment.psps = system;
     }
 
     @Override
@@ -63,4 +67,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         return bestPos;
     }
     
+    public String getName(){
+        return "BMO";
+    }
 }
