@@ -36,7 +36,7 @@ public class Settings {
     public static class Evaluations {
         
         //Pattern Policy
-        public static String pattern = "C"; //A,B,C
+        public static String pattern = "A"; //A,B,C
         
         public static double pairExp = 1;
         public static double twoPairExp = 1;

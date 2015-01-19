@@ -73,7 +73,10 @@ public class PatternPolicy {
         //BUILD Pattern
         
         if (Settings.Algorithms.positionRankEnabled) patternB(info, hand, col);
-        else patternA(info, hand, col);
+        else {
+            if (Settings.Evaluations.pattern == "A") patternA(info, hand, col);
+            else if (Settings.Evaluations.pattern == "B") patternB(info, hand, col);
+        }
         
         //RECORD Pattern
         hand.pattern = info.pattern;
@@ -183,7 +186,7 @@ public class PatternPolicy {
     private static double scoreHand(Info info, Card[] hand, boolean col) {
         double tempScore, handScore;
         //Policy Scores should relate to probability, 
-        //They are currently assigned by intuition,
+        //They are currently assigned by gut,
         //The probability should be calculated or else learned 
         
         if(!col){
