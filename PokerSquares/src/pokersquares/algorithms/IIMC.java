@@ -69,7 +69,7 @@ public class IIMC extends Algorithm{
                     b.playCard(c, p);
                 }
                 
-                score += Settings.Environment.psps.getScore(b.getGrid());
+                score += Settings.Environment.system.getScore(b.getGrid());
             }
             
             if(score > bestScore){

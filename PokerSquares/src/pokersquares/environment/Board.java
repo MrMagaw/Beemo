@@ -142,7 +142,7 @@ public class Board {
         return deck;
     }
     public void debug() {
-        Settings.Environment.psps.printGrid(grid);
+        Settings.Environment.system.printGrid(grid);
         for (Integer[] pos: openPos) System.out.print("(" + pos[0] + ", " + pos[1] + ") ");
         System.out.println("");
         for (String posPattern : posPatterns) System.out.println(posPattern);

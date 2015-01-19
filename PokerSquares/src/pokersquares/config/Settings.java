@@ -13,7 +13,7 @@ public class Settings {
     }
     
     public static class Environment {
-        public static PokerSquaresPointSystem psps;
+        public static PokerSquaresPointSystem system;
     }
     
     public static class Algorithms {

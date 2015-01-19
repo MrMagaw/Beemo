@@ -31,7 +31,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
-        Settings.Environment.psps = system;
+        Settings.Environment.system = system;
     }
 
     @Override
@@ -68,6 +68,6 @@ public class BeemoV2 implements PokerSquaresPlayer{
     }
     
     public String getName(){
-        return "BMO";
+        return "BMOV2";
     }
 }
