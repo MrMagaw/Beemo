@@ -59,8 +59,7 @@ MC runs simulations in equal parts on all nodes \
 -develop a test to determine how often iimc and oxmc choose the best move\
 \
 Pattern Policy\
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 \
+\
 \'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
 \
 1.15.2015 - Log Start\
@@ -106,10 +105,8 @@ It turns out that you need far more information to accurately ID a Board and its
 \
 \
 1.16.2015 - Position Policy \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 Position Policy \
-\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 each position has a pattern that is ranked relative to position patterns\
+Position Policy \
+each position has a pattern that is ranked relative to position patterns\
 Map a pattern\'92s relative value/weight/rank compared to other other patterns in a collection holding pattern information as follows:\
 \
 1. ab\
@@ -139,6 +136,38 @@ It looks like it\'92s levelling off at around 600 000 unique patterns.\
 \
 1.19.2015 - Parametrized Structure Update\
 We found out that the structure of the poker squares challenge is more generalized than we thought, the player must play the game with any hand scores. \
+\
+PatternC was lost in the parametrizing due to erroneous committing on my part, she will be mourned.\
+\
+\ul Scaled Position Values\
+\ulnone Using an abstract relative ranking to compare positions turned out to be excessively computationally heavy as well as requiring a LOT of information. A discrete, real number value by which to compare the positions would be much more useful! By this I mean a real floating point value assigned to every rank (ideally between 1 and 0). \
+\
+How to scale properly?\
+For the American Scoring System:\
+The static evaluation for the two hands and card of a position have a score range of 0 - 200, but this can\'92t be hard coded in.\
+The monte Carlo evaluation will be between 0 - (~675), but the distribution of scores in both of those won\'92t be equal because one is for the entire board and the other is for just the two hands. \
+\
+SOLUTION ONE\
+Keep track of the simulation results for all hands in the board so the score range will be the same as the static evaluation. \
+*a problem with this is that the simulation value will be skewed from game to game because of cards placed elsewhere on the board. for ex. a hand with a three of a kind and two empty spaces has a chance of a four of a kind unless the fourth card has already been placed elsewhere in the board. \
+To Deal with the above mentioned issue, include information about played cards in the pattern.\
+\
+a pattern with 4 identifiers for suits, 4 ids for ranks \
+(1123)(1123)(1111)(2233)(10)(21)\
+(suits hand one)(suits hand 2)(ranks hand 1)(ranks hand 2)(card rank)(card suit)\
+35 x 35 x 35 x 35 x 16 x 16 = 384 mil \
+too big and doesn\'92t even include board information.\
+\
+to keep the hash table manageable, look to keep the number of patterns stored in the range of a mil (1 000 000).\
+\
+What information about the board is relevant to the two hands being compared? (max number of unique IDs)\
+number of cards of each relevant rank (35 x 35 = 1225) \
+Cards of the same suit (number of cards)\
+\
+I don\'92t have a method of efficiently and accurately representing the hands and board without information loss with fewer than 10 million unique patterns\'85\
+\
+\
+\
 \
 \
 \

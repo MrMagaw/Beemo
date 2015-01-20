@@ -183,6 +183,8 @@ public class PatternPolicy {
         return info.pattern;
     }
     
+    
+    
     private static double scoreHand(Info info, Card[] hand, boolean col) {
         double tempScore, handScore;
         //Policy Scores should relate to probability, 
