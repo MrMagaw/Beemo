@@ -217,6 +217,7 @@ public class PokerSquares {
 			if (scores[i] < min) min = scores[i];
 			if (scores[i] > max) max = scores[i];
 			System.out.println(score);
+                        system.printGrid(grid);
 		}
 		scoreMean /= numGames;
 		double scoreStdDev = 0;
@@ -226,7 +227,7 @@ public class PokerSquares {
 		}
 		scoreStdDev = Math.sqrt(scoreStdDev / numGames);
 		System.out.printf("Score Mean: %f, Standard Deviation: %f, Minimum: %d, Maximum: %d\n", scoreMean, scoreStdDev, min, max);
-		return scores;
+                return scores;
 	}
 	
 	/**

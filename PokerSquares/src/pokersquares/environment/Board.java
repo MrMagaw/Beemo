@@ -2,12 +2,10 @@ package pokersquares.environment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
-import pokersquares.evaluations.PatternPolicy;
 import pokersquares.config.Settings;
 
-public class Board {
+public final class Board {
 
     private Card[][] grid;
     private ArrayList<Integer[]> openPos;

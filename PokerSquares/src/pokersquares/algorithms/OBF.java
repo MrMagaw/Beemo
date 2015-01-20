@@ -4,7 +4,6 @@ import pokersquares.config.Settings;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
-import pokersquares.evaluations.PatternPolicy;
 import pokersquares.evaluations.PositionRank;
 
 public class OBF extends Algorithm{
@@ -12,36 +11,29 @@ public class OBF extends Algorithm{
     public int[] search(Card card, Board board, long millisRemaining) {
         double[] postEvaluations = new double[10];
         double[] preEvaluations = new double[10];
-        double evaluation = 0;
         
         Integer[] bestPos = {2, 2};
         
         evaluate(card, board, preEvaluations, postEvaluations);
-        if (Settings.Algorithms.positionRankEnabled) board.patternatePositions(card);
         
-        Integer[] A,B;
-        
-        A = getBestPos(board, preEvaluations, postEvaluations);
-        
-        //COMMENT OUT to not use position rank
-        //if (Settings.Algorithms.positionRankEnabled) PositionRank.update(board, A); 
-        
-        if (Settings.Algorithms.positionRankEnabled && PositionRank.contains(board)) {
-            B = PositionRank.getBestPos(board);
-            A = B;
-            
-            //DEBUG for duplicate patterns
-            /*
-            if (!(A[0] == B[0]) && (A[1] == B[1])) {
-                System.out.println("Duplicate Pattern ERROR");
-                board.debug();
-                System.out.println("( "+A[0] + ", " + A[1] + " )" +"( "+B[0] + ", " + B[1] + " )");
+        if (Settings.Algorithms.positionRankEnabled) {
+            board.patternatePositions(card);
+            if (PositionRank.contains(board)){
+                bestPos = PositionRank.getBestPos(board);
+                //DEBUG for duplicate patterns
+                /*
+                if (!(A[0] == B[0]) && (A[1] == B[1])) {
+                    System.out.println("Duplicate Pattern ERROR");
+                    board.debug();
+                    System.out.println("( "+A[0] + ", " + A[1] + " )" +"( "+B[0] + ", " + B[1] + " )");
+                }
+                */   
+            }else{
+                bestPos = getBestPos(board, preEvaluations, postEvaluations);
             }
-            */    
+        }else{
+            bestPos = getBestPos(board, preEvaluations, postEvaluations);
         }
-        
-        
-        bestPos = A;
         
         return new int[] {bestPos[0], bestPos[1]};
     }

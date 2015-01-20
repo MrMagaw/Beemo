@@ -21,7 +21,7 @@ public class PatternPolicy {
         private double numCards = 0;
         private double handWeight = 0;
         private double numSuits = 0;
-        private int[] ranks = new int[5];
+        private final int[] ranks = new int[5];
         private final int[] suitCounts = new int[Card.NUM_SUITS];
         private final int[] rankCounts = new int[Card.NUM_RANKS];
         private final int[] rankCountCounts = new int[6];
@@ -184,41 +184,53 @@ public class PatternPolicy {
     }
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
-        double tempScore, handScore;
+        double tempScore, handScore = Settings.Evaluations.highCardValue;
         //Policy Scores should relate to probability, 
         //They are currently assigned by gut,
         //The probability should be calculated or else learned 
-        
-        if(!col){
+        if(col){
+            handScore += Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
+            //tempScore = Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
+            //handScore = handScore < tempScore ? tempScore : handScore;
+        }
+        //if(!col){
             //Missing:
-            //Pair
             //Straight
             //Royals
-            handScore = 5 * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
-            tempScore = 10 * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
+        /*
+            tempScore = Settings.Evaluations.pairValue * Math.pow(scorePairPolicy(info, hand), Settings.Evaluations.pairExp);
             handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = 25 * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
+            tempScore = Settings.Evaluations.twoPairValue * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
             handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = 50 * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
+            tempScore = Settings.Evaluations.threeOfAKindValue * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
             handScore = handScore < tempScore ? tempScore : handScore;
-        }else{
-            handScore = 20 * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
-        }
+            tempScore = Settings.Evaluations.fullHouseValue * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
+            handScore = handScore < tempScore ? tempScore : handScore;
+            tempScore = Settings.Evaluations.fourOfAKindValue * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
+            handScore = handScore < tempScore ? tempScore : handScore;
+        */
         
-        if (info.pattern != "p") patternEvaluations.put(info.pattern, handScore);
+            handScore += Settings.Evaluations.pairValue * Math.pow(scorePairPolicy(info, hand), Settings.Evaluations.pairExp);
+            handScore += Settings.Evaluations.twoPairValue * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
+            handScore += Settings.Evaluations.threeOfAKindValue * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
+            handScore += Settings.Evaluations.fullHouseValue * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
+            handScore += Settings.Evaluations.fourOfAKindValue * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
+            
+        //}else{
+        //    handScore = Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
+        //}
+        
+        if (!info.pattern.equals("p")) patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
-        double pairScore = 0;
-        
-        //if there is a pair
-        if (info.rankCountCounts[2] == 1) pairScore = Settings.Evaluations.pairPolicy[0];
-        //if there is a possibility of a pair
-        else if (info.numCards < 5) pairScore = Settings.Evaluations.pairPolicy[1];
-        
-        return pairScore;
+        if (info.rankCountCounts[2] == 1) 
+            return Settings.Evaluations.pairPolicy[0];
+        else{
+            return Settings.Evaluations.pairPolicy[1] * (5 - info.numCards);
+        }
     }
     
     private static double scoreTwoPairPolicy(Info info, Card hand[]) {
@@ -256,7 +268,7 @@ public class PatternPolicy {
         
         //this still works amazingly but I dont know 
         if ((info.numSuits == 1) && (info.numCards <= 5)) 
-            flushScore = Math.pow(info.handWeight,Settings.Evaluations.flushPolicy[0]);
+            flushScore = Math.pow(info.handWeight, Settings.Evaluations.flushPolicy[0]);
         
         return flushScore;
     }

@@ -34,7 +34,7 @@ public class IIMC extends Algorithm{
     public int[] search(final Card card, final Board board, long millisRemaining) {
         Integer[] bestPos = {2, 2};
         
-        Double bestScore = Double.MIN_VALUE;
+        Double bestScore = Double.NEGATIVE_INFINITY;
         
         Integer[][] positions = new Integer[board.getOpenPos().size()][];
         positions = board.getOpenPos().toArray(positions);

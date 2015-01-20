@@ -8,9 +8,16 @@ package pokersquares.environment;
  *
  */
 public enum PokerHand {
-	HIGH_CARD(0, "high card"), ONE_PAIR(1, "one pair"), TWO_PAIR(2, "two pair"), THREE_OF_A_KIND(3, "three of a kind"), 
-	STRAIGHT(4, "straight"), FLUSH(5, "flush"), FULL_HOUSE(6, "full house"), 
-	FOUR_OF_A_KIND(7, "four of a kind"), STRAIGHT_FLUSH(8, "straight flush"), ROYAL_FLUSH(9, "royal flush");
+	HIGH_CARD(0, "high card"), 
+        ONE_PAIR(1, "one pair"), 
+        TWO_PAIR(2, "two pair"), 
+        THREE_OF_A_KIND(3, "three of a kind"), 
+	STRAIGHT(4, "straight"), 
+        FLUSH(5, "flush"), 
+        FULL_HOUSE(6, "full house"), 
+	FOUR_OF_A_KIND(7, "four of a kind"), 
+        STRAIGHT_FLUSH(8, "straight flush"), 
+        ROYAL_FLUSH(9, "royal flush");
 	
 	public static final int NUM_HANDS = PokerHand.values().length;
 	public int id;

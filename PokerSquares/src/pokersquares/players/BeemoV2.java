@@ -1,10 +1,7 @@
 package pokersquares.players;
 
-import java.util.Map;
 import pokersquares.config.Settings;
 import pokersquares.environment.*;
-import pokersquares.evaluations.BoardPolicy;
-import pokersquares.evaluations.PatternPolicy;
 
 /**
  *
@@ -13,7 +10,7 @@ import pokersquares.evaluations.PatternPolicy;
  *                                ||.     . ||
  *                                ||   ‿    ||
  *_|_|_|    _|      _|    _|_|    ||        ||
- *_|    _|  _|_|  _|_|  _|    _| /||--------||\
+ *_|    _|  _|_|  _|_|  _|    _| /||-----V2-||\
  *_|_|_|    _|  _|  _|  _|    _|  ||===   . ||
  *_|    _|  _|      _|  _|    _|  || +  o  0||
  *_|_|_|    _|      _|    _|_|    ||________||
@@ -32,6 +29,17 @@ public class BeemoV2 implements PokerSquaresPlayer{
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
+        int[] scores = system.getScoreTable();
+        Settings.Evaluations.highCardValue = scores[0];
+        Settings.Evaluations.pairValue = scores[1];
+        Settings.Evaluations.twoPairValue = scores[2];
+        Settings.Evaluations.threeOfAKindValue = scores[3];
+        Settings.Evaluations.straightValue = scores[4];
+        Settings.Evaluations.flushValue = scores[5];
+        Settings.Evaluations.fullHouseValue = scores[6];
+        Settings.Evaluations.fourOfAKindValue = scores[7];
+        Settings.Evaluations.straightFlushValue = scores[8];
+        Settings.Evaluations.royalFlushValue = scores[9];
     }
 
     @Override
@@ -58,8 +66,9 @@ public class BeemoV2 implements PokerSquaresPlayer{
             }
         }
         
-        if(bestPos[0] == 2 && bestPos[1] == 2) 
-            System.out.println("Algorithm Error (Or unable to find algorithm).");
+        //Debug information to find if bestPos was not updated.
+        //if(bestPos[0] == 2 && bestPos[1] == 2) 
+        //    System.out.println("Algorithm Error (Or unable to find algorithm).");
         
         
         board.playCard(card, bestPos);
@@ -67,7 +76,8 @@ public class BeemoV2 implements PokerSquaresPlayer{
         return bestPos;
     }
     
+    @Override
     public String getName(){
-        return "BMOV2";
+        return "BMO_V2";
     }
 }
