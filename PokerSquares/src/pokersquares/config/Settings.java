@@ -2,15 +2,21 @@ package pokersquares.config;
 
 import pokersquares.algorithms.*;
 import pokersquares.environment.*;
+import java.util.Arrays;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
+    public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10000;
+        public static int games = 1;
         public static int seed = 0;
         public static boolean verbose = false;
-        public static int randomPointSystemSeed = 0;
+        public static int randomPointSystemSeed = 5;
+        
+        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        
+        
     }
     
     public static class Environment {
@@ -39,17 +45,29 @@ public class Settings {
         //Pattern Policy
         public static String pattern = "A"; //A,B,C
         
-        //array hold exponents for values of hands in american order
-        //public static double[] exps = {1, 1, 1, 1, 1.2, 1.18, 0.95, 0.647, 1.1, 1.1};
-        public static double[] exps = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-        
-        public static double[] pairPolicy = {1, 0.2};
-        public static double[] twoPairPolicy = {1, 0.5, 0.1, -0.1};
-        public static double[] threeOfAKindPolicy = {1, 0.7, 2, 0.5, 50}; //Very disturbing values....
-        public static double[] flushPolicy = {1};
-        public static double[] fullHousePolicy = {1, 0.7, 0.7, 0.8, 0.55, 0.6, 0.4, 0.4, 0};
-        public static double[] fourOfAKindPolicy = {1, 0.466, 0.51, 0.01, 0.01, 0.01, 0};
         
         public static double[] handScores = new double[10];
+        
+        //array hold exponents for values of hands in american order
+        //public static double[] exps = {1, 1, 1, 1, 1.2, 1.18, 0.95, 0.647, 1.1, 1.1};
+        public static double[] exps;
+        
+        public static double[] pairPolicy;
+        public static double[] twoPairPolicy;
+        public static double[] threeOfAKindPolicy;
+        public static double[] flushPolicy;
+        public static double[] fullHousePolicy;
+        public static double[] fourOfAKindPolicy;
+        
+        public static void debug () {
+            System.out.println("Hand Scores: " + Arrays.toString(handScores));
+            System.out.println("Exponents: " + Arrays.toString(exps));
+            System.out.println("Pair Policy: " + Arrays.toString(pairPolicy));
+            System.out.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));
+            System.out.println("Three Of A Kind Policy : " + Arrays.toString(threeOfAKindPolicy));
+            System.out.println("Flush Policy: " + Arrays.toString(flushPolicy));
+            System.out.println("Full House Policy: " + Arrays.toString(fullHousePolicy));
+            System.out.println("Four Of A Kind Policy: " + Arrays.toString(fourOfAKindPolicy));
+        }
     }
 }

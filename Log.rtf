@@ -139,8 +139,10 @@ We found out that the structure of the poker squares challenge is more generaliz
 \
 PatternC was lost in the parametrizing due to erroneous committing on my part, she will be mourned.\
 \
-\ul Scaled Position Values\
-\ulnone Using an abstract relative ranking to compare positions turned out to be excessively computationally heavy as well as requiring a LOT of information. A discrete, real number value by which to compare the positions would be much more useful! By this I mean a real floating point value assigned to every rank (ideally between 1 and 0). \
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \ul \ulc0 Scaled Position Values\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \ulnone Using an abstract relative ranking to compare positions turned out to be excessively computationally heavy as well as requiring a LOT of information. A discrete, real number value by which to compare the positions would be much more useful! By this I mean a real floating point value assigned to every rank (ideally between 1 and 0). \
 \
 How to scale properly?\
 For the American Scoring System:\
@@ -166,6 +168,21 @@ Cards of the same suit (number of cards)\
 \
 I don\'92t have a method of efficiently and accurately representing the hands and board without information loss with fewer than 10 million unique patterns\'85\
 \
+1.21.2015 - Hand Scoring Structure\
+Changed the structure of all the hand scoring values such as exponents into arrays so they can be indexed (all values associated with evaluating a hand for a flush, are indexed to 5, for ex)\
+\
+Starting to implement a structure for value Learning. \
+\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \ul \ulc0 Value Learning Environment\
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+\cf0 \ulnone For every variable that can be adjusted in the settings class to adjust the performance of the algorithm, automate the adjusting of the variable to return a better score.\
+\
+Patternate positions, and run simulations in MonteCarlo based only on positions that are unique,\
+\
+if two positions csaba u of a u city re-enforcement learning survey.\
+\
+Incorporate Probability values into static evaluation\
 \
 \
 \

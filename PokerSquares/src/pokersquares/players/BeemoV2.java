@@ -1,6 +1,7 @@
 package pokersquares.players;
 
-import pokersquares.config.Settings;
+import pokersquares.config.*;
+import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
 
 /**
@@ -24,14 +25,18 @@ public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
     
     public BeemoV2(){
+        
     }
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
         int[] scores = system.getScoreTable();
-        
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
+        
+        SettingsReader.readSettings("s.0.2.5.10.15.20.25.50.75.100.txt");
+        
+        Settings.Evaluations.debug();
     }
 
     @Override

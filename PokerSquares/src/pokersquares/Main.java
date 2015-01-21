@@ -34,10 +34,35 @@ public class Main {
         System.out.println(system);
         new PokerSquares(new GreedyMCPlayer(2), PokerSquaresPointSystem.getAmeritishPointSystem()).play();
         */
-
+        
         // Demonstration of batch game play (30 seconds per game)
         PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);
-        PokerSquaresPointSystem system = PokerSquaresPointSystem.getAmericanPointSystem();
+        
+        //Point System
+        PokerSquaresPointSystem system = PokerSquaresPointSystem.getRandomPointSystem();
+        switch (Settings.Main.pointSystem) {
+            case RANDOM:
+                system = PokerSquaresPointSystem.getRandomPointSystem();
+                break;
+            
+            case AMERICAN:
+                system = PokerSquaresPointSystem.getAmericanPointSystem();
+                break;
+            
+            case BRITISH:
+                system = PokerSquaresPointSystem.getBritishPointSystem();
+                break;
+                
+            case HYPERCORNER:
+                system = PokerSquaresPointSystem.getHypercornerPointSystem();
+                break;
+                
+            case SINGLEHAND:
+                system = PokerSquaresPointSystem.getSingleHandPointSystem();
+                break;
+        }
+            
+        
         System.out.println("\n\nSingle Player Game Sequence:");
         System.out.println(system);
         new PokerSquares(new BeemoV2(), system)

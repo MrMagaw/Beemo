@@ -184,21 +184,36 @@ public class PatternPolicy {
     }
     
     private static double scoreHand(Info info, Card[] hand, boolean col) {
-        double tempScore, handScore = Settings.Evaluations.handScores[0];
+        
         //Policy Scores should relate to probability, 
         //They are currently assigned by gut,
         //The probability should be calculated or else learned 
         
-        if(col){
-            handScore += selectScorePolicy(info, hand, 5); //flush
-        }
-        else{
-            
+        double temp = Double.NEGATIVE_INFINITY;
+        //double handScore = Double.NEGATIVE_INFINITY;
+        double handScore = 0;
+        
+        if (col) {
+            for (int i = 0; i < 10; ++i) {
+                //skip certain policies
+                if (i ==  5 ){
+                    temp = selectScorePolicy(info, hand, i);
+                    handScore += temp;
+                    //if (temp > handScore) handScore = temp;
+                }
+            }
         }
         
-        for (int i = 0; i < 10; ++i) {
-            if (i != 5) handScore += selectScorePolicy(info, hand, i); //all scores
-        } 
+        else {
+            for (int i = 0; i < 10; ++i) {
+                //skip certain policies
+                if (i != 5) {
+                    temp = selectScorePolicy(info, hand, i);
+                    handScore += temp;
+                    //if (temp > handScore) handScore = temp;
+                } 
+            } 
+        }
         
         if (!info.pattern.equals("p")) patternEvaluations.put(info.pattern, handScore);
         
