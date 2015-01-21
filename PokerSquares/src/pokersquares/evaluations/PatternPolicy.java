@@ -183,48 +183,47 @@ public class PatternPolicy {
         return info.pattern;
     }
     
-    
-    
     private static double scoreHand(Info info, Card[] hand, boolean col) {
-        double tempScore, handScore = Settings.Evaluations.highCardValue;
+        double tempScore, handScore = Settings.Evaluations.handScores[0];
         //Policy Scores should relate to probability, 
         //They are currently assigned by gut,
         //The probability should be calculated or else learned 
-        if(col){
-            handScore += Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
-            //tempScore = Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
-            //handScore = handScore < tempScore ? tempScore : handScore;
-        }
-        //if(!col){
-            //Missing:
-            //Straight
-            //Royals
-        /*
-            tempScore = Settings.Evaluations.pairValue * Math.pow(scorePairPolicy(info, hand), Settings.Evaluations.pairExp);
-            handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = Settings.Evaluations.twoPairValue * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
-            handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = Settings.Evaluations.threeOfAKindValue * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
-            handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = Settings.Evaluations.fullHouseValue * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
-            handScore = handScore < tempScore ? tempScore : handScore;
-            tempScore = Settings.Evaluations.fourOfAKindValue * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
-            handScore = handScore < tempScore ? tempScore : handScore;
-        */
         
-            handScore += Settings.Evaluations.pairValue * Math.pow(scorePairPolicy(info, hand), Settings.Evaluations.pairExp);
-            handScore += Settings.Evaluations.twoPairValue * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.twoPairExp);
-            handScore += Settings.Evaluations.threeOfAKindValue * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.threeOfAKindExp);
-            handScore += Settings.Evaluations.fullHouseValue * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.fullHouseExp);
-            handScore += Settings.Evaluations.fourOfAKindValue * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.fourOfAKindExp);
+        if(col){
+            handScore += selectScorePolicy(info, hand, 5); //flush
+        }
+        else{
             
-        //}else{
-        //    handScore = Settings.Evaluations.flushValue * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.flushExp);
-        //}
+        }
+        
+        for (int i = 0; i < 10; ++i) {
+            if (i != 5) handScore += selectScorePolicy(info, hand, i); //all scores
+        } 
         
         if (!info.pattern.equals("p")) patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
+    }
+    
+    private static double selectScorePolicy(Info info, Card hand[], int i) {
+        double handScore = Double.NEGATIVE_INFINITY;
+            
+        if (i == 0) handScore = Settings.Evaluations.handScores[0] * Math.pow(scoreHighCardPolicy(info, hand), Settings.Evaluations.exps[0]);
+        else if (i == 1) handScore = Settings.Evaluations.handScores[1] * Math.pow(scorePairPolicy(info, hand), Settings.Evaluations.exps[1]);
+        else if (i == 2) handScore = Settings.Evaluations.handScores[2] * Math.pow(scoreTwoPairPolicy(info, hand), Settings.Evaluations.exps[2]);
+        else if (i == 3) handScore = Settings.Evaluations.handScores[3] * Math.pow(scoreThreeOfAKindPolicy(info, hand), Settings.Evaluations.exps[3]);
+        else if (i == 4) handScore = Settings.Evaluations.handScores[4] * Math.pow(scoreStraightPolicy(info, hand), Settings.Evaluations.exps[4]);
+        else if (i == 5) handScore = Settings.Evaluations.handScores[5] * Math.pow(scoreFlushPolicy(info, hand), Settings.Evaluations.exps[5]);
+        else if (i == 6) handScore = Settings.Evaluations.handScores[6] * Math.pow(scoreFullHousePolicy(info, hand), Settings.Evaluations.exps[6]);
+        else if (i == 7) handScore = Settings.Evaluations.handScores[7] * Math.pow(scoreFourOfAKindPolicy(info, hand), Settings.Evaluations.exps[7]);
+        else if (i == 8) handScore = Settings.Evaluations.handScores[8] * Math.pow(scoreStraightFlushPolicy(info, hand), Settings.Evaluations.exps[8]);
+        else if (i == 9) handScore = Settings.Evaluations.handScores[9] * Math.pow(scoreRoyalFlushPolicy(info, hand), Settings.Evaluations.exps[9]);
+        
+        return handScore;
+    }
+    
+    private static double scoreHighCardPolicy(Info info, Card hand[]) {
+        return 0;
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
@@ -263,6 +262,10 @@ public class PatternPolicy {
         //System.out.println(numCards + " " + n + " " + threeOfAKindScore);
         
         return threeOfAKindScore;
+    }
+    
+    private static double scoreStraightPolicy(Info info, Card hand[]) {
+        return 0;
     }
     
     private static double scoreFlushPolicy(Info info, Card hand[]) {

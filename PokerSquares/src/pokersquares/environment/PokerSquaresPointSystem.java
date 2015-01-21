@@ -2,7 +2,6 @@ package pokersquares.environment;
 
 import java.util.Random;
 
-
 /**
  * @author tneller
  *
@@ -109,6 +108,7 @@ public class PokerSquaresPointSystem {
 	 * @return a random point system with scores uniformly distributed across the range of all allowable values
 	 */
 	public static PokerSquaresPointSystem getRandomPointSystem() {
+            
 		int[] scores = new int[PokerHand.NUM_HANDS];
 		for (int i = 0; i < PokerHand.NUM_HANDS; i++)
 			scores[i] = random.nextInt(MAX_HAND_SCORE - MIN_HAND_SCORE + 1) + MIN_HAND_SCORE;

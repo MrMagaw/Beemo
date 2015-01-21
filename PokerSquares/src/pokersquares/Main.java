@@ -36,15 +36,15 @@ public class Main {
         */
 
         // Demonstration of batch game play (30 seconds per game)
-        /*
+        PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);
         PokerSquaresPointSystem system = PokerSquaresPointSystem.getAmericanPointSystem();
         System.out.println("\n\nSingle Player Game Sequence:");
         System.out.println(system);
         new PokerSquares(new BeemoV2(), system)
                 .playSequence(Settings.Main.games, Settings.Main.seed, Settings.Main.verbose);
-        
         return;
-        */
+        
+        /*
         // Demonstration of tournament evaluation (3 players, 2 point systems, 100 x 30s games for each of the 3*2=6 player-system pairs) 
         System.out.println("\n\nTournament:");
         ArrayList<PokerSquaresPlayer> players = new ArrayList();
@@ -59,9 +59,9 @@ public class Main {
         //Point Systems
         //systems.add(PokerSquaresPointSystem.getAmeritishPointSystem());
         //for(int i = 0; i < 5; ++i) //Add 5 random
-            systems.add(PokerSquaresPointSystem.getRandomPointSystem());
+        systems.add(PokerSquaresPointSystem.getRandomPointSystem());
 
         PokerSquares.playTournament(players, systems, 5, 0L); // use fewer games per system for faster testing
-        
+        */
     }
 }

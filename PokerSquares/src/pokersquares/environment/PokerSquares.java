@@ -217,7 +217,6 @@ public class PokerSquares {
 			if (scores[i] < min) min = scores[i];
 			if (scores[i] > max) max = scores[i];
 			System.out.println(score);
-                        system.printGrid(grid);
 		}
 		scoreMean /= numGames;
 		double scoreStdDev = 0;
@@ -226,7 +225,7 @@ public class PokerSquares {
 			scoreStdDev += diff * diff;
 		}
 		scoreStdDev = Math.sqrt(scoreStdDev / numGames);
-		System.out.printf("Score Mean: %f, Standard Deviation: %f, Minimum: %d, Maximum: %d\n", scoreMean, scoreStdDev, min, max);
+		System.out.printf("Score Mean: %f, Standard Deviation: %f, Minimum: %d, Maximum: %d, Games: %d\n", scoreMean, scoreStdDev, min, max, numGames);
                 return scores;
 	}
 	
@@ -294,36 +293,5 @@ public class PokerSquares {
 	 */
 	private void setSeed(long seed) {
 		random.setSeed(seed);
-	}
-	
-	
-	/**
-	 * Demonstrate single/batch game play testing and tournament evaluation of PokerSquaresPlayers.
-	 * @param args (not used)
-	 */
-	public static void main(String[] args) {
-		// Demonstration of single game play (30 seconds)
-		System.out.println("Single game demo:");
-		PokerSquaresPointSystem.setSeed(0L);
-		PokerSquaresPointSystem system = PokerSquaresPointSystem.getAmeritishPointSystem();
-		System.out.println(system);
-		new PokerSquares(new GreedyMCPlayer(2), PokerSquaresPointSystem.getAmeritishPointSystem()).play();
-
-		// Demonstration of batch game play (30 seconds per game)
-		System.out.println("\n\nBatch game demo:");
-		System.out.println(system);
-		new PokerSquares(new GreedyMCPlayer(2), PokerSquaresPointSystem.getAmeritishPointSystem()).playSequence(3, 0, false);
-		
-		// Demonstration of tournament evaluation (3 players, 2 point systems, 100 x 30s games for each of the 3*2=6 player-system pairs) 
-		System.out.println("\n\nTournament evaluation demo:");
-		ArrayList<PokerSquaresPlayer> players = new ArrayList<PokerSquaresPlayer>();
-		players.add(new RandomPlayer());
-		players.add(new GreedyMCPlayer(0));
-		players.add(new GreedyMCPlayer(2));
-		ArrayList<PokerSquaresPointSystem> systems = new ArrayList<PokerSquaresPointSystem>();
-		PokerSquaresPointSystem.setSeed(0L);
-		systems.add(PokerSquaresPointSystem.getAmeritishPointSystem());
-		systems.add(PokerSquaresPointSystem.getRandomPointSystem());
-		PokerSquares.playTournament(players, systems, 100, 0L); // use fewer games per system for faster testing
 	}
 }
