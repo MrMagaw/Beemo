@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Evaluations.colHands;
+import static pokersquares.config.Settings.Evaluations.rowHands;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
@@ -194,25 +196,19 @@ public class PatternPolicy {
         double handScore = 0;
         
         if (col) {
-            for (int i = 0; i < 10; ++i) {
-                //skip certain policies
-                if (i ==  5 ){
-                    temp = selectScorePolicy(info, hand, i);
-                    handScore += temp;
-                    //if (temp > handScore) handScore = temp;
-                }
+            for (int i = 0; i < colHands.length; ++i) {
+                temp = selectScorePolicy(info, hand, (int) colHands[i]);
+                handScore += temp;
+                //if (temp > handScore) handScore = temp;
             }
         }
         
         else {
-            for (int i = 0; i < 10; ++i) {
-                //skip certain policies
-                if (i != 5) {
-                    temp = selectScorePolicy(info, hand, i);
-                    handScore += temp;
-                    //if (temp > handScore) handScore = temp;
-                } 
-            } 
+            for (int i = 0; i < rowHands.length; ++i) {
+                temp = selectScorePolicy(info, hand, (int) rowHands[i]);
+                handScore += temp;
+                //if (temp > handScore) handScore = temp;
+            }
         }
         
         if (!info.pattern.equals("p")) patternEvaluations.put(info.pattern, handScore);

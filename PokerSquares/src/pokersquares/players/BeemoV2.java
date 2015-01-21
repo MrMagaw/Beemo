@@ -34,9 +34,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
-        SettingsReader.readSettings("s.0.2.5.10.15.20.25.50.75.100.txt");
-        
-        Settings.Evaluations.debug();
+        SettingsReader.readSettings("s.0.2.5.10.15.20.25.50.75.100");
     }
 
     @Override

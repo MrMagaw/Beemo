@@ -9,7 +9,7 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 1;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
         public static int randomPointSystemSeed = 5;
@@ -45,11 +45,12 @@ public class Settings {
         //Pattern Policy
         public static String pattern = "A"; //A,B,C
         
-        
         public static double[] handScores = new double[10];
         
+        public static double[] rowHands;
+        public static double[] colHands;
+        
         //array hold exponents for values of hands in american order
-        //public static double[] exps = {1, 1, 1, 1, 1.2, 1.18, 0.95, 0.647, 1.1, 1.1};
         public static double[] exps;
         
         public static double[] pairPolicy;
@@ -61,6 +62,8 @@ public class Settings {
         
         public static void debug () {
             System.out.println("Hand Scores: " + Arrays.toString(handScores));
+            System.out.println("Row Hands: " + Arrays.toString(rowHands));
+            System.out.println("Col Hands: " + Arrays.toString(colHands));
             System.out.println("Exponents: " + Arrays.toString(exps));
             System.out.println("Pair Policy: " + Arrays.toString(pairPolicy));
             System.out.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));

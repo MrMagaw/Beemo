@@ -61,7 +61,6 @@ public class Main {
                 system = PokerSquaresPointSystem.getSingleHandPointSystem();
                 break;
         }
-            
         
         System.out.println("\n\nSingle Player Game Sequence:");
         System.out.println(system);
