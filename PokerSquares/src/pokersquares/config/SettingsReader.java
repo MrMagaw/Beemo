@@ -47,7 +47,7 @@ public class SettingsReader {
         double[] dataArray = parseArray(data);
         
         try {
-            Settings.Evaluations.class.getField(tag).set(new double[dataArray.length], dataArray);
+            Settings.Evaluations.class.getField(tag).set(null, dataArray);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             System.err.println("Failed setting field: " + tag);
             FIELD_SETTING_FAILED;
