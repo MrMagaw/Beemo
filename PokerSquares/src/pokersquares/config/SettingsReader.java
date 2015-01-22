@@ -1,14 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package pokersquares.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,21 +10,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static pokersquares.config.Settings.Evaluations.colHands;
-import static pokersquares.config.Settings.Evaluations.exps;
-import static pokersquares.config.Settings.Evaluations.flushPolicy;
-import static pokersquares.config.Settings.Evaluations.fourOfAKindPolicy;
-import static pokersquares.config.Settings.Evaluations.fullHousePolicy;
-import static pokersquares.config.Settings.Evaluations.handScores;
-import static pokersquares.config.Settings.Evaluations.pairPolicy;
-import static pokersquares.config.Settings.Evaluations.rowHands;
-import static pokersquares.config.Settings.Evaluations.threeOfAKindPolicy;
-import static pokersquares.config.Settings.Evaluations.twoPairPolicy;
+import static pokersquares.config.Settings.Evaluations.*;
 
-/**
- *
- * @author newuser
- */
 public class SettingsReader {
     
     public static void readSettings(String fileName) {
@@ -66,16 +46,12 @@ public class SettingsReader {
         
         double[] dataArray = parseArray(data);
         
-        if (tag.equals("handScores")) Settings.Evaluations.handScores = dataArray;
-        if (tag.equals("rowHands")) Settings.Evaluations.rowHands = dataArray;
-        if (tag.equals("colHands")) Settings.Evaluations.colHands = dataArray;
-        if (tag.equals("exps")) Settings.Evaluations.exps = dataArray;
-        if (tag.equals("pairPolicy")) Settings.Evaluations.pairPolicy = dataArray;
-        if (tag.equals("twoPairPolicy")) Settings.Evaluations.twoPairPolicy = dataArray;
-        if (tag.equals("threeOfAKindPolicy")) Settings.Evaluations.threeOfAKindPolicy = dataArray;
-        if (tag.equals("flushPolicy")) Settings.Evaluations.flushPolicy = dataArray;
-        if (tag.equals("fullHousePolicy")) Settings.Evaluations.fullHousePolicy = dataArray;
-        if (tag.equals("fourOfAKindPolicy")) Settings.Evaluations.fourOfAKindPolicy = dataArray;
+        try {
+            Settings.Evaluations.class.getField(tag).set(new double[dataArray.length], dataArray);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            System.err.println("Failed setting field: " + tag);
+            FIELD_SETTING_FAILED;
+        }
     }
     
     private static double[] parseArray(String data) {
