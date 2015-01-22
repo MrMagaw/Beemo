@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package pokersquares.config;
 
 import java.io.BufferedReader;
@@ -16,6 +10,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static pokersquares.config.Settings.Evaluations.colHands;
 import static pokersquares.config.Settings.Evaluations.exps;
 import static pokersquares.config.Settings.Evaluations.flushPolicy;
@@ -28,37 +23,24 @@ import static pokersquares.config.Settings.Evaluations.rowHands;
 import static pokersquares.config.Settings.Evaluations.threeOfAKindPolicy;
 import static pokersquares.config.Settings.Evaluations.twoPairPolicy;
 
-/**
- *
- * @author newuser
- */
+import static pokersquares.config.Settings.Evaluations.*;
+
+
 public class SettingsReader {
     
     public static void readSettings(String fileName) {
-        
-        List <String> settings = new ArrayList();
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(fileName));
-            
-            String line;
-            while (true) {
-                line = null;
-                try { 
-                    line = reader.readLine();
-                } catch (Exception e) {};
-            
-                if (line == null) break;
-                
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
+            String line = reader.readLine();
+            while (line != null) {
+                readLine(line);
+                line = reader.readLine();
                 //STORE line
-                settings.add(line);
             }
-        } catch (Exception e) {
+        } catch (IOException ex) {
             //FILE NOT INITIALIZED
-            System.out.println("File Read Error");
+            System.err.println("File Read Error");
+            
         }
-        
-        for (String line : settings) readLine(line);
     }
     
     private static void readLine(String line) {
@@ -78,6 +60,7 @@ public class SettingsReader {
         
         double[] dataArray = parseArray(data);
         
+
         if (tag.equals("rowHands")) Settings.Evaluations.rowHands = dataArray;
         if (tag.equals("colHands")) Settings.Evaluations.colHands = dataArray;
         if (tag.equals("exps")) Settings.Evaluations.exps = dataArray;
@@ -88,6 +71,14 @@ public class SettingsReader {
         if (tag.equals("flushPolicy")) Settings.Evaluations.flushPolicy = dataArray;
         if (tag.equals("fullHousePolicy")) Settings.Evaluations.fullHousePolicy = dataArray;
         if (tag.equals("fourOfAKindPolicy")) Settings.Evaluations.fourOfAKindPolicy = dataArray;
+
+        try {
+            Settings.Evaluations.class.getField(tag).set(null, dataArray);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
+            System.err.println("Failed setting field: " + tag);
+            
+        }
+
     }
     
     private static double[] parseArray(String data) {
@@ -108,13 +99,9 @@ public class SettingsReader {
     }
     
     public static void writeSettings(String filename) {
-        
-        //WRITE SETTINGS to file
-        Writer writer = null;
-        
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filename), "utf-8"));
+        //WRITE SETTINGS to file        
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(filename), "utf-8"))){
             
             writer.write("handScores " + Arrays.toString(handScores) + "\n");
             writer.write("rowHands " + Arrays.toString(rowHands) + "\n");
@@ -127,11 +114,11 @@ public class SettingsReader {
             writer.write("flushPolicy " + Arrays.toString(flushPolicy) + "\n");
             writer.write("fullHousePolicy " + Arrays.toString(fullHousePolicy) + "\n");
             writer.write("fourOfAKindPolicy " + Arrays.toString(fourOfAKindPolicy) + "\n");
+            writer.close();
             
         } catch (IOException ex) {
-            // report
-        } finally {
-            try {writer.close();} catch (Exception ex) {}
+            System.err.println("Failed writing settings.");
+            
         }
     }
 }
