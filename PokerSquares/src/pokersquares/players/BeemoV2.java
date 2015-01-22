@@ -25,13 +25,12 @@ public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
     
     public BeemoV2(){
-        Settings.BMO.BMO = this;
     }
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
-                
+        
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         

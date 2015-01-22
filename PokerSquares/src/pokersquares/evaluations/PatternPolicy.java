@@ -216,7 +216,7 @@ public class PatternPolicy {
             }
         }
         
-        patternEvaluations.put(info.pattern, handScore);
+        if (Settings.Evaluations.patternate) patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
     }
