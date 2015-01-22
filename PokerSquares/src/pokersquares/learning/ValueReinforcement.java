@@ -140,7 +140,7 @@ public class ValueReinforcement {
         
         double[] sign = { -1, 1 };
         int isign = 0;
-        double scale = 10;
+        double scale = 1;
         
         double og = 0;
         
@@ -156,6 +156,7 @@ public class ValueReinforcement {
             System.out.println(va[j]);
             va[j] = va[j] + (sign[isign]*scale);
             if (va[j] < 0) va[j] = 0;
+            if (va[j] > 1) va[j] = 1;
             System.out.println(va[j]);
             
             //SCORE PERFORMANCE
@@ -168,7 +169,7 @@ public class ValueReinforcement {
                 va[j] = og;
                 
                 //INCREMENT value adjustors
-                if (scale > 0.1) scale = scale / 2;
+                if (scale > 0.01) scale = scale / 2;
                 else if (isign == 0) {
                     isign = 1;
                     scale = 1;

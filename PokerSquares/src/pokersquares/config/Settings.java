@@ -37,7 +37,7 @@ public class Settings {
     
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
-        public static boolean train = false;
+        public static boolean train = true;
         //public static String settingsFile = "s.0.2.5.10.15.20.25.50.75.100";
         public static String settingsFile = "blank";
         public static BeemoV2 BMO;
@@ -45,7 +45,7 @@ public class Settings {
     
     public static class Training {
         public static long millis = 100000;
-        public static String outputFile = "trained";
+        public static String outputFile = "americanv2";
     }
     
     public static class Evaluations {
