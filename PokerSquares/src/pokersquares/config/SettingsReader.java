@@ -8,6 +8,7 @@ package pokersquares.config;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class SettingsReader {
                 line = reader.readLine();
                 //STORE line
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             //FILE NOT INITIALIZED
             System.out.println("File Read Error");
             CRASH_BECAUSE_OF_MISSING_SETTINGS;
