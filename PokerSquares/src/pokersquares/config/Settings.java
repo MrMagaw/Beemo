@@ -1,8 +1,9 @@
 package pokersquares.config;
 
+import java.util.Arrays;
 import pokersquares.algorithms.*;
 import pokersquares.environment.*;
-import java.util.Arrays;
+import pokersquares.players.BeemoV2;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
@@ -38,6 +39,8 @@ public class Settings {
     
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
+        public static boolean train = true;
+        public static BeemoV2 BMO;
     }
     
     public static class Evaluations {

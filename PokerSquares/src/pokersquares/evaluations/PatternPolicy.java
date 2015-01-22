@@ -13,7 +13,7 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 
 public class PatternPolicy {
-    public static final Map<String, Double> patternEvaluations = new java.util.HashMap();
+    public static Map<String, Double> patternEvaluations = new java.util.HashMap();
     //Hand Analysis
     
     private static class Info{

@@ -57,6 +57,8 @@ public class PokerSquares {
 	private Card[][] grid = new Card[SIZE][SIZE]; // current game grid
 	private Random random = new Random(); // current game random number generator
 	private int minPoints; // minimum possible score for current point system.
+        private double scoreMean;
+        public boolean verboseScores = true;
 	
 	/**
 	 * Create a PokerSquares game with a given player and point system.
@@ -207,7 +209,6 @@ public class PokerSquares {
 			System.out.printf("%d games starting at seed %d\nPoint system:\n%s\n", numGames, startSeed, system);
 		}
 		int[] scores = new int[numGames];
-		double scoreMean = 0;
 		int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
 		for (int i = 0; i < numGames; i++) {
 			setSeed(startSeed + i);
@@ -216,7 +217,7 @@ public class PokerSquares {
 			scoreMean += score;
 			if (scores[i] < min) min = scores[i];
 			if (scores[i] > max) max = scores[i];
-			System.out.println(score);
+			if (verboseScores) System.out.println(score);
 		}
 		scoreMean /= numGames;
 		double scoreStdDev = 0;
@@ -294,4 +295,6 @@ public class PokerSquares {
 	private void setSeed(long seed) {
 		random.setSeed(seed);
 	}
+        
+        public double getScoreMean() {return scoreMean; }
 }

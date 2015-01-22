@@ -25,16 +25,20 @@ public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
     
     public BeemoV2(){
-        
+        Settings.BMO.BMO = this;
     }
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
+                
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
-        SettingsReader.readSettings("s.0.2.5.10.15.20.25.50.75.100");
+        SettingsReader.readSettings("trainingtest");
+        
+        //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
+        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(100000);
     }
 
     @Override
