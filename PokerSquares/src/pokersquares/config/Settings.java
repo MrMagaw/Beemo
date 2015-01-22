@@ -39,13 +39,13 @@ public class Settings {
         public static int[] turnSplits = new int[]{5, 25, 25};
         public static boolean train = false;
         //public static String settingsFile = "s.0.2.5.10.15.20.25.50.75.100";
-        public static String settingsFile = "american";
+        public static String settingsFile = "blank";
         public static BeemoV2 BMO;
     }
     
     public static class Training {
         public static long millis = 100000;
-        public static String outputFile = "american";
+        public static String outputFile = "trained";
     }
     
     public static class Evaluations {

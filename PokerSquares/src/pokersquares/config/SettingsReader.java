@@ -61,17 +61,6 @@ public class SettingsReader {
         double[] dataArray = parseArray(data);
         
 
-        if (tag.equals("rowHands")) Settings.Evaluations.rowHands = dataArray;
-        if (tag.equals("colHands")) Settings.Evaluations.colHands = dataArray;
-        if (tag.equals("exps")) Settings.Evaluations.exps = dataArray;
-        if (tag.equals("highCardPolicy")) Settings.Evaluations.highCardPolicy = dataArray;
-        if (tag.equals("pairPolicy")) Settings.Evaluations.pairPolicy = dataArray;
-        if (tag.equals("twoPairPolicy")) Settings.Evaluations.twoPairPolicy = dataArray;
-        if (tag.equals("threeOfAKindPolicy")) Settings.Evaluations.threeOfAKindPolicy = dataArray;
-        if (tag.equals("flushPolicy")) Settings.Evaluations.flushPolicy = dataArray;
-        if (tag.equals("fullHousePolicy")) Settings.Evaluations.fullHousePolicy = dataArray;
-        if (tag.equals("fourOfAKindPolicy")) Settings.Evaluations.fourOfAKindPolicy = dataArray;
-
         try {
             Settings.Evaluations.class.getField(tag).set(null, dataArray);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {

@@ -250,11 +250,19 @@ public class PatternPolicy {
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
-        if (info.rankCountCounts[2] == 1) 
-            return Settings.Evaluations.pairPolicy[0];
-        else{
-            return Settings.Evaluations.pairPolicy[1] * (5 - info.numCards);
-        }
+        double pairScore = 0;
+        
+        //if there is a pair
+        if (info.rankCountCounts[2] == 1) pairScore = Settings.Evaluations.pairPolicy[0];
+        //if there is a possibility of a pair
+        else if ((info.numCards == info.numRanks) && (info.numCards == 4)) pairScore = Settings.Evaluations.pairPolicy[1];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 3)) pairScore = Settings.Evaluations.pairPolicy[2];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 2)) pairScore = Settings.Evaluations.pairPolicy[3];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 1)) pairScore = Settings.Evaluations.pairPolicy[4];
+        //if there is no possibility of a pair
+        else pairScore = Settings.Evaluations.pairPolicy[5];
+        
+        return pairScore;
     }
     
     private static double scoreTwoPairPolicy(Info info, Card hand[]) {

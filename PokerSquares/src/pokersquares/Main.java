@@ -67,7 +67,6 @@ public class Main {
         new PokerSquares(new BeemoV2(), system)
                 .playSequence(Settings.Main.games, Settings.Main.seed, Settings.Main.verbose);
         
-        
         /*
         // Demonstration of tournament evaluation (3 players, 2 point systems, 100 x 30s games for each of the 3*2=6 player-system pairs) 
         System.out.println("\n\nTournament:");
