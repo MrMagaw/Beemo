@@ -35,7 +35,6 @@ import static pokersquares.config.Settings.Evaluations.twoPairPolicy;
 public class SettingsReader {
     
     public static void readSettings(String fileName) {
-        System.out.println(fileName);
         try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
             String line = reader.readLine();
             while (line != null) {
@@ -43,9 +42,9 @@ public class SettingsReader {
                 line = reader.readLine();
                 //STORE line
             }
-        } catch (IOException e) {
+        } catch (IOException ex) {
             //FILE NOT INITIALIZED
-            System.out.println("File Read Error");
+            System.err.println("File Read Error");
             CRASH_BECAUSE_OF_MISSING_SETTINGS;
         }
     }
@@ -97,13 +96,9 @@ public class SettingsReader {
     }
     
     public static void writeSettings(String filename) {
-        
-        //WRITE SETTINGS to file
-        Writer writer = null;
-        
-        try {
-            writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(filename), "utf-8"));
+        //WRITE SETTINGS to file        
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(filename), "utf-8"))){
             
             writer.write("handScores " + Arrays.toString(handScores) + "\n");
             writer.write("rowHands " + Arrays.toString(rowHands) + "\n");
@@ -115,11 +110,11 @@ public class SettingsReader {
             writer.write("flushPolicy " + Arrays.toString(flushPolicy) + "\n");
             writer.write("fullHousePolicy " + Arrays.toString(fullHousePolicy) + "\n");
             writer.write("fourOfAKindPolicy " + Arrays.toString(fourOfAKindPolicy) + "\n");
+            writer.close();
             
         } catch (IOException ex) {
-            // report
-        } finally {
-            try {writer.close();} catch (Exception ex) {}
+            System.err.println("Failed writing settings.");
+            WRITING_FAILURE;
         }
     }
 }
