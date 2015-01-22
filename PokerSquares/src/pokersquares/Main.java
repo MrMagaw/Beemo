@@ -80,7 +80,7 @@ public class Main {
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
         PokerSquaresPointSystem.setSeed(1);
 
-        systems.add(PokerSquaresPointSystem.getRandomPointSystem());
+        systems.add(PokerSquaresPointSystem.getSingleHandPointSystem());
 
         PokerSquares.playTournament(players, systems, 5, 0); // use fewer games per system for faster testing
         */

@@ -35,10 +35,12 @@ public class BeemoV2 implements PokerSquaresPlayer{
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
-        SettingsReader.readSettings("trainingtest");
+        SettingsReader.readSettings(Settings.BMO.settingsFile);
+        
+        Settings.Evaluations.debug();
         
         //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
-        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(200000);
+        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(Settings.Training.millis);
     }
 
     @Override
@@ -63,6 +65,10 @@ public class BeemoV2 implements PokerSquaresPlayer{
                 bestPos = Settings.Algorithms.algorithm[i].search(card, board, millisRemaining);
                 break;
             }
+        }
+        
+        if ((bestPos[1] == 2) && bestPos[0] == 2) {
+            System.out.println("Algorithm ERROR");
         }
         
         board.playCard(card, bestPos);

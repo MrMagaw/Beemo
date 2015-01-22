@@ -22,6 +22,7 @@ import static pokersquares.config.Settings.Evaluations.flushPolicy;
 import static pokersquares.config.Settings.Evaluations.fourOfAKindPolicy;
 import static pokersquares.config.Settings.Evaluations.fullHousePolicy;
 import static pokersquares.config.Settings.Evaluations.handScores;
+import static pokersquares.config.Settings.Evaluations.highCardPolicy;
 import static pokersquares.config.Settings.Evaluations.pairPolicy;
 import static pokersquares.config.Settings.Evaluations.rowHands;
 import static pokersquares.config.Settings.Evaluations.threeOfAKindPolicy;
@@ -77,10 +78,10 @@ public class SettingsReader {
         
         double[] dataArray = parseArray(data);
         
-        if (tag.equals("handScores")) Settings.Evaluations.handScores = dataArray;
         if (tag.equals("rowHands")) Settings.Evaluations.rowHands = dataArray;
         if (tag.equals("colHands")) Settings.Evaluations.colHands = dataArray;
         if (tag.equals("exps")) Settings.Evaluations.exps = dataArray;
+        if (tag.equals("highCardPolicy")) Settings.Evaluations.highCardPolicy = dataArray;
         if (tag.equals("pairPolicy")) Settings.Evaluations.pairPolicy = dataArray;
         if (tag.equals("twoPairPolicy")) Settings.Evaluations.twoPairPolicy = dataArray;
         if (tag.equals("threeOfAKindPolicy")) Settings.Evaluations.threeOfAKindPolicy = dataArray;
@@ -119,6 +120,7 @@ public class SettingsReader {
             writer.write("rowHands " + Arrays.toString(rowHands) + "\n");
             writer.write("colHands " + Arrays.toString(colHands) + "\n");
             writer.write("exps " + Arrays.toString(exps) + "\n");
+            writer.write("highCardPolicy " + Arrays.toString(highCardPolicy) + "\n");
             writer.write("pairPolicy " + Arrays.toString(pairPolicy) + "\n");
             writer.write("twoPairPolicy " + Arrays.toString(twoPairPolicy) + "\n");
             writer.write("threeOfAKindPolicy " + Arrays.toString(threeOfAKindPolicy) + "\n");
