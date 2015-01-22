@@ -27,19 +27,18 @@ public class ValueReinforcement {
         //VALUES to be adjusted
         List <double[]> values = new ArrayList <double[]> ();
         
-        
-        
         values.add((double[])Settings.Evaluations.exps);
+        values.add(Settings.Evaluations.colHands); 
+        values.add(Settings.Evaluations.rowHands);
+        values.add(Settings.Evaluations.highCardPolicy);
         values.add(Settings.Evaluations.pairPolicy);
         values.add(Settings.Evaluations.twoPairPolicy);
         values.add(Settings.Evaluations.threeOfAKindPolicy);
         values.add(Settings.Evaluations.flushPolicy);
         values.add(Settings.Evaluations.fullHousePolicy);
         values.add(Settings.Evaluations.fourOfAKindPolicy);
-        values.add(Settings.Evaluations.colHands); 
-        values.add(Settings.Evaluations.rowHands);
         
-        int i = 7,j = 0;
+        int i = 0,j = 0;
         int valuesToTrain = values.size() - 1;
         boolean systemChanged = false;
         //WHILE there is time left, continue training
@@ -47,21 +46,21 @@ public class ValueReinforcement {
             
             //TRAIN Value
             //if value is successfully trained, the system has changed
-            if (i > 6) {
-                
+            if (i == 0) {
+                //pass
+            } else if (i < 3) {
                 systemChanged = trainHandCombinations(values, i);
-                
-            } else if (i == 0) {
-                ++i;
             } else {
                 systemChanged = trainValuesIncrementally(values, i, j);
             }
             
             if (systemChanged) valuesToTrain = values.size() - 1;
             
+            
             if (j == values.get(i).length-1) {
                 if (i == values.size()-1) {
                     i = 0;
+                    j = 0;
                     
                 } else {
                     ++i;
@@ -69,6 +68,8 @@ public class ValueReinforcement {
                 }
                 --valuesToTrain;
                 
+            } else if (i < 3) {
+                ++i;
             } else {
                 ++j;
             }
@@ -76,7 +77,9 @@ public class ValueReinforcement {
             if (!systemChanged && (valuesToTrain == 0)) break;
         }
         
-        SettingsReader.writeSettings("trainingtest");
+        SettingsReader.writeSettings(Settings.Training.outputFile);
+        
+        Settings.Evaluations.debug();
     }
     
     public static boolean trainHandCombinations(List values, int i) {
@@ -94,7 +97,7 @@ public class ValueReinforcement {
             //establish baseline
             baseScore = scoreGames();
             
-            System.out.println("\nTraining Hand Combinations" + " " + i);
+            System.out.println("\nTraining Hand Combinations:" + " " + i + " " + id);
             System.out.println("Base Score: " + baseScore);
             System.out.println(Arrays.toString(ha));
             
@@ -108,15 +111,15 @@ public class ValueReinforcement {
                 og = 0;
             }
             
+            System.out.println(Arrays.toString(ha));
+            
             deltaScore = scoreGames();
             
-            
-            System.out.println(Arrays.toString(ha));
             System.out.println("Delta Score: " + deltaScore);
             
             //if PERFORMANCE DECREASES or remains the same
             //RESET
-            if (deltaScore < baseScore) ha[id] = og;
+            if (deltaScore <= baseScore) ha[id] = og;
             else systemChanged = true;
             
         }
@@ -144,8 +147,8 @@ public class ValueReinforcement {
         boolean train = true;
         while (train) {
             baseScore = scoreGames();
-            System.out.print("\n");
-            System.out.println("bs" + baseScore + " " + i + " " + j);
+            System.out.println("\nTraining Values Incrementally:"  + " " + i + " " + j);
+            System.out.println("Base Score: " + baseScore);
             //STORE original value
             og = va[j];
             
@@ -157,7 +160,7 @@ public class ValueReinforcement {
             
             //SCORE PERFORMANCE
             deltaScore = scoreGames();
-            System.out.println("ds" + deltaScore);
+            System.out.println("Delta Score: " + deltaScore);
             
             //if PERFORMANCE DECREASES
             if (deltaScore < baseScore) {
@@ -179,13 +182,15 @@ public class ValueReinforcement {
                 } else {
                     train = false;
                 }
+                //RESET value
+                va[j] = og;
                 
             } else {
                 //PERFORMANCE INCREASES
                 //RECORD
                 baseScore = deltaScore;
                 systemChanged = true;
-                SettingsReader.writeSettings("trainingtest");
+                SettingsReader.writeSettings(Settings.Training.outputFile);
             } 
         }
         
@@ -196,6 +201,7 @@ public class ValueReinforcement {
         int numGames = 1000;
         int numSimulations = numGames;
         double score = 0;
+        Random r = new Random();
         
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
@@ -206,10 +212,11 @@ public class ValueReinforcement {
                 
             while (b.getTurn() < 25) {
                 if (b.getDeck().size() == 0) {
-                    System.out.println("ERROR" + " turn: " + b.getTurn());
+                    System.out.println("ERROR" + " turn: " + b.getDeck().size());
                     b.debug();
                     
                 }
+                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
                 Card c = b.getDeck().remove(numSimulations % b.getDeck().size()); 
                 int[] p = Settings.Algorithms.simAlgoritm.search(c, b, 10000);
                 b.playCard(c, p);

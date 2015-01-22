@@ -67,7 +67,6 @@ public class Main {
         new PokerSquares(new BeemoV2(), system)
                 .playSequence(Settings.Main.games, Settings.Main.seed, Settings.Main.verbose);
         
-        
         /*
         // Demonstration of tournament evaluation (3 players, 2 point systems, 100 x 30s games for each of the 3*2=6 player-system pairs) 
         System.out.println("\n\nTournament:");
@@ -80,7 +79,7 @@ public class Main {
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
         PokerSquaresPointSystem.setSeed(1);
 
-        systems.add(PokerSquaresPointSystem.getRandomPointSystem());
+        systems.add(PokerSquaresPointSystem.getSingleHandPointSystem());
 
         PokerSquares.playTournament(players, systems, 5, 0); // use fewer games per system for faster testing
         */
