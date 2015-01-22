@@ -1,5 +1,7 @@
 package pokersquares.evaluations;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
@@ -13,11 +15,12 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 
 public class PatternPolicy {
-    public static Map<String, Double> patternEvaluations = new java.util.HashMap();
+    public static Map<Integer, Double> patternEvaluations = new java.util.HashMap();
     //Hand Analysis
     
     private static class Info{
-        private String pattern = "p";
+        private Integer pattern;
+        private final boolean isCol;
         private boolean straight;
         private boolean royal;
         private double numCards = 0;
@@ -29,8 +32,7 @@ public class PatternPolicy {
         private final int[] rankCountCounts = new int[6];
         
         Info(boolean col) {
-            if (col == true) pattern = "c";
-            else pattern = "r";
+            isCol = col;
         }
     }
     
@@ -46,55 +48,54 @@ public class PatternPolicy {
     public static double evaluate(Hand hand, boolean col) {
         Info info = new Info(col);
         
-        analyzeHand(info, hand.cards, col);
-        buildPattern(info, hand, col);
+        analyzeHand(info, hand.cards);
+        buildPattern(info, hand);
         
         double evaluation;
         
-        if (patternEvaluations.containsKey(info.pattern)) 
+        if (patternEvaluations.containsKey(info.pattern))
             evaluation = patternEvaluations.get(info.pattern);
         else 
-            evaluation = scoreHand(info, hand.cards, col);
+            evaluation = scoreHand(info, hand.cards);
         
         hand.evaluation = evaluation;
         
         return evaluation;
     }
     
-    public static String patternate(Hand hand, boolean col) {
+    public static void patternate(Hand hand, boolean col) {
         Info info = new Info(col);
          
         //PROCESS hand
-        analyzeHand(info, hand.cards, col);
-        buildPattern(info, hand, col);
-        
-        return info.pattern;
+        analyzeHand(info, hand.cards);
+        buildPattern(info, hand);
     }
     
-    private static String buildPattern(Info info, Hand hand, boolean col) {
-        //BUILD Pattern
-        
-        if (Settings.Algorithms.positionRankEnabled) patternB(info, hand, col);
-        else {
-            if (Settings.Evaluations.pattern == "A") patternA(info, hand, col);
-            else if (Settings.Evaluations.pattern == "B") patternB(info, hand, col);
+    private static void buildPattern(Info info, Hand hand) {
+        //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
+        int pattern = (info.isCol ? 2 : 0);
+        pattern += info.numSuits <= 1 ? 1 : 0;
+        int[] ranks = new int[5];
+        for(int i = 0; i < 5; ++i){
+            Card c = hand.cards[i];
+            if (c == null) continue;
+            ranks[i] = c.getRank();
         }
-        
-        //RECORD Pattern
-        hand.pattern = info.pattern;
-        
-        return info.pattern;
-        
+        Arrays.sort(ranks);
+        for(int i = 0; i < 5; ++i){
+            pattern = pattern << 4;
+            pattern += ranks[i];
+        }
     }
-    
-    private static String patternA(Info info, Hand hand, boolean col) {
+    /*
+    private static String patternA(Info info, Hand hand) {
         //PATTERN NOTE 
         //Current Pattern builds based on the assumption that 
         //only suits are dealt with in columns 
         //and only ranks are dealt with in rows 
         
         //if col build suit pattern
-        if (col) {
+        if (info.isCol) {
             if (info.numSuits == 1) {
                 if (info.numCards == 1) info.pattern = info.pattern + "a";
                 else if (info.numCards == 2) info.pattern = info.pattern + "aa";
@@ -184,17 +185,17 @@ public class PatternPolicy {
         
         return info.pattern;
     }
-    
-    private static double scoreHand(Info info, Card[] hand, boolean col) {
+    */
+    private static double scoreHand(Info info, Card[] hand) {
         
         //Policy Scores should relate to probability, 
         //They are currently assigned by gut,
         //The probability should be calculated or else learned 
         
-        double temp = Double.NEGATIVE_INFINITY;
+        double temp;
         double handScore = 0;
         
-        if (col) {
+        if (info.isCol) {
             for (int i = 0; i < colHands.length; ++i) {
                 if (colHands[i] == 1) {
                     temp = selectScorePolicy(info, hand, (int) i);
@@ -215,7 +216,7 @@ public class PatternPolicy {
             }
         }
         
-        if (!info.pattern.equals("p")) patternEvaluations.put(info.pattern, handScore);
+        patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
     }
@@ -343,7 +344,7 @@ public class PatternPolicy {
         return royalFlushScore;
     }
     
-    private static void analyzeHand(Info info, Card[] hand, boolean col) {
+    private static void analyzeHand(Info info, Card[] hand) {
         
         SortedMap <Integer, LinkedList> sortedRankCounts = new TreeMap ();
         
@@ -355,7 +356,7 @@ public class PatternPolicy {
                 ++info.numCards;
             }
             
-            if (!col && Settings.Algorithms.positionRankEnabled) sortedRankCounts.put(ii, new LinkedList <Integer>());
+            if (!info.isCol && Settings.Algorithms.positionRankEnabled) sortedRankCounts.put(ii, new LinkedList <Integer>());
             ++ii;
         }
         
@@ -367,10 +368,10 @@ public class PatternPolicy {
                 }
             }
             
-            if (!col && Settings.Algorithms.positionRankEnabled) if (info.rankCounts[i] > 0) sortedRankCounts.get(4 - info.rankCounts[i]).add(i);
+            if (!info.isCol && Settings.Algorithms.positionRankEnabled) if (info.rankCounts[i] > 0) sortedRankCounts.get(4 - info.rankCounts[i]).add(i);
         }
         
-        if (!col && Settings.Algorithms.positionRankEnabled) {
+        if (!info.isCol && Settings.Algorithms.positionRankEnabled) {
             int i = 0;
             for (LinkedList <Integer> rankList : sortedRankCounts.values()) {
                 Collections.sort(rankList);

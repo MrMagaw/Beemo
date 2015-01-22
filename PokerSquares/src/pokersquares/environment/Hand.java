@@ -6,7 +6,6 @@
 
 package pokersquares.environment;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import pokersquares.evaluations.PatternPolicy;
 
@@ -29,11 +28,11 @@ public class Hand {
         cards[openPos.removeFirst()] = card;
     }
     public double evaluate() {
-        return PatternPolicy.evaluate(this,isCol);
+        return PatternPolicy.evaluate(this, isCol);
     }
      
-    public String patternate() {
-        return PatternPolicy.patternate(this,isCol);
+    public void patternate() {
+        PatternPolicy.patternate(this, isCol);
     }
     
     public Card getCard(int i) {
