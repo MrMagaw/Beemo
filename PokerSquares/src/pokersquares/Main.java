@@ -78,14 +78,11 @@ public class Main {
         players.add(new GreedyMCPlayer(3));
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
-        PokerSquaresPointSystem.setSeed(0L);
+        PokerSquaresPointSystem.setSeed(1);
 
-        //Point Systems
-        //systems.add(PokerSquaresPointSystem.getAmeritishPointSystem());
-        //for(int i = 0; i < 5; ++i) //Add 5 random
         systems.add(PokerSquaresPointSystem.getRandomPointSystem());
 
-        PokerSquares.playTournament(players, systems, 5, 0L); // use fewer games per system for faster testing
+        PokerSquares.playTournament(players, systems, 5, 0); // use fewer games per system for faster testing
         */
     }
 }

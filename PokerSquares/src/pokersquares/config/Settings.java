@@ -10,12 +10,11 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10000;
+        public static int games = 1;
         public static int seed = 0;
         public static boolean verbose = false;
-        public static int randomPointSystemSeed = 5;
-        
-        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static int randomPointSystemSeed = 1;
+        public static PointSystem pointSystem = PointSystem.RANDOM;
         
         
     }

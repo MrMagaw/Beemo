@@ -38,7 +38,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         SettingsReader.readSettings("trainingtest");
         
         //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
-        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(100000);
+        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(200000);
     }
 
     @Override

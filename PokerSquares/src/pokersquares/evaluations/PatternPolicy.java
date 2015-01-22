@@ -192,22 +192,26 @@ public class PatternPolicy {
         //The probability should be calculated or else learned 
         
         double temp = Double.NEGATIVE_INFINITY;
-        //double handScore = Double.NEGATIVE_INFINITY;
         double handScore = 0;
         
         if (col) {
             for (int i = 0; i < colHands.length; ++i) {
-                temp = selectScorePolicy(info, hand, (int) colHands[i]);
-                handScore += temp;
-                //if (temp > handScore) handScore = temp;
+                if (colHands[i] == 1) {
+                    temp = selectScorePolicy(info, hand, (int) i);
+                    handScore += temp;
+                    //if (temp > handScore) handScore = temp;
+                }
+                
             }
         }
         
         else {
             for (int i = 0; i < rowHands.length; ++i) {
-                temp = selectScorePolicy(info, hand, (int) rowHands[i]);
-                handScore += temp;
-                //if (temp > handScore) handScore = temp;
+                if (rowHands[i] == 1) {
+                    temp = selectScorePolicy(info, hand, (int) i);
+                    handScore += temp;
+                    //if (temp > handScore) handScore = temp;
+                }
             }
         }
         
@@ -234,7 +238,7 @@ public class PatternPolicy {
     }
     
     private static double scoreHighCardPolicy(Info info, Card hand[]) {
-        return 0;
+        return 1;
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
