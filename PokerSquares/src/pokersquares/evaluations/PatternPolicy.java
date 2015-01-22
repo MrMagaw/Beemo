@@ -271,7 +271,7 @@ public class PatternPolicy {
         //if there is a two pair
         if (info.rankCountCounts[2] == 2) twoPairScore = Settings.Evaluations.twoPairPolicy[0];
         //if there is the possibility of a two pair
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5))twoPairScore = Settings.Evaluations.twoPairPolicy[1];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) twoPairScore = Settings.Evaluations.twoPairPolicy[1];
         else if (info.numCards < 4) twoPairScore = Settings.Evaluations.twoPairPolicy[2];
         //if the hand has no chance of a two pair
         else if (info.numCards > 3) twoPairScore = Settings.Evaluations.twoPairPolicy[3];
@@ -285,10 +285,13 @@ public class PatternPolicy {
         //if there is a three of a kind
         if (info.rankCountCounts[3] == 1) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[0];
         //if there is the possibility of a three of a kind
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) 
-            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[1] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[2]);
-        else if (info.numCards < 4) 
-            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[3] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[4]);
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[1];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[2];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 4)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[3];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 1)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[4];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 2)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[5];
+        else if ((info.numCards == info.numRanks) && (info.numCards == 3)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[6];
+        else threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[7];
         
         return threeOfAKindScore;
     }
