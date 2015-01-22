@@ -34,30 +34,19 @@ import static pokersquares.config.Settings.Evaluations.twoPairPolicy;
 public class SettingsReader {
     
     public static void readSettings(String fileName) {
-        
-        List <String> settings = new ArrayList();
-        BufferedReader reader;
-        try {
-            reader = new BufferedReader(new FileReader(fileName));
-            
-            String line;
-            while (true) {
-                line = null;
-                try { 
-                    line = reader.readLine();
-                } catch (Exception e) {};
-            
-                if (line == null) break;
-                
+        System.out.println(fileName);
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))){
+            String line = reader.readLine();
+            while (line != null) {
+                readLine(line);
+                line = reader.readLine();
                 //STORE line
-                settings.add(line);
             }
         } catch (Exception e) {
             //FILE NOT INITIALIZED
             System.out.println("File Read Error");
+            CRASH_BECAUSE_OF_MISSING_SETTINGS;
         }
-        
-        for (String line : settings) readLine(line);
     }
     
     private static void readLine(String line) {
