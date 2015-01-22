@@ -25,7 +25,6 @@ public class PatternPolicy {
         private boolean royal;
         private double numCards = 0;
         private double handWeight = 0;
-        private double numRanks = 0;
         private double numSuits = 0;
         private final int[] ranks = new int[5];
         private final int[] suitCounts = new int[Card.NUM_SUITS];
@@ -206,6 +205,7 @@ public class PatternPolicy {
                 
             }
         }
+        
         else {
             for (int i = 0; i < rowHands.length; ++i) {
                 if (rowHands[i] == 1) {
@@ -216,7 +216,7 @@ public class PatternPolicy {
             }
         }
         
-        if (Settings.Evaluations.patternate) patternEvaluations.put(info.pattern, handScore);
+        patternEvaluations.put(info.pattern, handScore);
         
         return handScore;
     }
@@ -239,31 +239,15 @@ public class PatternPolicy {
     }
     
     private static double scoreHighCardPolicy(Info info, Card hand[]) {
-        double highCardScore = 0;
-        
-        if ((info.numCards == info.numRanks) && (info.numCards == 5)) highCardScore = Settings.Evaluations.highCardPolicy[0];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 4)) highCardScore = Settings.Evaluations.highCardPolicy[1];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 3)) highCardScore = Settings.Evaluations.highCardPolicy[2];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 2)) highCardScore = Settings.Evaluations.highCardPolicy[3];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 1)) highCardScore = Settings.Evaluations.highCardPolicy[4];
-        
-        return highCardScore;
+        return 1;
     }
     
     private static double scorePairPolicy(Info info, Card hand[]) {
-        double pairScore = 0;
-        
-        //if there is a pair
-        if (info.rankCountCounts[2] == 1) pairScore = Settings.Evaluations.pairPolicy[0];
-        //if there is a possibility of a pair
-        else if ((info.numCards == info.numRanks) && (info.numCards == 4)) pairScore = Settings.Evaluations.pairPolicy[1];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 3)) pairScore = Settings.Evaluations.pairPolicy[2];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 2)) pairScore = Settings.Evaluations.pairPolicy[3];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 1)) pairScore = Settings.Evaluations.pairPolicy[4];
-        //if there is no possibility of a pair
-        else pairScore = Settings.Evaluations.pairPolicy[5];
-        
-        return pairScore;
+        if (info.rankCountCounts[2] == 1) 
+            return Settings.Evaluations.pairPolicy[0];
+        else{
+            return Settings.Evaluations.pairPolicy[1] * (5 - info.numCards);
+        }
     }
     
     private static double scoreTwoPairPolicy(Info info, Card hand[]) {
@@ -272,7 +256,7 @@ public class PatternPolicy {
         //if there is a two pair
         if (info.rankCountCounts[2] == 2) twoPairScore = Settings.Evaluations.twoPairPolicy[0];
         //if there is the possibility of a two pair
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) twoPairScore = Settings.Evaluations.twoPairPolicy[1];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5))twoPairScore = Settings.Evaluations.twoPairPolicy[1];
         else if (info.numCards < 4) twoPairScore = Settings.Evaluations.twoPairPolicy[2];
         //if the hand has no chance of a two pair
         else if (info.numCards > 3) twoPairScore = Settings.Evaluations.twoPairPolicy[3];
@@ -286,13 +270,12 @@ public class PatternPolicy {
         //if there is a three of a kind
         if (info.rankCountCounts[3] == 1) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[0];
         //if there is the possibility of a three of a kind
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 2)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[1];
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 3)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[2];
-        else if ((info.rankCountCounts[2] == 1) && (info.numCards == 4)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[3];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 1)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[4];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 2)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[5];
-        else if ((info.numCards == info.numRanks) && (info.numCards == 3)) threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[6];
-        else threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[7];
+        else if ((info.rankCountCounts[2] == 1) && (info.numCards < 5)) 
+            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[1] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[2]);
+        else if (info.numCards < 4) 
+            threeOfAKindScore = Settings.Evaluations.threeOfAKindPolicy[3] - Math.pow((info.numCards/10),Settings.Evaluations.threeOfAKindPolicy[4]);
+        
+        //System.out.println(numCards + " " + n + " " + threeOfAKindScore);
         
         return threeOfAKindScore;
     }
@@ -304,12 +287,9 @@ public class PatternPolicy {
     private static double scoreFlushPolicy(Info info, Card hand[]) {
         double flushScore = 0;
         
-        if ((info.numSuits == 1) && (info.numCards == 5)) flushScore = Settings.Evaluations.flushPolicy[0];
-        else if ((info.numSuits == 1) && (info.numCards == 4)) flushScore = Settings.Evaluations.flushPolicy[1];
-        else if ((info.numSuits == 1) && (info.numCards == 3)) flushScore = Settings.Evaluations.flushPolicy[2];
-        else if ((info.numSuits == 1) && (info.numCards == 2)) flushScore = Settings.Evaluations.flushPolicy[3];
-        else if ((info.numSuits == 1) && (info.numCards == 1)) flushScore = Settings.Evaluations.flushPolicy[4];
-        else if (info.numSuits > 1) flushScore = Settings.Evaluations.flushPolicy[5];
+        //this still works amazingly but I dont know 
+        if ((info.numSuits == 1) && (info.numCards <= 5)) 
+            flushScore = Math.pow(info.handWeight, Settings.Evaluations.flushPolicy[0]);
         
         return flushScore;
     }
@@ -382,8 +362,6 @@ public class PatternPolicy {
         
 	for (int i = 0; i < Card.NUM_RANKS; ++i) {
             ++info.rankCountCounts[info.rankCounts[i]];
-            
-            if (info.rankCounts[i] >= 1) ++info.numRanks;
             if (i < Card.NUM_SUITS) {
                 if (info.suitCounts[i] > 0) {
                     ++info.numSuits;

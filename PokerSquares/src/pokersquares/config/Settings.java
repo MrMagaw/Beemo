@@ -10,11 +10,12 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 1000;
+        public static int games = 1;
         public static int seed = 0;
         public static boolean verbose = false;
         public static int randomPointSystemSeed = 1;
-        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static PointSystem pointSystem = PointSystem.RANDOM;
+        
         
     }
     
@@ -38,19 +39,12 @@ public class Settings {
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
         public static boolean train = true;
-        
-        public static String settingsFile = "americanv2";
-    }
-    
-    public static class Training {
-        public static long millis = 100000;
-        public static String outputFile = "americanv2";
+        public static BeemoV2 BMO;
     }
     
     public static class Evaluations {
         
         //Pattern Policy
-        public static boolean patternate = true;
         public static String pattern = "A"; //A,B,C
         
         public static double[] handScores = new double[10];
@@ -61,7 +55,6 @@ public class Settings {
         //array hold exponents for values of hands in american order
         public static double[] exps;
         
-        public static double[] highCardPolicy;
         public static double[] pairPolicy;
         public static double[] twoPairPolicy;
         public static double[] threeOfAKindPolicy;
