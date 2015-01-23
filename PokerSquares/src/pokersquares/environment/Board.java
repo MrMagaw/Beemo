@@ -3,6 +3,7 @@ package pokersquares.environment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import pokersquares.config.Settings;
 
 public final class Board {
@@ -45,13 +46,11 @@ public final class Board {
         //check each row 
         for (int row = 0; row < 5; ++row) {
             
-            Hand hand = new Hand(new Card[5], false);
+            Hand hand = new Hand(false);
             
             for (int col = 0; col < 5; ++col) {
                 //build hand
-                hand.cards[col] = getCard(row, col);
-                //check for null pos
-                if (getCard(row, col) == null) hand.openPos.add(col);
+                hand.placeCard(col, getCard(row, col));
             }
             
             hands.add(hand);
@@ -60,14 +59,11 @@ public final class Board {
         //check each column
         for (int col = 0; col < 5; ++col) {
             
-            Hand hand = new Hand(new Card[5], true);
+            Hand hand = new Hand(true);
             
             for (int row = 0; row < 5; ++row) {
                 //build hand
-                hand.cards[row] = getCard(row, col);
-                
-                //check for null pos
-                if (getCard(row, col) == null) hand.openPos.add(row);
+                hand.placeCard(row, getCard(row, col));
             }
             
             hands.add(hand);
@@ -85,10 +81,8 @@ public final class Board {
         }
         
         //UPDATE HANDS
-        hands.get(pos[0]).cards[pos[1]] = card;
-        hands.get(pos[0]).openPos.remove((Integer) pos[1]);
-        hands.get(pos[1] + 5).cards[pos[0]] = card;
-        hands.get(pos[1] + 5).openPos.remove((Integer) pos[0]);
+        hands.get(pos[0]).placeCard(pos[1], card);
+        hands.get(pos[1] + 5).placeCard(pos[0], card);
     }
     public void patternateHands() {
         for (Hand hand : hands) hand.patternate();
@@ -96,14 +90,14 @@ public final class Board {
     public void patternatePositions(Card card) {
         posPatterns.clear();
         for (Integer[] pos : openPos) {
-            posPatterns.add(new String (hands.get(pos[0]).pattern + hands.get(pos[1] + 5).pattern ) + card.toString());
+            posPatterns.add(hands.get(pos[0]).getPattern() + "/" + hands.get(pos[1] + 5).getPattern() + card.toString());
         }
     }
     public String getPosPattern(Integer[] pos) {
         int i = 0;
         
         for (Integer[] rpos : openPos) {
-            if ((rpos[0] == pos[0]) && (rpos[1] == pos[1])) return posPatterns.get(i);
+            if ((Objects.equals(rpos[0], pos[0])) && (Objects.equals(rpos[1], pos[1]))) return posPatterns.get(i);
             ++i;
         }
         
