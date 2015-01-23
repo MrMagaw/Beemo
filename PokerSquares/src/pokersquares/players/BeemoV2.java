@@ -35,7 +35,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
-        SettingsReader.readSettings("trainingtest");
+        SettingsReader.readSettings("american");
         
         //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
         if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(200000);
