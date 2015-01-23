@@ -116,21 +116,22 @@ public class PatternPolicy {
         if (hand.rankCountCounts[2] == 1) {
             if(hand.numCards == 5 && (hand.rankCountCounts[3] == 1 || hand.numSuits == 1)) 
                 return 0; //If we have a full house || flush
-            return Settings.Evaluations.pairPolicy[0];
+            return 1; //We have it!
         }
         //if there is a possibility of a pair
-        if(hand.numCards != hand.numRanks) return 0; //We have three or four of a kind
+        if(hand.rankCountCounts[3] == 1 || hand.rankCountCounts[4] == 1 //We have three or four of a kind
+                || hand.numCards == 5) return 0; //Or a full hand
         
-        return Settings.Evaluations.pairPolicy[hand.numCards];
+        return Settings.Evaluations.pairPolicy[hand.numCards - 1];
     }
     
     private static double scoreTwoPairPolicy(Hand hand) {
         if(hand.rankCountCounts[3] == 1) return 0; //Can't get two pair when we have three of a kind.
         if(hand.rankCountCounts[2] == 2) return 1; //We already have it
         if(hand.numCards == 5) return 0; //Hand is full.
-        if(hand.rankCountCounts[2] == 1) return Settings.Evaluations.twoPairPolicy[hand.numCards - 2];
+        if(hand.rankCountCounts[2] == 1) return Settings.Evaluations.twoPairPolicy[hand.numCards - 2]; //0, 1, 2, 3
         if(hand.numCards > 3) return 0;
-        return Settings.Evaluations.twoPairPolicy[hand.numCards + 2];
+        return Settings.Evaluations.twoPairPolicy[hand.numCards + 3]; //4, 5, 6
     }
     
     private static double scoreThreeOfAKindPolicy(Hand hand) {

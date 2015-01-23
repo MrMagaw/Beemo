@@ -3,6 +3,7 @@ package pokersquares.config;
 import java.util.Arrays;
 import pokersquares.algorithms.*;
 import pokersquares.environment.*;
+import pokersquares.learning.*;
 import pokersquares.players.BeemoV2;
 
 public class Settings {
@@ -38,21 +39,20 @@ public class Settings {
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
         public static boolean train = true;
-        //public static String settingsFile = "s.0.2.5.10.15.20.25.50.75.100";
-        public static String settingsFile = "blank";
-        public static BeemoV2 BMO;
+        public static String settingsFile = "american_from_blank";
     }
     
     public static class Training {
         public static long millis = 100000;
-        public static String outputFile = "americanv2";
+        public static String outputFile = "american_from_blank";
+        public static Trainer trainer = new ValueReinforcement();
     }
     
     public static class Evaluations {
         
         //Pattern Policy
         public static boolean patternate = true;
-        public static String pattern = "A"; //A,B,C
+        //public static String pattern = "A"; //A,B,C
         
         public static double[] handScores = new double[10];
         

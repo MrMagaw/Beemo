@@ -8,6 +8,7 @@ package pokersquares.learning;
 
 import pokersquares.config.Settings;
 import java.util.*;
+import pokersquares.algorithms.Simulator;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
@@ -16,16 +17,17 @@ import pokersquares.environment.Card;
  *
  * @author newuser
  */
-public class ValueReinforcement {
+public class ValueReinforcement implements Trainer {
     
-    public static void runSession(long millis){
+    @Override
+    public void runSession(long millis){
         
         long tStart = System.currentTimeMillis();
         
         //VALUES to be adjusted
         List <double[]> values = new ArrayList();
         
-        values.add((double[])Settings.Evaluations.exps);
+        //values.add((double[])Settings.Evaluations.exps);
         values.add(Settings.Evaluations.colHands); 
         values.add(Settings.Evaluations.rowHands);
         values.add(Settings.Evaluations.highCardPolicy);
@@ -143,6 +145,7 @@ public class ValueReinforcement {
         
         boolean train = true;
         boolean verbose = false;
+        
         while (train) {
             baseScore = scoreGames();
             if(verbose) System.out.println("\nTraining Values Incrementally:"  + " " + i + " " + j);
@@ -151,11 +154,11 @@ public class ValueReinforcement {
             og = va[j];
             
             //ADJUST value 
-            if(verbose) System.out.println(va[j]);
+            if(verbose) System.out.print(va[j]);
             va[j] = va[j] + (isign*scale);
             if (va[j] < 0) va[j] = 0.0;
             else if (va[j] > 1) va[j] = 1.0;
-            if(verbose) System.out.println(va[j]);
+            if(verbose) System.out.print("-->" + va[j] + ": ");
             //SCORE PERFORMANCE
             //Update scoring
             //for(int k = va.length-1; k >= 0; --k)
@@ -172,7 +175,7 @@ public class ValueReinforcement {
                 va[j] = og;
                 
                 //INCREMENT value adjustors
-                if (scale > 0.01) scale = scale / 1.1;
+                if (scale > 0.000001) scale = scale / 2.0;
                 else if (isign == -1) {
                     isign = 1;
                     scale = 1.0;
@@ -182,7 +185,6 @@ public class ValueReinforcement {
                 //if performance does not change 
                 if (isign == -1) {
                     isign = 1;
-                    
                 } else {
                     train = false;
                 }
@@ -190,9 +192,9 @@ public class ValueReinforcement {
                 va[j] = og;
                 
             } else {
+                System.out.println(og + "-->" + va[j] + ": Δ" + (newScore - baseScore));
                 //PERFORMANCE INCREASES
                 //RECORD
-                baseScore = newScore;
                 systemChanged = true;
                 SettingsReader.writeSettings(Settings.Training.outputFile);
             } 
@@ -204,30 +206,10 @@ public class ValueReinforcement {
     public static double scoreGames() {
         int numGames, numSimulations;
         numGames = numSimulations = 1000;
-        
-        double score = 0.0;        
-        
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
-        
         //SIMULATE Games
-        while(--numSimulations > 0){
-            Board b = new Board();
-                
-            while (b.getTurn() < 25) {
-                if (b.getDeck().size() == 0) {
-                    System.err.println("ERROR" + " turn: " + b.getDeck().size());
-                    b.debug();
-                }
-                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                Card c = b.getDeck().remove(numSimulations % b.getDeck().size()); 
-                int[] p = Settings.Algorithms.simAlgoritm.search(c, b, 10000);
-                b.playCard(c, p);
-            }
-            score += Settings.Environment.system.getScore(b.getGrid());
-        }
-        return score / (double)(numGames+1);
-            
+        return Simulator.simulate(new Board(), numSimulations, 10000) / (double)(numGames+1);
     }
     
 }

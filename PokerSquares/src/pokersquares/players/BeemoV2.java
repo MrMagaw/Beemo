@@ -24,10 +24,6 @@ import pokersquares.environment.*;
 public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
     
-    public BeemoV2(){
-        Settings.BMO.BMO = this;
-    }
-    
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
@@ -40,13 +36,12 @@ public class BeemoV2 implements PokerSquaresPlayer{
         Settings.Evaluations.debug();
         
         //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
-        if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(Settings.Training.millis);
+        if (Settings.BMO.train) Settings.Training.trainer.runSession(Settings.Training.millis);
     }
 
     @Override
     public void init() {
         board = new Board();
-        
     }
 
     @Override

@@ -60,17 +60,7 @@ public class IIMC extends Algorithm{
             tb.playCard(card, new int[]{pos[0], pos[1]});
             
             //SIMULATE Games
-            while(--numSimulations > 0){
-                Board b = new Board(tb);
-                
-                while (b.getTurn() < 25) {
-                    Card c = b.getDeck().remove(numSimulations % b.getDeck().size()); 
-                    int[] p = Settings.Algorithms.simAlgoritm.search(c, b, millisRemaining);
-                    b.playCard(c, p);
-                }
-                
-                score += Settings.Environment.system.getScore(b.getGrid());
-            }
+            score = Simulator.simulate(tb, numSimulations, millisRemaining);
             
             if(score > bestScore){
                 bestScore = score;
