@@ -10,7 +10,21 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static pokersquares.config.Settings.Evaluations.colHands;
+import static pokersquares.config.Settings.Evaluations.exps;
+import static pokersquares.config.Settings.Evaluations.flushPolicy;
+import static pokersquares.config.Settings.Evaluations.fourOfAKindPolicy;
+import static pokersquares.config.Settings.Evaluations.fullHousePolicy;
+import static pokersquares.config.Settings.Evaluations.handScores;
+import static pokersquares.config.Settings.Evaluations.highCardPolicy;
+import static pokersquares.config.Settings.Evaluations.pairPolicy;
+import static pokersquares.config.Settings.Evaluations.rowHands;
+import static pokersquares.config.Settings.Evaluations.threeOfAKindPolicy;
+import static pokersquares.config.Settings.Evaluations.twoPairPolicy;
+
 import static pokersquares.config.Settings.Evaluations.*;
+
 
 public class SettingsReader {
     
@@ -25,7 +39,7 @@ public class SettingsReader {
         } catch (IOException ex) {
             //FILE NOT INITIALIZED
             System.err.println("File Read Error");
-            CRASH_BECAUSE_OF_MISSING_SETTINGS;
+            
         }
     }
     
@@ -46,12 +60,14 @@ public class SettingsReader {
         
         double[] dataArray = parseArray(data);
         
+
         try {
             Settings.Evaluations.class.getField(tag).set(null, dataArray);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             System.err.println("Failed setting field: " + tag);
-            FIELD_SETTING_FAILED;
+            
         }
+
     }
     
     private static double[] parseArray(String data) {
@@ -80,6 +96,7 @@ public class SettingsReader {
             writer.write("rowHands " + Arrays.toString(rowHands) + "\n");
             writer.write("colHands " + Arrays.toString(colHands) + "\n");
             writer.write("exps " + Arrays.toString(exps) + "\n");
+            writer.write("highCardPolicy " + Arrays.toString(highCardPolicy) + "\n");
             writer.write("pairPolicy " + Arrays.toString(pairPolicy) + "\n");
             writer.write("twoPairPolicy " + Arrays.toString(twoPairPolicy) + "\n");
             writer.write("threeOfAKindPolicy " + Arrays.toString(threeOfAKindPolicy) + "\n");
@@ -90,7 +107,7 @@ public class SettingsReader {
             
         } catch (IOException ex) {
             System.err.println("Failed writing settings.");
-            WRITING_FAILURE;
+            
         }
     }
 }

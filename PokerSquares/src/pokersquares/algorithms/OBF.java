@@ -1,5 +1,6 @@
 package pokersquares.algorithms;
 
+import java.util.Arrays;
 import pokersquares.config.Settings;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
@@ -12,7 +13,7 @@ public class OBF extends Algorithm{
         double[] postEvaluations = new double[10];
         double[] preEvaluations = new double[10];
         
-        Integer[] bestPos = {2, 2};
+        Integer[] bestPos;
         
         evaluate(card, board, preEvaluations, postEvaluations);
         
@@ -38,8 +39,8 @@ public class OBF extends Algorithm{
         return new int[] {bestPos[0], bestPos[1]};
     }
     
-    private Integer[] getBestPos(Board board,double[] preEvaluations, double[] postEvaluations) {
-        double bestScore = Integer.MIN_VALUE;
+    private Integer[] getBestPos(Board board, double[] preEvaluations, double[] postEvaluations) {
+        double bestScore = Double.NEGATIVE_INFINITY;
         Integer[] bestPos = {2, 2};
         
         //FOR EACH pos represented by intersecting hands
@@ -51,12 +52,13 @@ public class OBF extends Algorithm{
             double score = 
                 (-preEvaluations[row] - preEvaluations[col + 5]) +
                 (postEvaluations[row] + postEvaluations[col + 5]);
+            //System.out.println(Arrays.toString(preEvaluations) + "\n" + Arrays.toString(postEvaluations));
             if(bestScore < score){
                 bestScore = score;
                 bestPos = pos;
             }
         }
-        
+        //System.out.println(Arrays.toString(bestPos) + ": " + bestScore);
         return bestPos;  
     }
     
@@ -64,31 +66,17 @@ public class OBF extends Algorithm{
         //Pre Evaluates Hands
         //Places Card
         //Post Evaluates Hands
-        //Removes Card 
-        
-        int i = 0;
-        for (Hand hand : board.hands) {
+        //Removes Card
+        for (int i = board.hands.size() - 1; i >= 0; --i) {
+            Hand hand = new Hand(board.hands.get(i));
             //PRE EVALUATE
             preEvaluations[i] = hand.evaluate();
-            
-            String OGPattern = hand.pattern;
-            double OGEvaluation = hand.evaluation;
-            
             //POST EVALUATE
-            if (hand.openPos.size() > 0) {
-                
-                int openPos = hand.openPos.getFirst();
-                hand.cards[openPos] = card;
+            if (hand.hasOpenPos()) {
+                hand.playOpenPos(card);
                 postEvaluations[i] = hand.evaluate();
                 
-                //RESTORE hand to original state
-                hand.cards[openPos] = null;
-                hand.pattern = OGPattern;
-                hand.evaluation = OGEvaluation;
-            }
-            else postEvaluations[i] = preEvaluations[i];
-            
-            ++i;
+            }else postEvaluations[i] = preEvaluations[i];
         }
     }
 }
