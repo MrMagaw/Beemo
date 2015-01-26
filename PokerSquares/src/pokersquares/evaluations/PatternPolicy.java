@@ -24,11 +24,8 @@ public class PatternPolicy {
     public static double evaluate(Hand hand) {
         //Generate rankCountCounts... What a weird place to put this.
         
-        if(!hand.hasPattern()){
-            for(int i = 0; i < Card.NUM_RANKS; ++i)
-                ++hand.rankCountCounts[hand.rankCounts[i]];
+        if(!hand.hasPattern())
             buildPattern(hand);
-        }
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
@@ -38,20 +35,37 @@ public class PatternPolicy {
     
     public static void buildPattern(Hand hand) {
         //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        int pattern = (hand.isCol ? 2 : 0);
-        pattern += (hand.numSuits <= 1 ? 1 : 0);
-        //int pattern = 0; //Temp
+        //int pattern = (hand.isCol ? 2 : 0);
         
-        //Iterates through num CountCounts, 
-        //recording a rank identifier for each rank
-        //for the maximum number of rank multiples
-        for (int i = 0; i < 5; ++i) {
-            //for each rank multiple occuring at least once
-            //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-            pattern = pattern << 3;
-            pattern += hand.rankCountCounts[i];
-        }
-        /*
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
+        
+        int[] rankPattern = new int[5];
+        
+        String [] nums = {"0", "1", "2", "3", "4"};
+            int iNums = 0;
+            
+            //Iterates through num CountCounts, 
+            //recording a rank identifier for each rank
+            
+            if (hand.numCards > 0)
+                //for the maximum number of rank multiples
+                for (int i = 5; i > 0; --i) {
+                    //for each rank multiple occuring at least once
+                    //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+                    if (hand.rankCountCounts[i] > 0) {
+                        //for each occurance of a rank multiple
+                        for (int j = 0; j < hand.rankCountCounts[i]; ++j) {
+                            for (int k = 0; k < i; ++k) {
+                                rankPattern[0] = 0; //change this
+                            }
+                            iNums++;
+                        }
+                    }
+                }
+        
+        int pattern = 0;
+        //pattern += (hand.numSuits <= 1 ? 1 : 0);
         int[] ranks = new int[5];
         for(int i = 0; i < 5; ++i){
             Card c = hand.getCard(i);
@@ -62,7 +76,7 @@ public class PatternPolicy {
         for(int i = 4; i >= 0; --i){
             pattern = pattern << 4;
             pattern += ranks[i];
-        }*/
+        }
         hand.setPattern(pattern);
     }
     
