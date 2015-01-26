@@ -107,7 +107,10 @@ public class Hand {
         cards[i] = c;
     }
     
-    
+    public void buildRankCounts(){
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++rankCountCounts[rankCounts[i]];
+    }
     
     public void debug() {
         for(Card card : cards) {

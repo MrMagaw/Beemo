@@ -24,8 +24,10 @@ public class PatternPolicy {
     public static double evaluate(Hand hand) {
         //Generate rankCountCounts... What a weird place to put this.
         
-        if(!hand.hasPattern())
+        if(!hand.hasPattern()){
+            hand.buildRankCounts();
             buildPattern(hand);
+        }
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
