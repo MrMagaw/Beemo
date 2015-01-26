@@ -24,8 +24,11 @@ public class PatternPolicy {
     public static double evaluate(Hand hand) {
         //Generate rankCountCounts... What a weird place to put this.
         
-        if(!hand.hasPattern())
+        if(!hand.hasPattern()){
+            for(int i = 0; i < Card.NUM_RANKS; ++i)
+                ++hand.rankCountCounts[hand.rankCounts[i]];
             buildPattern(hand);
+        }
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
@@ -35,8 +38,6 @@ public class PatternPolicy {
     
     public static void buildPattern(Hand hand) {
         //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        //int pattern = (hand.isCol ? 2 : 0);
-        
         hand.countRankCounts();
         
         int[] rankPattern = new int[5];
@@ -63,8 +64,21 @@ public class PatternPolicy {
                     }
                 }
         
-        int pattern = 0;
-        //pattern += (hand.numSuits <= 1 ? 1 : 0);
+        int pattern = (hand.isCol ? 2 : 0);
+        pattern += (hand.numSuits <= 1 ? 1 : 0);
+        //int pattern = 0; //Temp
+        
+        //Iterates through num CountCounts, 
+        //recording a rank identifier for each rank
+        //for the maximum number of rank multiples
+        for (int i = 0; i < 5; ++i) {
+            //for each rank multiple occuring at least once
+            //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+            pattern = pattern << 3;
+            pattern += hand.rankCountCounts[i];
+        }
+        /*
+>>>>>>> FETCH_HEAD
         int[] ranks = new int[5];
         for(int i = 0; i < 5; ++i){
             Card c = hand.getCard(i);
@@ -75,7 +89,7 @@ public class PatternPolicy {
         for(int i = 4; i >= 0; --i){
             pattern = pattern << 4;
             pattern += ranks[i];
-        }
+        }*/
         hand.setPattern(pattern);
     }
     
