@@ -1,9 +1,10 @@
 package pokersquares.config;
 
+import pokersquares.trainers.ValueReinforcement;
+import pokersquares.trainers.Trainer;
 import java.util.Arrays;
 import pokersquares.algorithms.*;
 import pokersquares.environment.*;
-import pokersquares.learning.*;
 import pokersquares.players.BeemoV2;
 
 public class Settings {
@@ -11,7 +12,7 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 1000;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
         public static int randomPointSystemSeed = 1;
@@ -38,24 +39,17 @@ public class Settings {
     
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
-        public static boolean train = true;
-<<<<<<< HEAD
-        //public static String settingsFile = "s.0.2.5.10.15.20.25.50.75.100";
-        public static String settingsFile = "american";
         public static BeemoV2 BMO;
-=======
-        public static String settingsFile = "american_from_blank";
->>>>>>> FETCH_HEAD
+        public static String settingsFile = "american103";
     }
     
     public static class Training {
-        public static long millis = 100000;
-<<<<<<< HEAD
-        public static String outputFile = "american";
-=======
-        public static String outputFile = "american_from_blank";
+        public static boolean train = false;
+        public static boolean randomize = false;
+        public static String outputFile = "random";
+        public static long millis = 200000;
+        
         public static Trainer trainer = new ValueReinforcement();
->>>>>>> FETCH_HEAD
     }
     
     public static class Evaluations {
@@ -70,7 +64,6 @@ public class Settings {
         public static double[] colHands;
         
         //array hold exponents for values of hands in american order
-        public static double[] exps;
         
         public static double[] highCardPolicy;
         public static double[] pairPolicy;
@@ -84,7 +77,6 @@ public class Settings {
             System.out.println("Hand Scores: " + Arrays.toString(handScores));
             System.out.println("Row Hands: " + Arrays.toString(rowHands));
             System.out.println("Col Hands: " + Arrays.toString(colHands));
-            System.out.println("Exponents: " + Arrays.toString(exps));
             System.out.println("Pair Policy: " + Arrays.toString(pairPolicy));
             System.out.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));
             System.out.println("Three Of A Kind Policy : " + Arrays.toString(threeOfAKindPolicy));

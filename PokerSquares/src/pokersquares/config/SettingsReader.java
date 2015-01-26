@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static pokersquares.config.Settings.Evaluations.colHands;
-import static pokersquares.config.Settings.Evaluations.exps;
 import static pokersquares.config.Settings.Evaluations.flushPolicy;
 import static pokersquares.config.Settings.Evaluations.fourOfAKindPolicy;
 import static pokersquares.config.Settings.Evaluations.fullHousePolicy;
@@ -95,7 +94,6 @@ public class SettingsReader {
             writer.write("handScores " + Arrays.toString(handScores) + "\n");
             writer.write("rowHands " + Arrays.toString(rowHands) + "\n");
             writer.write("colHands " + Arrays.toString(colHands) + "\n");
-            writer.write("exps " + Arrays.toString(exps) + "\n");
             writer.write("highCardPolicy " + Arrays.toString(highCardPolicy) + "\n");
             writer.write("pairPolicy " + Arrays.toString(pairPolicy) + "\n");
             writer.write("twoPairPolicy " + Arrays.toString(twoPairPolicy) + "\n");

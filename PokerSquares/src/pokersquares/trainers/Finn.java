@@ -1,4 +1,4 @@
-package pokersquares.learning;
+package pokersquares.trainers;
 
 import java.util.ArrayList;
 import java.util.List;

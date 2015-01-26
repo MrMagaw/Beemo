@@ -174,7 +174,7 @@ Changed the structure of all the hand scoring values such as exponents into arra
 Starting to implement a structure for value Learning. \
 \
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
-\cf0 \ul \ulc0 Value Learning Environment\
+\cf0 \ul Value Learning Environment\
 \pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
 \cf0 \ulnone For every variable that can be adjusted in the settings class to adjust the performance of the algorithm, automate the adjusting of the variable to return a better score.\
 \
@@ -188,9 +188,10 @@ Implemented a training environment MK1, it works! \
 \
 in Pattern Policy, would removing the whole \'91raise to exponent\'92 bit be useful? I think it might be superfluous.\
 \
+Starting all the initial values at either 1 or 0 seems to tend to \'91squish\'92 the values at one end or another\
+	Try starting from arrays with randomly distributed values - random values seems to lead to early plateaus\
+	Try Redistributing values regularly to allow more even stratification\
 \
-\
-\
-\
+0.5 is the best neutral value for blank to start from\
 \
 }

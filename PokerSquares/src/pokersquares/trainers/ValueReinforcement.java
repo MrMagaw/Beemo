@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package pokersquares.learning;
+package pokersquares.trainers;
 
 import pokersquares.config.Settings;
 import java.util.*;
@@ -29,7 +29,6 @@ public class ValueReinforcement implements Trainer {
         //VALUES to be adjusted
         List <double[]> values = new ArrayList();
         
-        //values.add((double[])Settings.Evaluations.exps);
         values.add(Settings.Evaluations.colHands); 
         values.add(Settings.Evaluations.rowHands);
         values.add(Settings.Evaluations.highCardPolicy);
@@ -40,7 +39,11 @@ public class ValueReinforcement implements Trainer {
         values.add(Settings.Evaluations.fullHousePolicy);
         values.add(Settings.Evaluations.fourOfAKindPolicy);
         
-        int i = 3, j = 0;
+        if (Settings.Training.randomize) randomize(values);
+        
+        Settings.Evaluations.debug();
+        
+        int i = 0, j = 0;
         int valuesToTrain = values.size() - 1;
         boolean systemChanged = false;
         //WHILE there is time left, continue training
@@ -48,10 +51,8 @@ public class ValueReinforcement implements Trainer {
             
             //TRAIN Value
             //if value is successfully trained, the system has changed
-            if (i == 0) {
-                //pass
-            } else if (i < 3) {
-                systemChanged = trainHandCombinations(values, i);
+            if (i < 2) {
+                //systemChanged = trainHandCombinations(values, i);
             } else {
                 systemChanged = trainValuesIncrementally(values, i, j);
             }
@@ -82,6 +83,16 @@ public class ValueReinforcement implements Trainer {
         SettingsReader.writeSettings(Settings.Training.outputFile);
         
         Settings.Evaluations.debug();
+    }
+    
+    public static void randomize(List <double[]> values) {
+        //randomize initial values 
+        Random r = new Random();
+        
+        for (int j = 0; j < values.size(); ++j) {
+            double[] value = values.get(j);
+            if (j > 1) for (int i = 0; i < value.length; ++i) value[i] = r.nextDouble();
+        }
     }
     
     public static boolean trainHandCombinations(List values, int i) {
@@ -122,7 +133,7 @@ public class ValueReinforcement implements Trainer {
             
             //if PERFORMANCE DECREASES or remains the same
             //RESET
-            if (deltaScore <= baseScore) ha[id] = og;
+            if (deltaScore < baseScore) ha[id] = og;
             else systemChanged = true;
             
         }
@@ -133,25 +144,21 @@ public class ValueReinforcement implements Trainer {
     
     public static boolean trainValuesIncrementally(List<double[]> values, int i, int j) {
         //adjust the specified value in a positive or negative direction until a max score is reached
+        double[]  va = values.get(i); //value array
         boolean systemChanged = false;
+        int sign = -1;
         double 
                 baseScore, 
                 newScore,
                 og,
-                scale = 1;
+                scale = va[j];
         
-        double[] 
-                va = values.get(i); //value array
         
-        int isign = -1;
         
         boolean train = true;
-<<<<<<< HEAD
-        boolean verbose = true;
-=======
-        boolean verbose = false;
         
->>>>>>> FETCH_HEAD
+        boolean verbose = true;
+
         while (train) {
             baseScore = scoreGames();
             if(verbose) System.out.println("\nTraining Values Incrementally:"  + " " + i + " " + j);
@@ -161,7 +168,7 @@ public class ValueReinforcement implements Trainer {
             
             //ADJUST value 
             if(verbose) System.out.print(va[j]);
-            va[j] = va[j] + (isign*scale);
+            va[j] = va[j] + (sign*scale);
             if (va[j] < 0) va[j] = 0.0;
             else if (va[j] > 1) va[j] = 1.0;
             if(verbose) System.out.print("-->" + va[j] + ": ");
@@ -181,25 +188,23 @@ public class ValueReinforcement implements Trainer {
                 va[j] = og;
                 
                 //INCREMENT value adjustors
-<<<<<<< HEAD
-                if (scale > 0.0001) scale = scale / 2;
-=======
-                if (scale > 0.000001) scale = scale / 2.0;
->>>>>>> FETCH_HEAD
-                else if (isign == -1) {
-                    isign = 1;
-                    scale = 1.0;
+                if (scale > 0.0001) scale = scale / 2.0;
+                else if (sign == -1) {
+                    sign = 1;
+                    scale = 1.0 - va[j];
                 }
                 else train = false;
             } else if (newScore == baseScore) {
                 //if performance does not change 
-                if (isign == -1) {
-                    isign = 1;
+                if (scale > 0.0001) scale = scale / 2.0;
+                if (sign == -1) {
+                    sign = 1;
+                    scale = 1.0 - va[j];
                 } else {
                     train = false;
                 }
                 //RESET value
-                va[j] = og;
+                //va[j] = og;
                 
             } else {
                 System.out.println(og + "-->" + va[j] + ": Δ" + (newScore - baseScore));

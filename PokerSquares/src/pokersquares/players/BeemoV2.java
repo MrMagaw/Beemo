@@ -3,6 +3,7 @@ package pokersquares.players;
 import pokersquares.config.*;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
+import pokersquares.evaluations.PatternPolicy;
 
 /**
  *
@@ -35,8 +36,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         Settings.Evaluations.debug();
         
-        //if (Settings.BMO.train) pokersquares.learning.ValueReinforcement.runSession(millis);
-        if (Settings.BMO.train) Settings.Training.trainer.runSession(Settings.Training.millis);
+        if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
     }
 
     @Override
@@ -54,6 +54,8 @@ public class BeemoV2 implements PokerSquaresPlayer{
             board.playCard(card, bestPos);
             return bestPos;
         }
+        
+        System.err.println(PatternPolicy.patternEvaluations.size());
         
         for(int i=0; i<3; ++i){
             if(board.getTurn() <= Settings.BMO.turnSplits[i]){

@@ -74,12 +74,12 @@ public class Main {
 
         //Players
         players.add(new BeemoV2());
-        players.add(new GreedyMCPlayer(3));
+        players.add(new GreedyMCPlayer());
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
         PokerSquaresPointSystem.setSeed(1);
 
-        systems.add(PokerSquaresPointSystem.getSingleHandPointSystem());
+        systems.add(PokerSquaresPointSystem.getRandomPointSystem());
 
         PokerSquares.playTournament(players, systems, 5, 0); // use fewer games per system for faster testing
         */

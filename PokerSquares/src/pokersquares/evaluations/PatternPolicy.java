@@ -22,6 +22,8 @@ public class PatternPolicy {
     }
     
     public static double evaluate(Hand hand) {
+        //Generate rankCountCounts... What a weird place to put this.
+        
         if(!hand.hasPattern())
             buildPattern(hand);
         
@@ -33,8 +35,37 @@ public class PatternPolicy {
     
     public static void buildPattern(Hand hand) {
         //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        int pattern = (hand.isCol ? 2 : 0);
-        pattern += (hand.numSuits <= 1 ? 1 : 0);
+        //int pattern = (hand.isCol ? 2 : 0);
+        
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
+        
+        int[] rankPattern = new int[5];
+        
+        String [] nums = {"0", "1", "2", "3", "4"};
+            int iNums = 0;
+            
+            //Iterates through num CountCounts, 
+            //recording a rank identifier for each rank
+            
+            if (hand.numCards > 0)
+                //for the maximum number of rank multiples
+                for (int i = 5; i > 0; --i) {
+                    //for each rank multiple occuring at least once
+                    //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+                    if (hand.rankCountCounts[i] > 0) {
+                        //for each occurance of a rank multiple
+                        for (int j = 0; j < hand.rankCountCounts[i]; ++j) {
+                            for (int k = 0; k < i; ++k) {
+                                rankPattern[0] = 0; //change this
+                            }
+                            iNums++;
+                        }
+                    }
+                }
+        
+        int pattern = 0;
+        //pattern += (hand.numSuits <= 1 ? 1 : 0);
         int[] ranks = new int[5];
         for(int i = 0; i < 5; ++i){
             Card c = hand.getCard(i);
@@ -57,10 +88,7 @@ public class PatternPolicy {
         
         double handScore = 0;
         
-        //Generate rankCountCounts... What a weird place to put this.
-        for(int i = 0; i < Card.NUM_RANKS; ++i)
-            ++hand.rankCountCounts[hand.rankCounts[i]];
-        //
+        
         
         if (hand.isCol) {
             for (int i = 0; i < colHands.length; ++i) {
@@ -82,6 +110,8 @@ public class PatternPolicy {
     }
     
     private static double selectScorePolicy(Hand hand, int i) {
+        //Policy Value Score Product
+        
         if (i == 0) //High Card
             return Settings.Evaluations.handScores[0] * scoreHighCardPolicy(hand);
         else if (i == 1)  //One Pair
@@ -103,6 +133,37 @@ public class PatternPolicy {
         else if (i == 9) //Royal Flush
             return Settings.Evaluations.handScores[9] * scoreRoyalFlushPolicy(hand);
         else return 0;
+        /*
+        //Policy Value
+        if (i == 0) //High Card
+            return scoreHighCardPolicy(hand);
+        else if (i == 1)  //One Pair
+            return scorePairPolicy(hand);
+        else if (i == 2) //Two Pair
+            return scoreTwoPairPolicy(hand);
+        else if (i == 3) //Three of a Kind
+            return scoreThreeOfAKindPolicy(hand);
+        else if (i == 4) //Straight
+            return scoreStraightPolicy(hand);
+        else if (i == 5) //Flush
+            return scoreFlushPolicy(hand);
+        else if (i == 6) //Full House
+            return scoreFullHousePolicy(hand);
+        else if (i == 7) //Four of a Kind
+            return scoreFourOfAKindPolicy(hand);
+        else if (i == 8) //Straight Flush
+            return scoreStraightFlushPolicy(hand);
+        else if (i == 9) //Royal Flush
+            return scoreRoyalFlushPolicy(hand);
+        else return 0;
+                */
+    }
+    
+    private static double scoreFullHandPolicy(Hand hand) {
+        
+        if (hand.numCards != hand.numRanks) return 0;
+            
+        return 0;
     }
     
     private static double scoreHighCardPolicy(Hand hand) {
