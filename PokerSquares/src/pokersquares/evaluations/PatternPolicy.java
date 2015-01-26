@@ -37,8 +37,7 @@ public class PatternPolicy {
         //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
         //int pattern = (hand.isCol ? 2 : 0);
         
-        for(int i = 0; i < Card.NUM_RANKS; ++i)
-            ++hand.rankCountCounts[hand.rankCounts[i]];
+        hand.countRankCounts();
         
         int[] rankPattern = new int[5];
         
@@ -160,6 +159,7 @@ public class PatternPolicy {
     }
     
     private static double scoreFullHandPolicy(Hand hand) {
+        //
         
         if (hand.numCards != hand.numRanks) return 0;
             
