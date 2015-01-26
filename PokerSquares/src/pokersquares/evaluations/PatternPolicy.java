@@ -78,7 +78,6 @@ public class PatternPolicy {
             pattern += hand.rankCountCounts[i];
         }
         /*
->>>>>>> FETCH_HEAD
         int[] ranks = new int[5];
         for(int i = 0; i < 5; ++i){
             Card c = hand.getCard(i);
@@ -172,11 +171,22 @@ public class PatternPolicy {
                 */
     }
     
-    private static double scoreFullHandPolicy(Hand hand) {
-        //
+    private static double scoreSuitPolicy(Hand hand) {
+        //Essentially the same as the flush policy
         
-        if (hand.numCards != hand.numRanks) return 0;
-            
+        //if there is more than one suit
+        if(hand.numSuits > 1) return 0;
+        //if there is a flush
+        if(hand.numCards == 5) return 1;
+        //if there is the possibility of a flush
+        return Settings.Evaluations.suitPolicy[hand.numCards + 2];
+        
+    }
+    
+    private static double scoreRankPolicy(Hand hand) {
+        //Combines all policy scores not related to suits
+        
+        //if there is a full house
         return 0;
     }
     
