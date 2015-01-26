@@ -24,11 +24,8 @@ public class PatternPolicy {
     public static double evaluate(Hand hand) {
         //Generate rankCountCounts... What a weird place to put this.
         
-        if(!hand.hasPattern()){
-            for(int i = 0; i < Card.NUM_RANKS; ++i)
-                ++hand.rankCountCounts[hand.rankCounts[i]];
+        if(!hand.hasPattern())
             buildPattern(hand);
-        }
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
@@ -38,7 +35,10 @@ public class PatternPolicy {
     
     public static void buildPattern(Hand hand) {
         //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        hand.countRankCounts();
+        //int pattern = (hand.isCol ? 2 : 0);
+        
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
         
         int[] rankPattern = new int[5];
         
@@ -64,20 +64,8 @@ public class PatternPolicy {
                     }
                 }
         
-        int pattern = (hand.isCol ? 2 : 0);
-        pattern += (hand.numSuits <= 1 ? 1 : 0);
-        //int pattern = 0; //Temp
-        
-        //Iterates through num CountCounts, 
-        //recording a rank identifier for each rank
-        //for the maximum number of rank multiples
-        for (int i = 0; i < 5; ++i) {
-            //for each rank multiple occuring at least once
-            //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-            pattern = pattern << 3;
-            pattern += hand.rankCountCounts[i];
-        }
-        /*
+        int pattern = 0;
+        //pattern += (hand.numSuits <= 1 ? 1 : 0);
         int[] ranks = new int[5];
         for(int i = 0; i < 5; ++i){
             Card c = hand.getCard(i);
@@ -88,7 +76,7 @@ public class PatternPolicy {
         for(int i = 4; i >= 0; --i){
             pattern = pattern << 4;
             pattern += ranks[i];
-        }*/
+        }
         hand.setPattern(pattern);
     }
     
@@ -171,22 +159,10 @@ public class PatternPolicy {
                 */
     }
     
-    private static double scoreSuitPolicy(Hand hand) {
-        //Essentially the same as the flush policy
+    private static double scoreFullHandPolicy(Hand hand) {
         
-        //if there is more than one suit
-        if(hand.numSuits > 1) return 0;
-        //if there is a flush
-        if(hand.numCards == 5) return 1;
-        //if there is the possibility of a flush
-        return Settings.Evaluations.suitPolicy[hand.numCards + 2];
-        
-    }
-    
-    private static double scoreRankPolicy(Hand hand) {
-        //Combines all policy scores not related to suits
-        
-        //if there is a full house
+        if (hand.numCards != hand.numRanks) return 0;
+            
         return 0;
     }
     

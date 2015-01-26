@@ -73,9 +73,6 @@ public class Settings {
         public static double[] fullHousePolicy;
         public static double[] fourOfAKindPolicy;
         
-        public static double[] suitPolicy;
-        public static double[] rankPolicy;
-        
         public static void debug () {
             System.out.println("Hand Scores: " + Arrays.toString(handScores));
             System.out.println("Row Hands: " + Arrays.toString(rowHands));
@@ -86,8 +83,6 @@ public class Settings {
             System.out.println("Flush Policy: " + Arrays.toString(flushPolicy));
             System.out.println("Full House Policy: " + Arrays.toString(fullHousePolicy));
             System.out.println("Four Of A Kind Policy: " + Arrays.toString(fourOfAKindPolicy));
-            System.out.println("\nSuitPolicy: " + Arrays.toString(suitPolicy));
-            System.out.println("Rank Policy: " + Arrays.toString(rankPolicy));
         }
     }
 }
