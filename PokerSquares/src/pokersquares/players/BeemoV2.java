@@ -55,7 +55,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
             return bestPos;
         }
         
-        System.err.println(PatternPolicy.patternEvaluations.size());
+        //System.err.println(PatternPolicy.patternEvaluations.size());
         
         for(int i=0; i<3; ++i){
             if(board.getTurn() <= Settings.BMO.turnSplits[i]){
