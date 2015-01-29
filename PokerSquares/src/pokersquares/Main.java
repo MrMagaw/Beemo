@@ -34,7 +34,7 @@ public class Main {
         System.out.println(system);
         new PokerSquares(new GreedyMCPlayer(2), PokerSquaresPointSystem.getAmeritishPointSystem()).play();
         */
-        
+        if (!Settings.Main.tournament) {
         // Demonstration of batch game play (30 seconds per game)
         PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);
         
@@ -66,8 +66,9 @@ public class Main {
         System.out.println(system);
         new PokerSquares(new BeemoV2(), system)
                 .playSequence(Settings.Main.games, Settings.Main.seed, Settings.Main.verbose);
+        }
+        else {
         
-        /*
         // Demonstration of tournament evaluation (3 players, 2 point systems, 100 x 30s games for each of the 3*2=6 player-system pairs) 
         System.out.println("\n\nTournament:");
         ArrayList<PokerSquaresPlayer> players = new ArrayList();
@@ -77,11 +78,31 @@ public class Main {
         players.add(new GreedyMCPlayer());
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
-        PokerSquaresPointSystem.setSeed(1);
+        PokerSquaresPointSystem.setSeed(2000);
 
-        systems.add(PokerSquaresPointSystem.getRandomPointSystem());
+        switch (Settings.Main.pointSystem) {
+            case RANDOM:
+                systems.add(PokerSquaresPointSystem.getRandomPointSystem());
+                break;
+            
+            case AMERICAN:
+                systems.add(PokerSquaresPointSystem.getAmericanPointSystem());
+                break;
+            
+            case BRITISH:
+                systems.add(PokerSquaresPointSystem.getBritishPointSystem());
+                break;
+                
+            case HYPERCORNER:
+                systems.add(PokerSquaresPointSystem.getHypercornerPointSystem());
+                break;
+                
+            case SINGLEHAND:
+                systems.add(PokerSquaresPointSystem.getSingleHandPointSystem());
+                break;
+        }
 
-        PokerSquares.playTournament(players, systems, 5, 0); // use fewer games per system for faster testing
-        */
+        PokerSquares.playTournament(players, systems, Settings.Main.games, 10); // use fewer games per system for faster testing
+        }
     }
 }

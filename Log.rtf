@@ -194,4 +194,15 @@ Starting all the initial values at either 1 or 0 seems to tend to \'91squish\'92
 \
 0.5 is the best neutral value for blank to start from\
 \
+1.26.2015 - FullHandPolicy\
+To reduce redundancy and complexity in the settings to increase training performance, implement all information in a full hand policy that has one setting (constant) per informationally unique hand.\
+\
+Hand Score = SuitScore + RankScore\
+\
+CAIDA?? Montecarlo Library\
+\
+1.29.2015\
+In Random mode, manually adjusting the settings file to set all settings to 0 is the score is below 0 and to one if the score is above 1 consistently returns a reasonably competitive play style. So the next Goal is to build the logic for the heuristic.\
+\
+Calculate the probability of each hand represented in pattern policy and multiply the scaled score by that value\
 }

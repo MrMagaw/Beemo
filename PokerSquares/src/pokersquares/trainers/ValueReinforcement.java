@@ -6,9 +6,11 @@
 
 package pokersquares.trainers;
 
-import pokersquares.config.Settings;
 import java.util.*;
 import pokersquares.algorithms.Simulator;
+import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Training.policyMax;
+import static pokersquares.config.Settings.Training.policyMin;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
@@ -35,6 +37,7 @@ public class ValueReinforcement implements Trainer {
         values.add(Settings.Evaluations.pairPolicy);
         values.add(Settings.Evaluations.twoPairPolicy);
         values.add(Settings.Evaluations.threeOfAKindPolicy);
+        values.add(Settings.Evaluations.straightPolicy);
         values.add(Settings.Evaluations.flushPolicy);
         values.add(Settings.Evaluations.fullHousePolicy);
         values.add(Settings.Evaluations.fourOfAKindPolicy);
@@ -105,7 +108,7 @@ public class ValueReinforcement implements Trainer {
         double[] ha = ((double[])values.get(i));
         
         //COMPARE PERFORMANCE for each hand
-        for (int id = 0; id < 10; ++id) {
+        for (int id = 0; id < ha.length; ++id) {
             
             //establish baseline
             baseScore = scoreGames();
@@ -169,8 +172,8 @@ public class ValueReinforcement implements Trainer {
             //ADJUST value 
             if(verbose) System.out.print(va[j]);
             va[j] = va[j] + (sign*scale);
-            if (va[j] < 0) va[j] = 0.0;
-            else if (va[j] > 1) va[j] = 1.0;
+            if (va[j] < policyMin) va[j] = 0.0;
+            else if (va[j] > policyMax) va[j] = 1.0;
             if(verbose) System.out.print("-->" + va[j] + ": ");
             //SCORE PERFORMANCE
             //Update scoring

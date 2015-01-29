@@ -1,6 +1,8 @@
 package pokersquares.players;
 
 import pokersquares.config.*;
+import pokersquares.config.AdaptiveSettings;
+import static pokersquares.config.Settings.BMO.genSettings;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
@@ -34,7 +36,9 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         SettingsReader.readSettings(Settings.BMO.settingsFile);
         
-        Settings.Evaluations.debug();
+        if (genSettings) AdaptiveSettings.generateSettings();
+        
+        //Settings.Evaluations.debug();
         
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
     }
@@ -55,7 +59,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
             return bestPos;
         }
         
-        System.err.println(PatternPolicy.patternEvaluations.size());
+        //System.err.println(PatternPolicy.patternEvaluations.size());
         
         for(int i=0; i<3; ++i){
             if(board.getTurn() <= Settings.BMO.turnSplits[i]){
@@ -77,4 +81,5 @@ public class BeemoV2 implements PokerSquaresPlayer{
     public String getName(){
         return "BMO_V2";
     }
+
 }

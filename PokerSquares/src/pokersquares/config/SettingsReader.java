@@ -61,7 +61,7 @@ public class SettingsReader {
         
 
         try {
-            Settings.Evaluations.class.getField(tag).set(null, dataArray);
+            if (!tag.equals("handScores"))Settings.Evaluations.class.getField(tag).set(null, dataArray);
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             System.err.println("Failed setting field: " + tag);
             
@@ -98,6 +98,7 @@ public class SettingsReader {
             writer.write("pairPolicy " + Arrays.toString(pairPolicy) + "\n");
             writer.write("twoPairPolicy " + Arrays.toString(twoPairPolicy) + "\n");
             writer.write("threeOfAKindPolicy " + Arrays.toString(threeOfAKindPolicy) + "\n");
+            writer.write("straightPolicy " + Arrays.toString(straightPolicy) + "\n");
             writer.write("flushPolicy " + Arrays.toString(flushPolicy) + "\n");
             writer.write("fullHousePolicy " + Arrays.toString(fullHousePolicy) + "\n");
             writer.write("fourOfAKindPolicy " + Arrays.toString(fourOfAKindPolicy) + "\n");

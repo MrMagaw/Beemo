@@ -25,7 +25,6 @@ public final class Board {
             }));
     }
     
-   
     public Board(){
         grid = new Card[5][5];
         deck.addAll(Arrays.asList(Card.getAllCards()));

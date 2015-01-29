@@ -4,7 +4,9 @@ import java.util.Arrays;
 import java.util.Map;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Evaluations.colHands;
+import static pokersquares.config.Settings.Evaluations.patternate;
 import static pokersquares.config.Settings.Evaluations.rowHands;
+import static pokersquares.config.Settings.Evaluations.simpleScoring;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
@@ -23,9 +25,10 @@ public class PatternPolicy {
     
     public static double evaluate(Hand hand) {
         //Generate rankCountCounts... What a weird place to put this.
+        hand.buildRankCounts();
+        hand.checkStraight();
         
-        if(!hand.hasPattern()){
-            hand.buildRankCounts();
+        if(!hand.hasPattern() && patternate){
             buildPattern(hand);
         }
         
@@ -74,23 +77,40 @@ public class PatternPolicy {
         
         double handScore = 0;
         
-        
-        
-        if (hand.isCol) {
-            for (int i = 0; i < colHands.length; ++i) {
-                if (colHands[i] == 1) {
-                    handScore += selectScorePolicy(hand, i);
+        if (simpleScoring) {
+            if (hand.isCol) {
+                for (int i = 0; i < colHands.length; ++i) {
+                    if (colHands[i] == 1) {
+                        if (i == 0) handScore += scoreSuitPolicy(hand);
+                        if (i == 1) handScore += scoreRankPolicy(hand);
+                    }
+                }
+            }else {
+                for (int i = 0; i < rowHands.length; ++i) {
+                    if (rowHands[i] == 1) {
+                        if (i == 0) handScore += scoreSuitPolicy(hand);
+                        if (i == 1) handScore += scoreRankPolicy(hand);
+                    }
                 }
             }
-        }else {
-            for (int i = 0; i < rowHands.length; ++i) {
-                if (rowHands[i] == 1) {
-                    handScore += selectScorePolicy(hand, i);
+        }
+        else {
+            if (hand.isCol) {
+                for (int i = 0; i < colHands.length; ++i) {
+                    if (colHands[i] == 1) {
+                        handScore += selectScorePolicy(hand, i);
+                    }
+                }
+            }else {
+                for (int i = 0; i < rowHands.length; ++i) {
+                    if (rowHands[i] == 1) {
+                        handScore += selectScorePolicy(hand, i);
+                    }
                 }
             }
         }
         
-        patternEvaluations.put(hand.getPattern(), handScore);
+        if (patternate) patternEvaluations.put(hand.getPattern(), handScore);
         
         return handScore;
     }
@@ -119,35 +139,44 @@ public class PatternPolicy {
         else if (i == 9) //Royal Flush
             return Settings.Evaluations.handScores[9] * scoreRoyalFlushPolicy(hand);
         else return 0;
-        /*
-        //Policy Value
-        if (i == 0) //High Card
-            return scoreHighCardPolicy(hand);
-        else if (i == 1)  //One Pair
-            return scorePairPolicy(hand);
-        else if (i == 2) //Two Pair
-            return scoreTwoPairPolicy(hand);
-        else if (i == 3) //Three of a Kind
-            return scoreThreeOfAKindPolicy(hand);
-        else if (i == 4) //Straight
-            return scoreStraightPolicy(hand);
-        else if (i == 5) //Flush
-            return scoreFlushPolicy(hand);
-        else if (i == 6) //Full House
-            return scoreFullHousePolicy(hand);
-        else if (i == 7) //Four of a Kind
-            return scoreFourOfAKindPolicy(hand);
-        else if (i == 8) //Straight Flush
-            return scoreStraightFlushPolicy(hand);
-        else if (i == 9) //Royal Flush
-            return scoreRoyalFlushPolicy(hand);
-        else return 0;
-                */
     }
     
-    private static double scoreFullHandPolicy(Hand hand) {
+    private static double scoreSuitPolicy(Hand hand) {
+        //essentially the same as the flush policy
         
-        if (hand.numCards != hand.numRanks) return 0;
+        //If there is no possibility of a flush
+        if(hand.numSuits > 1) return Settings.Evaluations.flushPolicy[0];
+        //if there is a flush
+        if(hand.numCards == 5) return Settings.Evaluations.flushPolicy[1];
+        //if there is a possibility of a flush
+        return Settings.Evaluations.flushPolicy[hand.numCards + 2];
+            
+    }
+    
+    private static double scoreRankPolicy(Hand hand) {
+        //all possible combinations of ranks
+        
+        //where there are no rank multiples and a possiblitity of a straight
+        if (hand.numRanks == hand.numCards &&hand.hasStraight) 
+            return Settings.Evaluations.straightPolicy[hand.numCards-1]; //5
+        //where there are no rank multiples (no doubles, triples, etc.)
+        if (hand.numRanks == hand.numCards) 
+            return Settings.Evaluations.highCardPolicy[hand.numCards-1]; //5
+        //where there is one pair and no other multiples
+        if ((hand.rankCountCounts[2] == 1) && ((hand.rankCountCounts[1] + 2) == hand.numCards))
+            return Settings.Evaluations.pairPolicy[hand.numRanks-1]; //4
+        //where there is a twoPair 
+        if ((hand.rankCountCounts[2] == 2) && ((hand.rankCountCounts[1] + 4) == hand.numCards))
+            return Settings.Evaluations.twoPairPolicy[hand.numRanks-2]; //3
+        //where there is a three of a kind
+        if ((hand.rankCountCounts[3] == 1) && ((hand.rankCountCounts[1] + 3) == hand.numCards))
+            return Settings.Evaluations.twoPairPolicy[hand.numRanks-1]; //4
+        //where there is a full house
+        if ((hand.rankCountCounts[3] == 1) && (hand.rankCountCounts[2] == 1))
+            return Settings.Evaluations.twoPairPolicy[0]; //1
+        //where there is a four of a kind
+        if (hand.rankCountCounts[4] == 1)
+            return Settings.Evaluations.fourOfAKindPolicy[0]; //1
             
         return 0;
     }
@@ -168,7 +197,7 @@ public class PatternPolicy {
                 return 0; //If we have a full house || flush
             return 1; //We have it!
         }
-        //if there is a possibility of a pair
+        //if there is no possibility of a pair
         if(hand.rankCountCounts[3] == 1 || hand.rankCountCounts[4] == 1 //We have three or four of a kind
                 || hand.numCards == 5) return 0; //Or a full hand
         

@@ -16,8 +16,12 @@ public class Hand {
     public int
             numCards,
             numRanks,
-            numSuits;
-    public final int[] 
+            numSuits,
+            hiCard = -1,
+            loCard = -1,
+            loCard2 = -1;
+            
+    public int[] 
             rankCountCounts = new int[6],
             rankCounts = new int[Card.NUM_RANKS],
             suitCounts = new int[Card.NUM_SUITS];
@@ -43,6 +47,9 @@ public class Hand {
         System.arraycopy(hand.cards, 0, this.cards, 0, hand.cards.length);
         System.arraycopy(hand.rankCounts, 0, this.rankCounts, 0, hand.rankCounts.length);
         System.arraycopy(hand.suitCounts, 0, this.suitCounts, 0, hand.suitCounts.length);
+        this.hiCard = hand.hiCard;
+        this.loCard = hand.loCard;
+        this.loCard2 = hand.loCard2;
     }
     
     public Hand(boolean isCol) {
@@ -84,8 +91,10 @@ public class Hand {
     }
     
     public void placeCard(int i, Card c){
-        //update pattern
+        //reset pattern
         pattern = -1;
+        hasStraight = false;
+        //update hand data
         if(cards[i] == null){
             openPos.remove(openPos.indexOf(i));
             ++numCards;
@@ -99,6 +108,22 @@ public class Hand {
             openPos.add(i);
             --numCards;
         }else{
+            //track Hi & Lo Cards
+            int cRank = c.getRank();
+        
+            if (hiCard == -1) hiCard = cRank;
+            else if (cRank > hiCard) hiCard = cRank;
+        
+            if (loCard == -1) loCard = cRank;
+            else if (cRank < loCard) {
+                loCard2 = loCard;
+                loCard = cRank;
+            }
+            
+            if (loCard2 == -1) loCard2 = cRank;
+            else if ((cRank < loCard2) && (cRank > loCard)) loCard2 = cRank;
+            else if ((loCard2 == loCard) && (cRank > loCard)) loCard2 = cRank;
+            
             if(++rankCounts[c.getRank()] == 1)
                 ++numRanks;
             if(++suitCounts[c.getSuit()] == 1)
@@ -107,7 +132,19 @@ public class Hand {
         cards[i] = c;
     }
     
+    public void checkStraight() {
+        //if there are no card multiples
+        int dHiLo = 0, dHiLo2 = 0;
+        if (numRanks == numCards) {
+            dHiLo = hiCard - loCard;
+            dHiLo2 = 13 - loCard2;
+            if (dHiLo < 5) hasStraight = true;
+            if ((loCard == 0) && (dHiLo2 < 5)) hasStraight = true;
+        } else hasStraight = false;
+    }
+    
     public void buildRankCounts(){
+        rankCountCounts = new int[6];
         for(int i = 0; i < Card.NUM_RANKS; ++i)
             ++rankCountCounts[rankCounts[i]];
     }
@@ -118,7 +155,8 @@ public class Hand {
             else System.out.print(card.toString());
             System.out.print(" / ");
         }
-        System.out.println("\n" + pattern + ", " + isCol + ", " + openPos);
-        System.out.println(numCards + ", " + Arrays.toString(rankCountCounts) + "\n");
+        System.out.println("\n" + pattern + ", " + isCol + ", " + openPos + " hasStraight: " + hasStraight);
+        System.out.println("numCards: " + numCards + " numRanks: " + numRanks + " numSuits: " + numSuits );
+        System.out.println(Arrays.toString(rankCountCounts) + " Hi: " + hiCard + " Lo: " + loCard + " Lo2: " + loCard2 + "\n");
     }
 }
