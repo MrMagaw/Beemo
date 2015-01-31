@@ -3,6 +3,9 @@ package pokersquares.players;
 import pokersquares.config.*;
 import pokersquares.config.AdaptiveSettings;
 import static pokersquares.config.Settings.BMO.genSettings;
+import static pokersquares.config.Settings.Evaluations.updateSettings;
+import static pokersquares.config.Settings.Training.bestValues;
+import static pokersquares.config.Settings.Training.updateBest;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
@@ -55,6 +58,15 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         //First Turn Optimization
         if(board.getTurn() == 0){
+            //Using best Settings Check
+            /*
+            if (updateBest) {
+                Settings.Evaluations.updateSettings(bestValues);
+                SettingsReader.writeSettings(Settings.Training.outputFile);
+                updateBest = false;
+            }
+                    */
+            
             board.playCard(card, bestPos);
             return bestPos;
         }

@@ -149,7 +149,7 @@ public class PatternPolicy {
         //if there is a flush
         if(hand.numCards == 5) return Settings.Evaluations.flushPolicy[1];
         //if there is a possibility of a flush
-        return Settings.Evaluations.flushPolicy[hand.numCards + 2];
+        return Settings.Evaluations.flushPolicy[hand.numCards + 1];
             
     }
     

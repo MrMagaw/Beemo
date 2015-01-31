@@ -60,8 +60,7 @@ public class ValueReinforcement implements Trainer {
                 systemChanged = trainValuesIncrementally(values, i, j);
             }
             
-            if (systemChanged) valuesToTrain = values.size() - 1;
-            
+            System.out.println("\nValues To Train: " + valuesToTrain);
             
             if (j == values.get(i).length-1) {
                 if (i == values.size()-1) {
@@ -74,18 +73,68 @@ public class ValueReinforcement implements Trainer {
                 }
                 --valuesToTrain;
                 
-            } else if (i < 3) {
-                ++i;
             } else {
                 ++j;
             }
             
+            if (systemChanged) valuesToTrain = values.size() - 2;
+            
+            //if (!systemChanged && (valuesToTrain == 0)) redistribute(values);
             if (!systemChanged && (valuesToTrain == 0)) break;
         }
         
         SettingsReader.writeSettings(Settings.Training.outputFile);
         
-        Settings.Evaluations.debug();
+    }
+    
+    public static void redistribute(List <double[]> values) {
+        //redistribute all values so they are evenly spaced
+        List <Double> uniqueValues = new ArrayList <Double> ();
+        double max = Double.NEGATIVE_INFINITY;
+        double min = Double.POSITIVE_INFINITY;
+        
+        //List all Values
+        for (int i = 0; i < values.size(); ++i) {
+            
+            double[] value = values.get(i);
+            for (int j = 0; j < value.length; ++j) {
+                double val = value[j];
+                if (val > max) max = val;
+                if (val < min) min = val;
+                if (!uniqueValues.contains(val) && (i > 2))
+                    uniqueValues.add(val);
+            }
+        }
+        
+        //MAP Values
+        Collections.sort(uniqueValues);
+        Map <Double, Double> distributedValues = new HashMap <Double, Double> ();
+        double dValue = 2.0 / ((double) uniqueValues.size() - 1);
+        double nValue = Settings.Training.policyMin;
+        
+        for (int i = 0; i <  uniqueValues.size(); ++i) {
+            distributedValues.put(uniqueValues.get(i), (Double) nValue);
+            nValue += dValue;
+        }
+        
+        System.err.println(uniqueValues.size() + " " + dValue + " " + nValue);
+        System.err.println(distributedValues.toString());
+        
+        //REDISTRIBUTE Values
+        for (Double uv : distributedValues.keySet()){
+            for (int i = 0; i < values.size(); ++i) {
+                double[] value = values.get(i);
+                for (int j = 0; j < value.length; ++j) {
+                    if ((value[j] == uv) && (i > 2)){
+                        value[j] = distributedValues.get(uv);
+                        
+                    }
+                    
+                    
+                }
+            }
+        }
+        
     }
     
     public static void randomize(List <double[]> values) {
@@ -111,7 +160,7 @@ public class ValueReinforcement implements Trainer {
         for (int id = 0; id < ha.length; ++id) {
             
             //establish baseline
-            baseScore = scoreGames();
+            baseScore = scoreGames(1000);
             
             System.out.println("\nTraining Hand Combinations:" + " " + i + " " + id);
             System.out.println("Base Score: " + baseScore);
@@ -130,7 +179,7 @@ public class ValueReinforcement implements Trainer {
             
             System.out.println(Arrays.toString(ha));
             
-            deltaScore = scoreGames();
+            deltaScore = scoreGames(1000);
             
             System.out.println("Delta Score: " + deltaScore);
             
@@ -163,7 +212,7 @@ public class ValueReinforcement implements Trainer {
         boolean verbose = true;
 
         while (train) {
-            baseScore = scoreGames();
+            baseScore = scoreGames(1000);
             if(verbose) System.out.println("\nTraining Values Incrementally:"  + " " + i + " " + j);
             if(verbose) System.out.println("Base Score: " + baseScore);
             //STORE original value
@@ -176,13 +225,7 @@ public class ValueReinforcement implements Trainer {
             else if (va[j] > policyMax) va[j] = 1.0;
             if(verbose) System.out.print("-->" + va[j] + ": ");
             //SCORE PERFORMANCE
-            //Update scoring
-            //for(int k = va.length-1; k >= 0; --k)
-              //  Settings.Evaluations.handScores[k] = va[k];
-            
-            
-            //
-            newScore = scoreGames();
+            newScore = scoreGames(1000);
             if(verbose) System.out.println("New Score: " + newScore);
             
             //if PERFORMANCE DECREASES
@@ -221,9 +264,8 @@ public class ValueReinforcement implements Trainer {
         return systemChanged;
     }
     
-    public static double scoreGames() {
-        int numGames, numSimulations;
-        numGames = numSimulations = 1000;
+    public static double scoreGames(int numGames) {
+        int numSimulations = numGames;
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
         //SIMULATE Games

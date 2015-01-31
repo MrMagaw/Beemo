@@ -1,22 +1,25 @@
 package pokersquares.config;
 
-import pokersquares.trainers.ValueReinforcement;
-import pokersquares.trainers.Trainer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import pokersquares.algorithms.*;
 import pokersquares.environment.*;
 import pokersquares.players.BeemoV2;
+import pokersquares.trainers.Jake;
+import pokersquares.trainers.Trainer;
+import pokersquares.trainers.ValueReinforcement;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 5;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
-        public static boolean tournament = true;
-        public static int randomPointSystemSeed = 10;
+        public static boolean tournament = false;
+        public static int randomPointSystemSeed = 1000;
         public static PointSystem pointSystem = PointSystem.AMERICAN;
     }
     
@@ -40,6 +43,8 @@ public class Settings {
     public static class BMO {
         public static int[] turnSplits = new int[]{5, 25, 25};
         public static BeemoV2 BMO;
+        
+        //SETTINGS
         public static boolean genSettings = false;
         public static String settingsFile = "test";
     }
@@ -48,13 +53,23 @@ public class Settings {
         public static double policyMax = 1;
         public static double policyMin = -1;
         
-        public static long millis = 100000;
+        public static long millis = 3600000;
         public static boolean train = true;
         public static boolean randomize = false;
         public static String outputFile = "test";
         
+        public static boolean updateBest = true;
+    
+        //VALUES to be adjusted
+        public static List <double[]> values = new ArrayList();
+        public static double score = Double.NEGATIVE_INFINITY;
+
+        public static List <double[]> bestValues = new ArrayList ();
+        public static double bestScore = Double.NEGATIVE_INFINITY;
         
-        public static Trainer trainer = new ValueReinforcement();
+        public static Trainer trainer = new Jake();
+        //public static Trainer trainer = new ValueReinforcement();
+        
     }
     
     public static class Evaluations {
@@ -81,17 +96,29 @@ public class Settings {
         public static double[] fourOfAKindPolicy;
         
         public static void debug () {
-            System.out.println("Hand Scores: " + Arrays.toString(handScores));
-            System.out.println("Row Hands: " + Arrays.toString(rowHands));
-            System.out.println("Col Hands: " + Arrays.toString(colHands));
-            System.out.println("High Card Policy: " + Arrays.toString(highCardPolicy));
-            System.out.println("Pair Policy: " + Arrays.toString(pairPolicy));
-            System.out.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));
-            System.out.println("Three Of A Kind Policy : " + Arrays.toString(threeOfAKindPolicy));
-            System.out.println("Straight Policy: " + Arrays.toString(straightPolicy));
-            System.out.println("Flush Policy: " + Arrays.toString(flushPolicy));
-            System.out.println("Full House Policy: " + Arrays.toString(fullHousePolicy));
-            System.out.println("Four Of A Kind Policy: " + Arrays.toString(fourOfAKindPolicy));
+            System.err.println("Settings");
+            System.err.println("Hand Scores: " + Arrays.toString(handScores));
+            System.err.println("Row Hands: " + Arrays.toString(rowHands));
+            System.err.println("Col Hands: " + Arrays.toString(colHands));
+            System.err.println("High Card Policy: " + Arrays.toString(highCardPolicy));
+            System.err.println("Pair Policy: " + Arrays.toString(pairPolicy));
+            System.err.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));
+            System.err.println("Three Of A Kind Policy : " + Arrays.toString(threeOfAKindPolicy));
+            System.err.println("Straight Policy: " + Arrays.toString(straightPolicy));
+            System.err.println("Flush Policy: " + Arrays.toString(flushPolicy));
+            System.err.println("Full House Policy: " + Arrays.toString(fullHousePolicy));
+            System.err.println("Four Of A Kind Policy: " + Arrays.toString(fourOfAKindPolicy));
+        }
+        
+        public static void updateSettings(List <double[]> values) {
+            highCardPolicy = values.get(0);
+            pairPolicy = values.get(1);
+            twoPairPolicy = values.get(2);
+            threeOfAKindPolicy = values.get(3);
+            straightPolicy = values.get(4);
+            flushPolicy = values.get(5);
+            fullHousePolicy = values.get(6);
+            fourOfAKindPolicy = values.get(7);
         }
     }
 }
