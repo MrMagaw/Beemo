@@ -17,10 +17,7 @@ import pokersquares.environment.Board;
 import static pokersquares.trainers.ValueReinforcement.redistribute;
 import static pokersquares.trainers.ValueReinforcement.trainValuesIncrementally;
 
-/**
- *
- * @author newuser
- */
+
 
 public class Jake implements Trainer{
     

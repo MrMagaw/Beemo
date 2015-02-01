@@ -58,38 +58,6 @@ public class Hand {
         this.openPos.addAll(allPos);
     }
     
-    public void playOpenPos(Card card) {
-        placeCard(openPos.getFirst(), card);
-    }
-    
-    public boolean hasOpenPos(){
-        return !openPos.isEmpty();
-    }
-    
-    public double evaluate() {
-        return PatternPolicy.evaluate(this);
-    }
-     
-    public void patternate() {
-        PatternPolicy.buildPattern(this);
-    }
-    
-    public boolean hasPattern(){
-        return (pattern != -1);
-    }
-    
-    public Integer getPattern(){
-        return pattern;
-    }
-
-    public void setPattern(int pattern) {
-        this.pattern = pattern;
-    }
-    
-    public Card getCard(int i) {
-        return cards[i];
-    }
-    
     public void placeCard(int i, Card c){
         //reset pattern
         pattern = -1;
@@ -159,4 +127,14 @@ public class Hand {
         System.out.println("numCards: " + numCards + " numRanks: " + numRanks + " numSuits: " + numSuits );
         System.out.println(Arrays.toString(rankCountCounts) + " Hi: " + hiCard + " Lo: " + loCard + " Lo2: " + loCard2 + "\n");
     }
+    
+    public void playOpenPos(Card card) { placeCard(openPos.getFirst(), card); } 
+    public boolean hasOpenPos(){ return !openPos.isEmpty(); } 
+    public double evaluate() { return PatternPolicy.evaluate(this); } 
+    public void patternate() { PatternPolicy.buildPattern(this); } 
+    public boolean hasPattern(){ return (pattern != -1); } 
+    public Integer getPattern(){ return pattern; } 
+    public void setPattern(int pattern) { this.pattern = pattern; } 
+    public Card getCard(int i) { return cards[i]; }
+    public Card[] getCards() { return cards; }
 }

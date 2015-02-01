@@ -78,7 +78,7 @@ public class Main {
                 break;
         }
 
-        PokerSquares.playTournament(players, systems, Settings.Main.games, 10); // use fewer games per system for faster testing
+        PokerSquares.playTournament(players, systems, Settings.Main.games, Settings.Main.seed ); // use fewer games per system for faster testing
         }
     }
 }
