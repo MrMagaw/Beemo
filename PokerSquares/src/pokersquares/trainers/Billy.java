@@ -57,7 +57,7 @@ public class Billy implements Trainer {
             }
             
             boolean update = true;
-            if (trials > 100000) update = false;
+            //if (trials > 100000) update = false;
             
             //SCORE and UPDATE Pattern Scores
             mapScores(b, boardPatterns, patternScores, update);
@@ -67,7 +67,7 @@ public class Billy implements Trainer {
             
             
             if (trials < 100000) {
-                //if (trials % 10000 == 0) refreshScores(patternScores);
+                if (trials % 10000 == 0) refreshScores(patternScores);
             }
             else
                 if (trials % 200000 == 0) refreshScores(patternScores);
