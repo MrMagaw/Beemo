@@ -13,6 +13,7 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
+import static pokersquares.trainers.ValueReinforcement.scoreGames;
 
 public class Billy implements Trainer {
     
@@ -47,7 +48,7 @@ public class Billy implements Trainer {
             //Simulate a Game
             while (b.getTurn() < 25) {
                 Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove(trials % b.getDeck().size()); 
+                //Card c = b.getDeck().remove((int)( System.currentTimeMillis() - tStart) % b.getDeck().size()); 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -55,8 +56,21 @@ public class Billy implements Trainer {
                 classifyHands(b, boardPatterns);
             }
             
+            boolean update = true;
+            if (trials > 100000) update = false;
+            
             //SCORE and UPDATE Pattern Scores
-            updateScores(b, boardPatterns, patternScores);
+            mapScores(b, boardPatterns, patternScores, update);
+            
+            //REFRESH and Update Pattern Scores in stages
+            //if (trials % 1000 == 0) refreshScores(patternScores);
+            
+            
+            if (trials < 100000) {
+                //if (trials % 10000 == 0) refreshScores(patternScores);
+            }
+            else
+                if (trials % 200000 == 0) refreshScores(patternScores);
             
             ++trials;
             trialScore += Settings.Environment.system.getScore(b.getGrid());
@@ -68,15 +82,35 @@ public class Billy implements Trainer {
                 }
                 System.err.println(
                         "Trials: " + trials + 
+                        " Score: " + (Simulator.simulate(new Board(), 10000, millis) / 10000));
+                /*
+                System.err.println(
+                        "Trials: " + trials + 
                         " Score: " + trialScore/trials);
-                /*System.err.println(
+                */
+                System.err.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
-                        " Number of Patterns: " + patternScores.size());*/
+                        " Number of Patterns: " + patternScores.size());
+                        
             }
         }
     }
     
-    private void updateScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores) {
+    private void refreshScores(HashMap <Integer,PatternScore> patternScores) { 
+        //map all the scores in pattern scores to pattern valuations and 
+        //refresh pattern scores
+        patternEvaluations.clear();
+        //PUT scores into patternEvaluations
+        for (Integer p : patternScores.keySet()) {
+            PatternScore ps = patternScores.get(p);
+            patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+        }
+        
+        //CLEAR patternScores
+        patternScores.clear();
+    }
+    
+    private void mapScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores, boolean update) {
         
         //SCORE and UPDATE hands 
         for (int h = 0; h < 10; ++h) {
@@ -95,15 +129,15 @@ public class Billy implements Trainer {
                     patternScores.put(p, ps);
                 } else ps = patternScores.get(p);
                 
+                
                 ps.totalScore += score;
                 ++ps.numTrials;
                 
                 //Update Pattern Evaluations
-                patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                //if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
             }
-            
         }
-        
     } 
     
     private List classifyHands(Board b, List <List> bp) {

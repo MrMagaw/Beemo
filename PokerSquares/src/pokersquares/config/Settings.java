@@ -17,7 +17,7 @@ public class Settings {
     
     public static class Main {
         public static int games = 10000;
-        public static int seed = 10;
+        public static int seed = 1;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 353;
@@ -54,7 +54,7 @@ public class Settings {
         public static double policyMax = 1;
         public static double policyMin = -1;
         
-        public static long millis = 60000;
+        public static long millis = 200000;
         public static boolean train = true;
         public static boolean randomize = false;
         public static String outputFile = "test";

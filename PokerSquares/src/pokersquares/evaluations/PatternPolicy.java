@@ -37,39 +37,51 @@ public class PatternPolicy {
         else 
             return scoreHand(hand);
     }
-    
+    /*
     public static void buildPattern(Hand hand) {
-        //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        int pattern = (hand.isCol ? 2 : 0);
-        //has straight potential
-        pattern = pattern << 3;
-        pattern += (hand.hasStraight) ? 2 : 0;
+        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
+        int pattern = (hand.isCol ? 4 : 0);
+        if (hand.isCol) {
+            pattern <<= 20;
+            pattern += hand.numCards;
+        } else {
+            //Iterates through num CountCounts, 
+            //recording a rank identifier for each rank
+            //for the maximum number of rank multiples
+            //Done
         
-        pattern += (hand.numSuits <= 1 ? 1 : 0);
-        //int pattern = 0; //Temp
+            //has straight potential
+            pattern += (hand.numSuits <= 1 ? 2 : 0);
+            pattern += (hand.hasStraight) ? 1 : 0;
+            for (int i = 0; i < 5; ++i) {
+                //for each rank multiple occuring at least once
+                //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+                pattern <<= 3;
+                pattern += hand.rankCountCounts[i];
+            }
+        }
+        
+        hand.setPattern(pattern);
+    }
+    */
+    public static void buildPattern(Hand hand) {
+        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
+        int pattern = (hand.isCol ? 4 : 0);
+        //has straight potential
+        pattern += (hand.numSuits <= 1 ? 2 : 0);
+        pattern += (hand.hasStraight) ? 1 : 0;
         
         //Iterates through num CountCounts, 
         //recording a rank identifier for each rank
         //for the maximum number of rank multiples
         //Done
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 1; i < 5; ++i) {
             //for each rank multiple occuring at least once
             //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-            pattern = pattern << 3;
+            pattern <<= 3;
             pattern += hand.rankCountCounts[i];
         }
-        /*
-        int[] ranks = new int[5];
-        for(int i = 0; i < 5; ++i){
-            Card c = hand.getCard(i);
-            if (c == null) continue;
-            ranks[i] = c.getRank();
-        }
-        Arrays.sort(ranks);
-        for(int i = 4; i >= 0; --i){
-            pattern = pattern << 4;
-            pattern += ranks[i];
-        }*/
+        
         hand.setPattern(pattern);
     }
     
