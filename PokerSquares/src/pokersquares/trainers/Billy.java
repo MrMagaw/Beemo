@@ -14,6 +14,7 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
+import static pokersquares.trainers.ValueReinforcement.scoreGames;
 
 public class Billy implements Trainer {
     
@@ -54,27 +55,60 @@ public class Billy implements Trainer {
                 classifyHands(b, boardPatterns);
             }
             
+            boolean update = true;
+            //if (trials > 100000) update = false;
+            
             //SCORE and UPDATE Pattern Scores
-            updateScores(b, boardPatterns, patternScores);
+            mapScores(b, boardPatterns, patternScores, update);
+            
+            //REFRESH and Update Pattern Scores in stages
+            //if (trials % 1000 == 0) refreshScores(patternScores);
+            
+            
+            if (trials < 100000) {
+                if (trials % 10000 == 0) refreshScores(patternScores);
+            }
+            else
+                if (trials % 200000 == 0) refreshScores(patternScores);
             
             ++trials;
             trialScore += Settings.Environment.system.getScore(b.getGrid());
             if (trials % 10000 == 0) {
                 int tpt = 0;
                 for (PatternScore ps : patternScores.values()) {
+                    //System.out.println("ps: " + ps.totalScore/ps.numTrials + " pt: " + ps.numTrials);
                     tpt += ps.numTrials;
                 }
                 System.out.println(
                         "Trials: " + trials + 
+                        " Score: " + (Simulator.simulate(new Board(), 10000, millis) / 10000));
+                /*
+                System.out.println(
+                        "Trials: " + trials + 
                         " Score: " + trialScore/trials);
-                /*System.err.println(
+                */
+                System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());*/
             }
         }
     }
     
-    private void updateScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores) {
+    private void refreshScores(HashMap <Integer,PatternScore> patternScores) { 
+        //map all the scores in pattern scores to pattern valuations and 
+        //refresh pattern scores
+        patternEvaluations.clear();
+        //PUT scores into patternEvaluations
+        for (Integer p : patternScores.keySet()) {
+            PatternScore ps = patternScores.get(p);
+            patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+        }
+        
+        //CLEAR patternScores
+        patternScores.clear();
+    }
+    
+    private void mapScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores, boolean update) {
         
         //SCORE and UPDATE hands 
         for (int h = 0; h < 10; ++h) {
@@ -97,7 +131,8 @@ public class Billy implements Trainer {
                 ++ps.numTrials;
                 
                 //Update Pattern Evaluations
-                patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                //if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
             }
             
         }

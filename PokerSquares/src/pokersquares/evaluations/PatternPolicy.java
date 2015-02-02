@@ -42,10 +42,8 @@ public class PatternPolicy {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //15 bits / 32 bits
         int pattern = (hand.isCol ? 4 : 0);
-        //has straight potential
         pattern += (hand.hasStraight) ? 2 : 0;
         pattern += (hand.numSuits <= 1 ? 1 : 0);
-        //int pattern = 0; //Temp
         
         //Iterates through num CountCounts, 
         //recording a rank identifier for each rank
@@ -57,18 +55,7 @@ public class PatternPolicy {
             pattern <<= 3;
             pattern += hand.rankCountCounts[i];
         }
-        /*
-        int[] ranks = new int[5];
-        for(int i = 0; i < 5; ++i){
-            Card c = hand.getCard(i);
-            if (c == null) continue;
-            ranks[i] = c.getRank();
-        }
-        Arrays.sort(ranks);
-        for(int i = 4; i >= 0; --i){
-            pattern = pattern << 4;
-            pattern += ranks[i];
-        }*/
+        
         hand.setPattern(pattern);
     }
     
