@@ -16,7 +16,7 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 5;
+        public static int games = 10000;
         public static int seed = 10;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -54,7 +54,7 @@ public class Settings {
         public static double policyMax = 1;
         public static double policyMin = -1;
         
-        public static long millis = 10000;
+        public static long millis = 60000;
         public static boolean train = true;
         public static boolean randomize = false;
         public static String outputFile = "test";
@@ -77,7 +77,7 @@ public class Settings {
     public static class Evaluations {
         
         //Pattern Policy
-        public static boolean simpleScoring = true;
+        public static boolean simpleScoring = false;
         public static boolean patternate = true;
         //public static String pattern = "A"; //A,B,C
         
