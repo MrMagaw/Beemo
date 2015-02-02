@@ -3,6 +3,7 @@ package pokersquares.trainers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import pokersquares.algorithms.Simulator;
@@ -28,26 +29,24 @@ public class Billy implements Trainer {
     
     @Override
     public void runSession(long millis) {
-        System.err.print("\nBilly is in your Mind\n");
+        System.out.print("\nBilly is in your Mind\n");
         
-        Random r = new Random();
         long tStart = System.currentTimeMillis();
-        long tBuffer = 1000; //Some amount of millis to make sure we dont exceed alotted millis
+        long tBuffer = millis - 1000; //Some amount of millis to make sure we dont exceed alotted millis
         HashMap <Integer, PatternScore> patternScores = new HashMap <Integer, PatternScore> ();
         
         //SIMULATE Games
         
         int trials = 0;
         double trialScore = 0;
-        while((System.currentTimeMillis() - tStart) < (millis - tBuffer)) {
-            
+        while((System.currentTimeMillis() - tStart) < tBuffer) {
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-                Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove(trials % b.getDeck().size()); 
+                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
+                Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -63,10 +62,9 @@ public class Billy implements Trainer {
             if (trials % 10000 == 0) {
                 int tpt = 0;
                 for (PatternScore ps : patternScores.values()) {
-                    //System.out.println("ps: " + ps.totalScore/ps.numTrials + " pt: " + ps.numTrials);
                     tpt += ps.numTrials;
                 }
-                System.err.println(
+                System.out.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
                 /*System.err.println(

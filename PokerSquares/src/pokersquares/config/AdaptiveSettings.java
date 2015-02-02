@@ -9,10 +9,8 @@ package pokersquares.config;
 import static java.lang.Math.pow;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import static pokersquares.config.Settings.Evaluations.handScores;
-import static pokersquares.config.Settings.Evaluations.highCardPolicy;
 import static pokersquares.config.Settings.Training.policyMax;
 import static pokersquares.config.Settings.Training.policyMin;
 

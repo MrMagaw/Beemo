@@ -39,12 +39,11 @@ public class PatternPolicy {
     }
     
     public static void buildPattern(Hand hand) {
-        //[isCol][flushCapable][4xRank][4xRank][4xRank][4xRank][4xRank]
-        int pattern = (hand.isCol ? 2 : 0);
+        //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
+        //15 bits / 32 bits
+        int pattern = (hand.isCol ? 4 : 0);
         //has straight potential
-        pattern = pattern << 3;
         pattern += (hand.hasStraight) ? 2 : 0;
-        
         pattern += (hand.numSuits <= 1 ? 1 : 0);
         //int pattern = 0; //Temp
         
@@ -52,10 +51,10 @@ public class PatternPolicy {
         //recording a rank identifier for each rank
         //for the maximum number of rank multiples
         //Done
-        for (int i = 0; i < 5; ++i) {
+        for (int i = 1; i < 5; ++i) {
             //for each rank multiple occuring at least once
             //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-            pattern = pattern << 3;
+            pattern <<= 3;
             pattern += hand.rankCountCounts[i];
         }
         /*
