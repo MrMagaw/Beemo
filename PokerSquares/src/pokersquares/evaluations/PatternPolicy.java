@@ -37,39 +37,17 @@ public class PatternPolicy {
         else 
             return scoreHand(hand);
     }
-    /*
+    
     public static void buildPattern(Hand hand) {
-        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
-        int pattern = (hand.isCol ? 4 : 0);
-        if (hand.isCol) {
-            pattern <<= 20;
-            pattern += hand.numCards;
-        } else {
-            //Iterates through num CountCounts, 
-            //recording a rank identifier for each rank
-            //for the maximum number of rank multiples
-            //Done
-        
-            //has straight potential
-            pattern += (hand.numSuits <= 1 ? 2 : 0);
-            pattern += (hand.hasStraight) ? 1 : 0;
-            for (int i = 0; i < 5; ++i) {
-                //for each rank multiple occuring at least once
-                //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-                pattern <<= 3;
-                pattern += hand.rankCountCounts[i];
-            }
-        }
-        
-        hand.setPattern(pattern);
-    }
-    */
-    public static void buildPattern(Hand hand) {
+<<<<<<< HEAD
         //[isCol][flushCapable][hasStraight][numHighCards][numPairs][numTwoPairs][num3Kind][num4Kind]
+=======
+        //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
+        //15 bits / 32 bits
+>>>>>>> FETCH_HEAD
         int pattern = (hand.isCol ? 4 : 0);
-        //has straight potential
-        pattern += (hand.numSuits <= 1 ? 2 : 0);
-        pattern += (hand.hasStraight) ? 1 : 0;
+        pattern += (hand.hasStraight) ? 2 : 0;
+        pattern += (hand.numSuits <= 1 ? 1 : 0);
         
         //Iterates through num CountCounts, 
         //recording a rank identifier for each rank
