@@ -16,7 +16,7 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 1;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -42,7 +42,7 @@ public class Settings {
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new UCT(), new OBF()};
+                new Algorithm[] {new OBF(), new OBF(), new OBF()};
     }
     
     public static class BMO {
@@ -52,12 +52,12 @@ public class Settings {
         //SETTINGS
         public static boolean genSettings = false;
         public static boolean readPatterns = true;
-        public static String patternsFileIn = "american119p";
+        public static String patternsFileIn = "test.p";
         public static String settingsFileIn = "test";
     }
     
     public static class Training {
-        public static boolean train = false;
+        public static boolean train =false;
         public static long millis = 50000;
         
         public static double policyMax = 1;

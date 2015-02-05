@@ -23,7 +23,7 @@ public class UCT extends Algorithm{
     }
     
     @Override
-    public int[] search(final Card card, final Board board, long millisRemaining) {
+    public int[] internalSearch(final Card card, final Board board, long millisRemaining) {
         if (debugUCT) System.out.println("\nUCT");
         
         long tStart = System.currentTimeMillis();
