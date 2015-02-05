@@ -1,0 +1,216 @@
+BMO Log
+
+RetroActive Log (~2.1.2014 - 1.15.2015)
+Initial Search Algorithm
+The first attempt at a search algorithm was an xpectimax structured search, optimized in various places for speed, dubbed OX for optimized expectimax. It performs at ~114. The static grid evaluation was based on a reverse engineering of the final board evaluation provided in the poker squares class. 
+
+Imperfect Information Monte Carlo (IIMC)
+The next generation of search algorithm involved using monte carlo simulation from the corresponding game state from each available position. This was a non-tree non-UCT version of monte Carlo. 
+Internally we tried using a random game simulator (random moves), then a simple flush oriented player and noted a corresponding increase in the performance of IIMC relative to the algorithm it was running internally IE, the better the performance of the algorithm used to simulate games in IIMC, the better IIMC itself performed. This seemed like a pretty faithful correlation. Next we tried using the optimized expectimax algorithm internally in IIMC to simulate the games because of the obvious performance benefit (as per the noted correlation). Buuut this ended up being extremely slow, too slow to run sufficient games to use for statistical sampling (the rule of thumb minimum threshold we developed was 1000 simulations per node). 
+
+This created a need for a fast, relatively high performing search algorithm to run internally in IIMC, the natural first choice was to make as effective a rule base as possible. 
+
+Genetic Rule Base (GRB) + Pattern Policy
+Various rule bases were tried and tested to achieve high performance without compromising speed, but they all blew up very quickly when trying to hard code every specific case that appears in the game, additionally, making this rule based required expert knowledge of which we had little - we weren’t completely clueless after this much exposure, but we definitely did not have the strategy sufficiently down. 
+
+The Next approach was to make a Policy that statically evaluated hands, then sum the 10 hand evaluations for a board and use that in a best first search algorithm which only looked at a maximum of 25 nodes per turn and so was still highly efficient. 
+
+This hand evaluation was dubbed Pattern Policy. So named because it also incorporated an optimization using patterns that mapped a hands pattern signature to it’s evaluation, saving computation time in the recalculation of a hand’s evaluation if the hand is encountered twice. This was possible because 
+
+Search Tree Structure (ox)
+1
+25 — 1 	<— Root Sample
+51		<— Deck Sample
+24 — 2 	<— Branch Sample
+50		<— Deck Sample
+23 — 3  	<— Branch Sample
+49		<— Deck Sample
+22 — 4  	<— Branch Sample
+
+DVLPMNT Goals 
+Nov 19
+-UCT 
+-Using OX search internally in MCTS
+-Determine if MCTS performs better or worse with more or less nodes to sample from ** confirm with will
+-improve the static evaluation
+-use hand probabilities to determine static evaluation
+-validate that RB is optimal for the first 8 moves
+-validate that MCTS always performs better given more samples
+-would a rule base for the last move, handful of moves be useful?
+
+November 23 2014
+OXMC
+structure
+
+OX determines a sample of moves to run simulations from
+MC runs simulations in equal parts on all nodes 
+
+-develop a genetic algorithm to evolve the best rule based approach
+-develop a test to determine how often iimc and oxmc choose the best move
+
+Pattern Policy
+
+———————————————————————————————————————————
+
+1.15.2015 - Log Start
+Cleaned up and recoded the best current algorithms, Beemo V2 (BV2) is born!
+Classes Transposed:
+	GRB
+	IIMC
+	PatternPolicy
+	BMO
+	Card 
+	PokerSquares
+	
+New Classes Added:
+	Settings -> A class we’d long discussed adding that consolidates all the static variables in all classes to one location so that all parameters can be tweaked from one location.
+	Board -> A class containing the grid, the deck, the current available positions and other meta data about the grid. This moved some of the functionality from the recently deceased Play class which had become excessively bloated. 
+	
+IIMC is tweaked to simulate games in a much more uniform fashion: instead drawing cards from the deck randomly, the cards are indexed in the deck as a function of the number of simulations iimc is running. This results in a more uniform ‘random’ game sampling. 
+
+New Record -> Mean Score: 126.004, Standard Deviation: 31.538040268856278, Minimum: 52, Maximum: 241, Games: 1000
+
+To Try:
+Board Policy
+Game Board Hashing: develop a hash for the game board corresponding to only the relevant information in the board to save decisions.
+
+For Flush hands, possible combinations:
+X
+XX
+XXX
+XXXX
+XXXXX
+O
+252 combinations
+
+For non-Flush Hands, possible combinations:
+18 different hands
+26334 combinations
+
+Board Combinations:
+6*6*6*6*6*18*18*18*18*18
+
+It turns out that you need far more information to accurately ID a Board and its card in order to map it to a bestPos
+
+1.16.2015 - Position Policy 
+Position Policy 
+each position has a pattern that is ranked relative to position patterns
+Map a pattern’s relative value/weight/rank compared to other other patterns in a collection holding pattern information as follows:
+
+1. ab
+2. ba
+3. aa
+
+The evaluation of the position is not stored, only the relative rank is stored i.e. ‘ab’ is better than ‘ba’ 
+
+In order to implement this every hand must store relevant meta data so…
+the Hand Class is born.
+
+The restructuring of the classes to use Hand resulted in a significant time improvement (26s -> 8s for a single run of IIMC)
+
+A position pattern created from the concatenation of the two corresponding hand patterns and the card value has roughly
+5000 <— this was not unique enough
+unique values  
+
+Completed a functional implementation of position pattern using a new patternate function within pattern policy, this new implementation generates somewhere in the range of 1.6 to 2 million unique patterns to describe the relationships between positions. This implementation severely slows down the OBF algorithm, in the area of 3x slow down, putting a single run of IIMC at 30s.
+
+Running IIMC with Position Ranking enabled maps roughly 200 position patterns per game, this means it would take around 10000 games to map almost all the position patterns.
+
+1.17.2015 - patternC
+Testing using a more specific pattern for hand patterns:
+Each hand’s suits and ranks are recorded, they are then sorted and concatenated to make the pattern. 
+The pattern is very slow (10000 runs of OBF takes 9s), but passes all necessary information on.
+It looks like it’s levelling off at around 600 000 unique patterns.
+
+1.19.2015 - Parametrized Structure Update
+We found out that the structure of the poker squares challenge is more generalized than we thought, the player must play the game with any hand scores. 
+
+PatternC was lost in the parametrizing due to erroneous committing on my part, she will be mourned.
+
+Scaled Position Values
+Using an abstract relative ranking to compare positions turned out to be excessively computationally heavy as well as requiring a LOT of information. A discrete, real number value by which to compare the positions would be much more useful! By this I mean a real floating point value assigned to every rank (ideally between 1 and 0). 
+
+How to scale properly?
+For the American Scoring System:
+The static evaluation for the two hands and card of a position have a score range of 0 - 200, but this can’t be hard coded in.
+The monte Carlo evaluation will be between 0 - (~675), but the distribution of scores in both of those won’t be equal because one is for the entire board and the other is for just the two hands. 
+
+SOLUTION ONE
+Keep track of the simulation results for all hands in the board so the score range will be the same as the static evaluation. 
+*a problem with this is that the simulation value will be skewed from game to game because of cards placed elsewhere on the board. for ex. a hand with a three of a kind and two empty spaces has a chance of a four of a kind unless the fourth card has already been placed elsewhere in the board. 
+To Deal with the above mentioned issue, include information about played cards in the pattern.
+
+a pattern with 4 identifiers for suits, 4 ids for ranks 
+(1123)(1123)(1111)(2233)(10)(21)
+(suits hand one)(suits hand 2)(ranks hand 1)(ranks hand 2)(card rank)(card suit)
+35 x 35 x 35 x 35 x 16 x 16 = 384 mil 
+too big and doesn’t even include board information.
+
+to keep the hash table manageable, look to keep the number of patterns stored in the range of a mil (1 000 000).
+
+What information about the board is relevant to the two hands being compared? (max number of unique IDs)
+number of cards of each relevant rank (35 x 35 = 1225) 
+Cards of the same suit (number of cards)
+
+I don’t have a method of efficiently and accurately representing the hands and board without information loss with fewer than 10 million unique patterns…
+
+1.21.2015 - Hand Scoring Structure
+Changed the structure of all the hand scoring values such as exponents into arrays so they can be indexed (all values associated with evaluating a hand for a flush, are indexed to 5, for ex)
+
+Starting to implement a structure for value Learning. 
+
+Value Learning Environment
+For every variable that can be adjusted in the settings class to adjust the performance of the algorithm, automate the adjusting of the variable to return a better score.
+
+Patternate positions, and run simulations in MonteCarlo based only on positions that are unique,
+
+if two positions csaba u of a u city re-enforcement learning survey.
+
+Incorporate Probability values into static evaluation
+
+Implemented a training environment MK1, it works! 
+
+in Pattern Policy, would removing the whole ‘raise to exponent’ bit be useful? I think it might be superfluous.
+
+Starting all the initial values at either 1 or 0 seems to tend to ‘squish’ the values at one end or another
+	Try starting from arrays with randomly distributed values - random values seems to lead to early plateaus
+	Try Redistributing values regularly to allow more even stratification
+
+0.5 is the best neutral value for blank to start from
+
+1.26.2015 - FullHandPolicy
+To reduce redundancy and complexity in the settings to increase training performance, implement all information in a full hand policy that has one setting (constant) per informationally unique hand.
+
+Hand Score = SuitScore + RankScore
+
+CAIDA?? Montecarlo Library
+
+1.29.2015
+In Random mode, manually adjusting the settings file to set all settings to 0 is the score is below 0 and to one if the score is above 1 consistently returns a reasonably competitive play style. So the next Goal is to build the logic for the heuristic.
+
+Calculate the probability of each hand represented in pattern policy and multiply the scaled score by that value
+
+1.29.2015 - Trainer Jake
+Updated Value Learning, uses small trials (small scope simulations) to determine whether changing a value will impact the the score at all. This speeds up the overall time to train values.
+
+2.1.2015 -  Billy!
+NOTE: the random poker hand generation is somehow very non-random, high card very often has the highest score and is always positive
+
+Billy uses Monte Carlo sampling to determine the the value of a partial hand.
+
+There is a high chance there is some information being lost in pattern encoding or some other part of the system.
+
+Billy uses ‘recursive’ pattern scoring.
+
+2.4.2015 
+WRITE Report (2 pg)
+Encoding Scheme
+Algorithm 
+Training
+Symmetries 
+
+TESTING -> Different Weights of Exploration in UCT
+smo3 -> 1000
+smo4 -> 10
+smo5 -> 5
+

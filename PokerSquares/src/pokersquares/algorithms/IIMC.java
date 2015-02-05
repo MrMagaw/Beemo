@@ -2,6 +2,7 @@ package pokersquares.algorithms;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import pokersquares.config.Settings;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
@@ -9,7 +10,7 @@ import pokersquares.evaluations.PositionRank;
 
 public class IIMC extends Algorithm{
     private static class Filter implements Comparator<Integer[]>{
-        //Compartor class to filter positions by they're static evaluation value 
+        //Compartor class to filter positions by their static evaluation value 
         private final Card card;
         private final Board board;
         @Override
@@ -33,22 +34,29 @@ public class IIMC extends Algorithm{
     @Override
     public int[] search(final Card card, final Board board, long millisRemaining) {
         Integer[] bestPos = {2, 2};
-        
         Double bestScore = Double.NEGATIVE_INFINITY;
         
-        Integer[][] positions = new Integer[board.getOpenPos().size()][];
-        positions = board.getOpenPos().toArray(positions);
+        //UNIQUE POSITION PATTERNS
+        //SYMMETRY REDUNDANCY
+        Board pb = new Board(board);
+        for (Hand h : pb.hands) if (h.numCards < 5)h.playOpenPos(card);
         
-        if(Settings.Algorithms.playSampleSize < positions.length){
-            Arrays.sort(positions, new Filter(board, card));
-            positions[Settings.Algorithms.playSampleSize] = null;
+        pb.patternateHands();
+        pb.patternatePositions(card);
+        
+        HashMap <String,Integer[]> uniquePatterns = new HashMap <String, Integer[]>();
+        for (int i = 0; i < pb.posPatterns.size(); ++i) {
+            Integer[] pos = pb.getOpenPos().get(i);
+            String posPattern = pb.posPatterns.get(i);
+            uniquePatterns.put(posPattern, pos);
         }
         
-        //POSITION RANK OPTIMIZATION
-        if (Settings.Algorithms.positionRankEnabled) {
-            board.patternateHands();
-            board.patternatePositions(card);
-        }
+        Integer[][] positions = new Integer[uniquePatterns.size()][];
+        int i = 0;
+        for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
+        
+        //System.out.println(pb.posPatterns.size() + " " + uniquePatterns.size());
+        //positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
         //FOR EACH POSITION available in the board
         for(Integer[] pos : positions){
@@ -60,7 +68,7 @@ public class IIMC extends Algorithm{
             tb.playCard(card, new int[]{pos[0], pos[1]});
             
             //SIMULATE Games
-            score = Simulator.simulate(tb, numSimulations, millisRemaining);
+            score = Simulator.simulate(tb, numSimulations, millisRemaining, 1);
             
             if(score > bestScore){
                 bestScore = score;

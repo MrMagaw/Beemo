@@ -16,11 +16,11 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10000;
-        public static int seed = 1;
+        public static int games = 1;
+        public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
-        public static int randomPointSystemSeed = 353;
+        public static int randomPointSystemSeed = 73484;
         public static PointSystem pointSystem = PointSystem.AMERICAN;
     }
     
@@ -29,16 +29,20 @@ public class Settings {
     }
     
     public static class Algorithms {
+        public static boolean debugUCT = true;
         public static int searchDepth = 2;      //Currently unused.
         public static int simSampleSize = 1000; 
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
+        //UCT
+        public static double UCT = 2.5;
+        
         public static boolean positionRankEnabled = false;
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new UCT(), new OBF()};
     }
     
     public static class BMO {
@@ -47,18 +51,20 @@ public class Settings {
         
         //SETTINGS
         public static boolean genSettings = false;
-        public static String settingsFile = "tablaRasa";
+        public static boolean readPatterns = true;
+        public static String patternsFileIn = "american119p";
+        public static String settingsFileIn = "test";
     }
     
     public static class Training {
+        public static boolean train = false;
+        public static long millis = 50000;
+        
         public static double policyMax = 1;
         public static double policyMin = -1;
-        
-        public static long millis = 200000;
-        public static boolean train = true;
         public static boolean randomize = false;
-        public static String outputFile = "test";
-        
+        public static String patternsFileOut = "test.p";
+        public static String settingsFileOut = "test";
         public static boolean updateBest = true;
     
         //VALUES to be adjusted

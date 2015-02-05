@@ -4,6 +4,7 @@ package pokersquares.trainers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.Settings;
@@ -18,14 +19,14 @@ import static pokersquares.trainers.ValueReinforcement.scoreGames;
 public class Billy implements Trainer {
     
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
+    public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
+    double bestScore = Double.NEGATIVE_INFINITY;
     
     private class PatternScore {
         public double totalScore = 0;
         public int numTrials = 0;
         public Hand h;
     }
-    
-    public Billy () { }
     
     @Override
     public void runSession(long millis) {
@@ -36,9 +37,12 @@ public class Billy implements Trainer {
         long tBuffer = 1000; //Some amount of millis to make sure we dont exceed alotted millis
         HashMap <Integer, PatternScore> patternScores = new HashMap <Integer, PatternScore> ();
         
-        //SIMULATE Games
+        //SET BENCHMARK
+        bestScore = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
+        bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
         
-        int trials = 0;
+        //SIMULATE Games
+        int trials = 52;
         double trialScore = 0;
         while((System.currentTimeMillis() - tStart) < (millis - tBuffer)) {
             
@@ -48,7 +52,7 @@ public class Billy implements Trainer {
             //Simulate a Game
             while (b.getTurn() < 25) {
                 Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove((int)( System.currentTimeMillis() - tStart) % b.getDeck().size()); 
+                //Card c = b.getDeck().remove(trials % b.getDeck().size()); 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -57,7 +61,7 @@ public class Billy implements Trainer {
             }
             
             boolean update = true;
-            //if (trials > 100000) update = false;
+            if (trials > 100000) update = false;
             
             //SCORE and UPDATE Pattern Scores
             mapScores(b, boardPatterns, patternScores, update);
@@ -65,12 +69,14 @@ public class Billy implements Trainer {
             //REFRESH and Update Pattern Scores in stages
             //if (trials % 1000 == 0) refreshScores(patternScores);
             
-            
             if (trials < 100000) {
                 if (trials % 10000 == 0) refreshScores(patternScores);
             }
             else
-                if (trials % 200000 == 0) refreshScores(patternScores);
+                if (trials % 500000 == 0) {
+                    refreshScores(patternScores);
+                }
+                
             
             ++trials;
             trialScore += Settings.Environment.system.getScore(b.getGrid());
@@ -80,20 +86,30 @@ public class Billy implements Trainer {
                     //System.out.println("ps: " + ps.totalScore/ps.numTrials + " pt: " + ps.numTrials);
                     tpt += ps.numTrials;
                 }
-                System.err.println(
+                System.out.println(
                         "Trials: " + trials + 
-                        " Score: " + (Simulator.simulate(new Board(), 10000, millis) / 10000));
+                        " Score: " + (Simulator.simulate(new Board(), 10000, millis, 1) / 10000) + 
+                        " Best Score: " + bestScore);
                 /*
                 System.err.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
                 */
-                System.err.println(
+                System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());
                         
             }
         }
+        
+        //SET BEST SCORE
+        patternEvaluations.clear();
+        for (Integer p : bestPatternEvaluations.keySet()) {
+            patternEvaluations.put(p, bestPatternEvaluations.get(p));
+        }
+        
+        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);
+        
     }
     
     private void refreshScores(HashMap <Integer,PatternScore> patternScores) { 
@@ -104,6 +120,17 @@ public class Billy implements Trainer {
         for (Integer p : patternScores.keySet()) {
             PatternScore ps = patternScores.get(p);
             patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+        }
+        
+        //TEST CURRENT SCORES
+        double score = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
+        if (score > bestScore) {
+            System.out.println("New Best");
+            bestScore = score;
+            bestPatternEvaluations.clear();
+            for (Integer p : patternScores.keySet()) {
+                bestPatternEvaluations.put(p,patternEvaluations.get(p));
+            }
         }
         
         //CLEAR patternScores

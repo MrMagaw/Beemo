@@ -10,6 +10,8 @@ public class Main {
     
     public static void main(String[] args) {
         
+        //pokersquares.config.Settings.Algorithms.UCT = Double.parseDouble(args[0]);
+        
         if (!Settings.Main.tournament) {
         // Demonstration of batch game play (30 seconds per game)
         PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);

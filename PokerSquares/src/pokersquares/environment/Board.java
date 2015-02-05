@@ -2,6 +2,7 @@ package pokersquares.environment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Objects;
 import pokersquares.config.Settings;
@@ -84,12 +85,24 @@ public final class Board {
         hands.get(pos[1] + 5).placeCard(pos[0], card);
     }
     public void patternateHands() {
-        for (Hand hand : hands) hand.patternate();
+        
+        for (Hand hand : hands) {
+            hand.buildRankCounts();
+            hand.checkStraight();
+            hand.patternate();
+        }
     }
     public void patternatePositions(Card card) {
         posPatterns.clear();
         for (Integer[] pos : openPos) {
-            posPatterns.add(hands.get(pos[0]).getPattern() + "/" + hands.get(pos[1] + 5).getPattern() + card.toString());
+            //SORT Patterns
+            ArrayList <Integer> orderedPatterns = new ArrayList <Integer> ();
+            orderedPatterns.add(hands.get(pos[0]).getPattern());
+            orderedPatterns.add(hands.get(pos[1] + 5).getPattern());
+            Collections.sort(orderedPatterns);
+            
+            //PATTERNATE Position
+            posPatterns.add(orderedPatterns.get(0) + "/" + orderedPatterns.get(1) + " " + card.toString());
         }
     }
     public String getPosPattern(Integer[] pos) {

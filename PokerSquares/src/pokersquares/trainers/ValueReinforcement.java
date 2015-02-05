@@ -83,7 +83,7 @@ public class ValueReinforcement implements Trainer {
             if (!systemChanged && (valuesToTrain == 0)) break;
         }
         
-        SettingsReader.writeSettings(Settings.Training.outputFile);
+        SettingsReader.writeSettings(Settings.Training.settingsFileOut);
         
     }
     
@@ -257,7 +257,7 @@ public class ValueReinforcement implements Trainer {
                 //PERFORMANCE INCREASES
                 //RECORD
                 systemChanged = true;
-                SettingsReader.writeSettings(Settings.Training.outputFile);
+                SettingsReader.writeSettings(Settings.Training.settingsFileOut);
             } 
         }
         
@@ -269,7 +269,7 @@ public class ValueReinforcement implements Trainer {
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
         //SIMULATE Games
-        return Simulator.simulate(new Board(), numSimulations, 10000) / (double)(numGames+1);
+        return Simulator.simulate(new Board(), numSimulations, 10000, 1) / (double)(numGames+1);
     }
     
 }

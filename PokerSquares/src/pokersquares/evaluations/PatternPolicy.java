@@ -65,7 +65,7 @@ public class PatternPolicy {
     }
     */
     public static void buildPattern(Hand hand) {
-        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
+        //[isCol][flushCapable][hasStraight][numHighCards][numPairs][numTwoPairs][num3Kind][num4Kind]
         int pattern = (hand.isCol ? 4 : 0);
         //has straight potential
         pattern += (hand.numSuits <= 1 ? 2 : 0);

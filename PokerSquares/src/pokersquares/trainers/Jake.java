@@ -115,12 +115,12 @@ public class Jake implements Trainer{
             if (score > bestScore) {
                 bestScore = score;
                 bestValues = (cloneValues(values));
-                SettingsReader.writeSettings(Settings.Training.outputFile);
+                SettingsReader.writeSettings(Settings.Training.settingsFileOut);
             }
         }
         
         Settings.Evaluations.updateSettings(bestValues);
-        SettingsReader.writeSettings(Settings.Training.outputFile);
+        SettingsReader.writeSettings(Settings.Training.settingsFileOut);
         updateBest = false;
         
     }
@@ -197,7 +197,7 @@ public class Jake implements Trainer{
                     break;
                 }
                 
-                SettingsReader.writeSettings(Settings.Training.outputFile);
+                SettingsReader.writeSettings(Settings.Training.settingsFileOut);
             } 
         }
         
@@ -222,7 +222,7 @@ public class Jake implements Trainer{
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
         //SIMULATE Games
-        return Simulator.simulate(new Board(), numSimulations, 10000) / (double)(numGames+1);
+        return Simulator.simulate(new Board(), numSimulations, 10000, 1) / (double)(numGames+1);
     }
     
 }

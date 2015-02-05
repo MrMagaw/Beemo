@@ -33,17 +33,23 @@ public class BeemoV2 implements PokerSquaresPlayer{
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
         Settings.Environment.system = system;
-                
+        
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
-        SettingsReader.readSettings(Settings.BMO.settingsFile);
+        //READ PATTERNS
+        if (Settings.BMO.readPatterns) pokersquares.evaluations.PatternPolicy.patternEvaluations = pokersquares.config.PatternReader.readPatterns(Settings.BMO.patternsFileIn);
         
+        //READ SETTINGS
+        SettingsReader.readSettings(Settings.BMO.settingsFileIn);
+        
+        //GENERATE SETTINGS
         if (genSettings) AdaptiveSettings.generateSettings();
         
-        //Settings.Evaluations.debug();
-        
+        //TRAIN
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
+        
+        
     }
 
     @Override
@@ -58,15 +64,13 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         //First Turn Optimization
         if(board.getTurn() == 0){
-            //Using best Settings Check
-            /*
-            if (updateBest) {
-                Settings.Evaluations.updateSettings(bestValues);
-                SettingsReader.writeSettings(Settings.Training.outputFile);
-                updateBest = false;
-            }
-                    */
             
+            board.playCard(card, bestPos);
+            return bestPos;
+        }
+        if (board.getTurn() == 24){
+            Integer[] bp = board.getOpenPos().get(0);
+            bestPos = new  int[] { bp[0], bp[1] } ;
             board.playCard(card, bestPos);
             return bestPos;
         }

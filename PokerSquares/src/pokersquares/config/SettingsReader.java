@@ -37,7 +37,18 @@ public class SettingsReader {
             }
         } catch (IOException ex) {
             //FILE NOT INITIALIZED
-            System.err.println("File Read Error");
+            System.err.println("Settings File Read Error");
+            /*
+            Settings.Evaluations.highCardPolicy);
+            Settings.Evaluations.pairPolicy);
+            Settings.Evaluations.twoPairPolicy);
+            Settings.Evaluations.threeOfAKindPolicy);
+            Settings.Evaluations.straightPolicy);
+            Settings.Evaluations.flushPolicy);
+            Settings.Evaluations.fullHousePolicy);
+            Settings.Evaluations.fourOfAKindPolicy);
+                    */
+        
             
         }
     }
