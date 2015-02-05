@@ -50,13 +50,9 @@ public class Billy implements Trainer {
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-<<<<<<< HEAD
-                Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove(trials % b.getDeck().size()); 
-=======
                 //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
                 Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
->>>>>>> FETCH_HEAD
+                
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -98,7 +94,7 @@ public class Billy implements Trainer {
                 System.out.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
-                */
+               
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());*/

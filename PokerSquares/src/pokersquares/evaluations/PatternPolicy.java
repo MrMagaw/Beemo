@@ -39,12 +39,8 @@ public class PatternPolicy {
     }
     
     public static void buildPattern(Hand hand) {
-<<<<<<< HEAD
-        //[isCol][flushCapable][hasStraight][numHighCards][numPairs][numTwoPairs][num3Kind][num4Kind]
-=======
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //15 bits / 32 bits
->>>>>>> FETCH_HEAD
         int pattern = (hand.isCol ? 4 : 0);
         pattern += (hand.hasStraight) ? 2 : 0;
         pattern += (hand.numSuits <= 1 ? 1 : 0);
