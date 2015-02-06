@@ -133,7 +133,7 @@ public class UCT extends Algorithm{
         return bestPos;    
     }
     
-    public double getUCT(PosVal pv, double A, double B) {
+    private double getUCT(PosVal pv, double A, double B) {
         //return the UCT value
         
         double score = (pv.totalScore / (pv.numSim+epsilon));

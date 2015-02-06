@@ -29,6 +29,7 @@ import pokersquares.evaluations.PatternPolicy;
 
 public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
+    private boolean needUpdate = true;
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
@@ -64,7 +65,10 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         //First Turn Optimization
         if(board.getTurn() == 0){
-            
+            if (Settings.Training.train && needUpdate){
+                Settings.Training.trainer.update();
+                needUpdate = false;
+            }
             board.playCard(card, bestPos);
             return bestPos;
         }

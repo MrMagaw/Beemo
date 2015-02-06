@@ -13,7 +13,6 @@ import static pokersquares.config.Settings.Training.policyMax;
 import static pokersquares.config.Settings.Training.policyMin;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.Board;
-import pokersquares.environment.Card;
 
 /**
  *
@@ -129,8 +128,6 @@ public class ValueReinforcement implements Trainer {
                         value[j] = distributedValues.get(uv);
                         
                     }
-                    
-                    
                 }
             }
         }
@@ -270,6 +267,11 @@ public class ValueReinforcement implements Trainer {
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
         //SIMULATE Games
         return Simulator.simulate(new Board(), numSimulations, 10000, 1) / (double)(numGames+1);
+    }
+
+    @Override
+    public void update() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

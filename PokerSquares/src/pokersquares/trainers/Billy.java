@@ -3,7 +3,6 @@ package pokersquares.trainers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -15,13 +14,21 @@ import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
-import static pokersquares.trainers.ValueReinforcement.scoreGames;
 
 public class Billy implements Trainer {
     
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
+
+    @Override
+    public void update() {
+        patternEvaluations.clear();
+        bestPatternEvaluations.keySet().stream().forEach((p) -> {
+            patternEvaluations.put(p, bestPatternEvaluations.get(p));
+        });
+        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);  
+    }
     
     private class PatternScore {
         public double totalScore = 0;
@@ -34,20 +41,21 @@ public class Billy implements Trainer {
         System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
         
-        long tStart = System.currentTimeMillis();
-        long tBuffer = millis - 1000; //Some amount of millis to make sure we dont exceed alotted millis
-        HashMap <Integer, PatternScore> patternScores = new HashMap <Integer, PatternScore> ();
+        //long tStart = System.currentTimeMillis();
+        //long tBuffer = millis - 1000; //Some amount of millis to make sure we dont exceed alotted millis
+        HashMap <Integer, PatternScore> patternScores = new HashMap();
         
         //SET BENCHMARK
         bestScore = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
         bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
         
         //SIMULATE Games
-        int trials = 52;
-        int nextCheck = 9900 + r.nextInt(200);
+        int trials = 0 ;
+        int nextCheck = 8192;
+        int nextNextCheck = 65536;
         //double trialScore = 0;
-        while((System.currentTimeMillis() - tStart) < tBuffer) {
-        //while(true){
+        //while((System.currentTimeMillis() - tStart) < tBuffer) {
+        while(true){
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
@@ -65,15 +73,16 @@ public class Billy implements Trainer {
             //SCORE and UPDATE Pattern Scores
             mapScores(b, boardPatterns, patternScores, trials <= 100000);
             
-            
             if (trials % nextCheck == 0) {
                 double score = refreshScores(patternScores);
                 System.out.println(
                         "Trials: " + trials + 
                         "\tScore: " + score + 
                         "\tBest Score: " + bestScore);
-                if (trials >= 100000)
-                    nextCheck = 499000 + r.nextInt(2000);
+                if (trials >= nextNextCheck){
+                    nextCheck = nextNextCheck;
+                    nextNextCheck <<= 3;
+                }
             }
             ++trials;
             /*trialScore += Settings.Environment.system.getScore(b.getGrid());

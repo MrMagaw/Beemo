@@ -224,5 +224,10 @@ public class Jake implements Trainer{
         //SIMULATE Games
         return Simulator.simulate(new Board(), numSimulations, 10000, 1) / (double)(numGames+1);
     }
+
+    @Override
+    public void update() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

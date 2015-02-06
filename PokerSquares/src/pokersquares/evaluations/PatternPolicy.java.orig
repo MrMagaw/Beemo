@@ -37,13 +37,49 @@ public class PatternPolicy {
         else 
             return scoreHand(hand);
     }
-    
+    /*
     public static void buildPattern(Hand hand) {
+<<<<<<< HEAD
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //15 bits / 32 bits
         int pattern = (hand.isCol ? 4 : 0);
+        //has straight potential
         pattern += (hand.hasStraight) ? 2 : 0;
         pattern += (hand.numSuits <= 1 ? 1 : 0);
+        //int pattern = 0; //Temp
+=======
+        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
+        int pattern = (hand.isCol ? 4 : 0);
+        if (hand.isCol) {
+            pattern <<= 20;
+            pattern += hand.numCards;
+        } else {
+            //Iterates through num CountCounts, 
+            //recording a rank identifier for each rank
+            //for the maximum number of rank multiples
+            //Done
+        
+            //has straight potential
+            pattern += (hand.numSuits <= 1 ? 2 : 0);
+            pattern += (hand.hasStraight) ? 1 : 0;
+            for (int i = 0; i < 5; ++i) {
+                //for each rank multiple occuring at least once
+                //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
+                pattern <<= 3;
+                pattern += hand.rankCountCounts[i];
+            }
+        }
+        
+        hand.setPattern(pattern);
+    }
+    */
+    public static void buildPattern(Hand hand) {
+        //[isCol][flushCapable][hasStraight][4xRank][4xRank][4xRank][4xRank][4xRank]
+        int pattern = (hand.isCol ? 4 : 0);
+        //has straight potential
+        pattern += (hand.numSuits <= 1 ? 2 : 0);
+        pattern += (hand.hasStraight) ? 1 : 0;
+>>>>>>> 4f8b2233ca71112221103a163a3e988922c88104
         
         //Iterates through num CountCounts, 
         //recording a rank identifier for each rank
@@ -59,7 +95,7 @@ public class PatternPolicy {
         hand.setPattern(pattern);
     }
     
-    private static synchronized double scoreHand(Hand hand) {
+    private static double scoreHand(Hand hand) {
         //Policy Scores should relate to probability, 
         //They are currently assigned by gut,
         //The probability shousld be calculated or else learned 
@@ -70,14 +106,14 @@ public class PatternPolicy {
         if (simpleScoring) {
             if (hand.isCol) {
                 for (int i = 0; i < colHands.length; ++i) {
-                    if (colHands[i]) {
+                    if (colHands[i] == 1) {
                         if (i == 0) handScore += scoreSuitPolicy(hand);
                         if (i == 1) handScore += scoreRankPolicy(hand);
                     }
                 }
             }else {
                 for (int i = 0; i < rowHands.length; ++i) {
-                    if (rowHands[i]) {
+                    if (rowHands[i] == 1) {
                         if (i == 0) handScore += scoreSuitPolicy(hand);
                         if (i == 1) handScore += scoreRankPolicy(hand);
                     }
@@ -87,13 +123,13 @@ public class PatternPolicy {
         else {
             if (hand.isCol) {
                 for (int i = 0; i < colHands.length; ++i) {
-                    if (colHands[i]) {
+                    if (colHands[i] == 1) {
                         handScore += selectScorePolicy(hand, i);
                     }
                 }
             }else {
                 for (int i = 0; i < rowHands.length; ++i) {
-                    if (rowHands[i]) {
+                    if (rowHands[i] == 1) {
                         handScore += selectScorePolicy(hand, i);
                     }
                 }

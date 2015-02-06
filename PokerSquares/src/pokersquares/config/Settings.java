@@ -13,10 +13,10 @@ import pokersquares.trainers.ValueReinforcement;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
-    public enum PointSystem {RANDOM, AMERICAN, BRITISH, HYPERCORNER, SINGLEHAND };
+    public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10000;
+        public static int games = 10;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -52,18 +52,18 @@ public class Settings {
         //SETTINGS
         public static boolean genSettings = false;
         public static boolean readPatterns = true;
-        public static String patternsFileIn = "test.p";
+        public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
         public static String settingsFileIn = "test";
     }
     
     public static class Training {
-        public static boolean train =false;
+        public static boolean train = true;
         public static long millis = 50000;
         
         public static double policyMax = 1;
         public static double policyMin = -1;
         public static boolean randomize = false;
-        public static String patternsFileOut = "test.p";
+        public static String patternsFileOut = Main.pointSystem.name() + ".pattern";
         public static String settingsFileOut = "test";
         public static boolean updateBest = true;
     
@@ -89,8 +89,8 @@ public class Settings {
         
         public static double[] handScores = new double[10];
         
-        public static double[] rowHands;
-        public static double[] colHands;
+        public static boolean[] rowHands;
+        public static boolean[] colHands;
         
         //array hold exponents for values of hands in american order
         

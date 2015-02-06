@@ -8,17 +8,15 @@ import pokersquares.environment.Card;
 
 public class Simulator {
     private class Gamer extends Thread {
-        private final Simulator parent;
         private final Board board;
         private final int offset;
         private int numSimulations;
         private double totalScore = 0;
         
-        public Gamer(Simulator parent, int numSimulations, int offset){
-            this.board = parent.board;
+        public Gamer(Board board, int numSimulations, int offset){
+            this.board = board;
             this.numSimulations = numSimulations + offset;
             this.offset = offset;
-            this.parent = parent;
         }
         
         @Override
@@ -38,7 +36,6 @@ public class Simulator {
     private final Board board;
     private final int numSimulations, variator;
     private final long millisRemaining;
-    private final boolean genBoards;
     
     private double totalScore = 0;
     public final List<Board> allBoards = new ArrayList();
@@ -49,7 +46,6 @@ public class Simulator {
         this.numSimulations = numSimulations;
         this.millisRemaining = millisRemaining;
         this.variator = variator;
-        this.genBoards = genBoards;
     }
     
     public void run(){
@@ -59,7 +55,7 @@ public class Simulator {
         int extraThread = numSimulations - (simPerThread << 4);
         
         for(int i = 0; i < gamers.length; ++i){
-            gamers[i] = new Gamer(this, (i < extraThread) ? simPerThread : simPerThread + 1, (i * simPerThread) + variator);
+            gamers[i] = new Gamer(board, (i < extraThread) ? simPerThread : simPerThread + 1, (i * simPerThread) + variator);
             gamers[i].start();
         }
         for(int i = 0; i < gamers.length; ++i){
@@ -71,10 +67,15 @@ public class Simulator {
     }
     
     public static double simulate(Board tb, int numSimulations, long millisRemaining, int variator){
+        /*double stime = System.currentTimeMillis();
+        int nSim = numSimulations;
+        System.err.println(nSim + " games finished in " + (System.currentTimeMillis() - stime) / 1000 + "s.");*/
+        
         Simulator sim = new Simulator(tb, numSimulations, millisRemaining, variator, false);
         sim.run();
         return sim.totalScore;
-        /*double score = 0;
+        /*
+        double score = 0;
         numSimulations += variator;
         while(numSimulations-- > variator){ //DONT CHANGE THE POST FIX, it's necessary here to properly calulate the number of simulations
             Board b = new Board(tb);
@@ -87,6 +88,7 @@ public class Simulator {
 
             score += Settings.Environment.system.getScore(b.getGrid());
         }
+        
         return score;*/
     }
 }
