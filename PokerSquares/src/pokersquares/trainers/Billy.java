@@ -32,6 +32,7 @@ public class Billy implements Trainer {
     @Override
     public void runSession(long millis) {
         System.out.print("\nBilly is in your Mind\n");
+        Random r = new Random();
         
         long tStart = System.currentTimeMillis();
         long tBuffer = millis - 1000; //Some amount of millis to make sure we dont exceed alotted millis
@@ -50,13 +51,9 @@ public class Billy implements Trainer {
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-<<<<<<< HEAD
-                Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove(trials % b.getDeck().size()); 
-=======
-                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
->>>>>>> FETCH_HEAD
+                 Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
+                //Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
+                
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -98,7 +95,7 @@ public class Billy implements Trainer {
                 System.out.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
-                */
+               
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());*/

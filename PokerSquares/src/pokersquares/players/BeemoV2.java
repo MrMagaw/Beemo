@@ -68,6 +68,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
             board.playCard(card, bestPos);
             return bestPos;
         }
+        //Last Turn Optimization
         if (board.getTurn() == 24){
             Integer[] bp = board.getOpenPos().get(0);
             bestPos = new  int[] { bp[0], bp[1] } ;

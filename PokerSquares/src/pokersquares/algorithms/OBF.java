@@ -9,7 +9,7 @@ import pokersquares.evaluations.PositionRank;
 
 public class OBF extends Algorithm{
     @Override
-    public int[] search(Card card, Board board, long millisRemaining) {
+    public int[] internalSearch(Card card, Board board, long millisRemaining) {
         double[] postEvaluations = new double[10];
         double[] preEvaluations = new double[10];
         

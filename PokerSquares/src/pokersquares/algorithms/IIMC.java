@@ -32,7 +32,7 @@ public class IIMC extends Algorithm{
     }
     
     @Override
-    public int[] search(final Card card, final Board board, long millisRemaining) {
+    public int[] internalSearch(final Card card, final Board board, long millisRemaining) {
         Integer[] bestPos = {2, 2};
         Double bestScore = Double.NEGATIVE_INFINITY;
         
