@@ -38,17 +38,20 @@ public class SettingsReader {
         } catch (IOException ex) {
             //FILE NOT INITIALIZED
             System.err.println("Settings File Read Error");
-            /*
-            Settings.Evaluations.highCardPolicy);
-            Settings.Evaluations.pairPolicy);
-            Settings.Evaluations.twoPairPolicy);
-            Settings.Evaluations.threeOfAKindPolicy);
-            Settings.Evaluations.straightPolicy);
-            Settings.Evaluations.flushPolicy);
-            Settings.Evaluations.fullHousePolicy);
-            Settings.Evaluations.fourOfAKindPolicy);
-                    */
-        
+            
+            Settings.Evaluations.rowHands = new boolean[]{false, true};
+            Settings.Evaluations.colHands = new boolean[]{true, false};
+            
+            Settings.Evaluations.highCardPolicy = new double[5];
+            Settings.Evaluations.pairPolicy = new double[4];
+            Settings.Evaluations.twoPairPolicy = new double[3];
+            Settings.Evaluations.threeOfAKindPolicy = new double[4];
+            Settings.Evaluations.straightPolicy = new double[5];
+            Settings.Evaluations.flushPolicy = new double[6];
+            Settings.Evaluations.fullHousePolicy = new double[1];
+            Settings.Evaluations.fourOfAKindPolicy = new double[1];
+            
+            writeSettings(Settings.Training.settingsFileOut);
             
         }
     }
@@ -66,35 +69,41 @@ public class SettingsReader {
         String tag = line.substring(0, tagEnd);
         String data = line.substring(tagEnd+1, line.length());
         
-        data = data.replaceAll(" ","");
-        
-        double[] dataArray = parseArray(data);
-        
+        data = data.replaceAll(" ","");        
 
         try {
-            if (!tag.equals("handScores"))Settings.Evaluations.class.getField(tag).set(null, dataArray);
+            switch(tag){
+                case "handScores": break;
+                case "rowHands": case "colHands":
+                    Settings.Evaluations.class.getField(tag).set(null, parseBooleanArray(data));
+                    break;
+                default:
+                    Settings.Evaluations.class.getField(tag).set(null, parseDoubleArray(data));
+            }
         } catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
             System.err.println("Failed setting field: " + tag);
-            
         }
 
     }
     
-    private static double[] parseArray(String data) {
-        List <Double> dataArray = new ArrayList <Double> ();
-        
+    private static double[] parseDoubleArray(String data) {
         //FORMAT data string
         data = data.substring(1,data.length() -1);
-        String[] doubles = data.split(",");
-        
-        //PARSE to double
-        for (int i = 0; i < doubles.length; ++i) dataArray.add(Double.parseDouble(doubles[i]));
-        
-        //CONVERT form list to double array
-        double[] doubleArray = new double[dataArray.size()];
-        for (int i = 0; i < dataArray.size(); ++i) doubleArray[i] = dataArray.get(i);
-            
-        return doubleArray;
+        String[] strings = data.split(",");
+        double[] doubles = new double[strings.length];
+        for(int i = 0; i < strings.length; ++i)
+            doubles[i] = Double.parseDouble(strings[i]);
+        return doubles;
+    }
+    
+    private static boolean[] parseBooleanArray(String data) {
+        //FORMAT data string
+        data = data.substring(1,data.length() -1);
+        String[] strings = data.split(",");
+        boolean[] booleans = new boolean[strings.length];
+        for(int i = 0; i < strings.length; ++i)
+            booleans[i] = Boolean.parseBoolean(strings[i]);
+        return booleans;
     }
     
     public static void writeSettings(String filename) {

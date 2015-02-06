@@ -31,8 +31,8 @@ public class ValueReinforcement implements Trainer {
         //VALUES to be adjusted
         List <double[]> values = new ArrayList();
         
-        values.add(Settings.Evaluations.colHands); 
-        values.add(Settings.Evaluations.rowHands);
+        //values.add(Settings.Evaluations.colHands); 
+        //values.add(Settings.Evaluations.rowHands);
         values.add(Settings.Evaluations.highCardPolicy);
         values.add(Settings.Evaluations.pairPolicy);
         values.add(Settings.Evaluations.twoPairPolicy);
@@ -54,11 +54,11 @@ public class ValueReinforcement implements Trainer {
             
             //TRAIN Value
             //if value is successfully trained, the system has changed
-            if (i < 2) {
+            //if (i < 2) {
                 //systemChanged = trainHandCombinations(values, i);
-            } else {
+            //} else {
                 systemChanged = trainValuesIncrementally(values, i, j);
-            }
+            //}
             
             System.out.println("\nValues To Train: " + valuesToTrain);
             

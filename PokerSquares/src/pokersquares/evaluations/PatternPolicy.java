@@ -70,14 +70,14 @@ public class PatternPolicy {
         if (simpleScoring) {
             if (hand.isCol) {
                 for (int i = 0; i < colHands.length; ++i) {
-                    if (colHands[i] == 1) {
+                    if (colHands[i]) {
                         if (i == 0) handScore += scoreSuitPolicy(hand);
                         if (i == 1) handScore += scoreRankPolicy(hand);
                     }
                 }
             }else {
                 for (int i = 0; i < rowHands.length; ++i) {
-                    if (rowHands[i] == 1) {
+                    if (rowHands[i]) {
                         if (i == 0) handScore += scoreSuitPolicy(hand);
                         if (i == 1) handScore += scoreRankPolicy(hand);
                     }
@@ -87,13 +87,13 @@ public class PatternPolicy {
         else {
             if (hand.isCol) {
                 for (int i = 0; i < colHands.length; ++i) {
-                    if (colHands[i] == 1) {
+                    if (colHands[i]) {
                         handScore += selectScorePolicy(hand, i);
                     }
                 }
             }else {
                 for (int i = 0; i < rowHands.length; ++i) {
-                    if (rowHands[i] == 1) {
+                    if (rowHands[i]) {
                         handScore += selectScorePolicy(hand, i);
                     }
                 }
