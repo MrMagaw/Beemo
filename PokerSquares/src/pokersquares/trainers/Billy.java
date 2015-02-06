@@ -60,27 +60,27 @@ public class Billy implements Trainer {
                 //CLASSIFY Hands
                 classifyHands(b, boardPatterns);
             }
-            
-            boolean update = true;
-            if (trials > 100000) update = false;
-            
             //SCORE and UPDATE Pattern Scores
-            mapScores(b, boardPatterns, patternScores, update);
+            mapScores(b, boardPatterns, patternScores, trials <= 100000);
             
             //REFRESH and Update Pattern Scores in stages
             //if (trials % 1000 == 0) refreshScores(patternScores);
             
+            double score = -1;
             if (trials < 100000) {
-                if (trials % 10000 == 0) refreshScores(patternScores);
+                if (trials % 10000 == 0) score = refreshScores(patternScores);
             }
-            else
-                if (trials % 500000 == 0) {
-                    refreshScores(patternScores);
-                }
-                
-            
+            else if (trials % 500000 == 0) {
+                score = refreshScores(patternScores);
+            }
+            if(score != -1)
+                System.out.println(
+                        "Trials: " + trials + 
+                        " Score: " + score + 
+                        " Best Score: " + bestScore);
             ++trials;
-            trialScore += Settings.Environment.system.getScore(b.getGrid());
+            /*trialScore += Settings.Environment.system.getScore(b.getGrid());
+            
             if (trials % 10000 == 0) {
                 int tpt = 0;
                 for (PatternScore ps : patternScores.values()) {
@@ -98,8 +98,8 @@ public class Billy implements Trainer {
                
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
-                        " Number of Patterns: " + patternScores.size());*/
-            }
+                        " Number of Patterns: " + patternScores.size());
+            }*/
         }
         
         //SET BEST SCORE
@@ -112,7 +112,7 @@ public class Billy implements Trainer {
         
     }
     
-    private void refreshScores(HashMap <Integer,PatternScore> patternScores) { 
+    private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
         //map all the scores in pattern scores to pattern valuations and 
         //refresh pattern scores
         patternEvaluations.clear();
@@ -135,6 +135,7 @@ public class Billy implements Trainer {
         
         //CLEAR patternScores
         patternScores.clear();
+        return score;
     }
     
     private void mapScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores, boolean update) {
