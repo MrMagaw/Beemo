@@ -16,7 +16,7 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10;
+        public static int games = 1;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -42,7 +42,7 @@ public class Settings {
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
     }
     
     public static class BMO {
@@ -50,14 +50,14 @@ public class Settings {
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean genSettings = false;
+        public static boolean genSettings = true;
         public static boolean readPatterns = true;
         public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
         public static String settingsFileIn = "test";
     }
     
     public static class Training {
-        public static boolean train = true;
+        public static boolean train = false;
         public static long millis = 50000;
         
         public static double policyMax = 1;
@@ -129,4 +129,5 @@ public class Settings {
             fourOfAKindPolicy = values.get(7);
         }
     }
+    
 }

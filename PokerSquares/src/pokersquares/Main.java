@@ -53,7 +53,7 @@ public class Main {
 
         //Players
         players.add(new BeemoV2());
-        players.add(new GreedyMCPlayer(2));
+        players.add(new GreedyMCPlayer(25));
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
         PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);

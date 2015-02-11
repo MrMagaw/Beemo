@@ -85,7 +85,7 @@ public class Billy implements Trainer {
                 }
             }
             ++trials;
-            /*trialScore += Settings.Environment.system.getScore(b.getGrid());
+            double trialScore = Settings.Environment.system.getScore(b.getGrid());
             
             if (trials % 10000 == 0) {
                 int tpt = 0;
@@ -97,7 +97,7 @@ public class Billy implements Trainer {
                         "Trials: " + trials + 
                         " Score: " + (Simulator.simulate(new Board(), 10000, millis, 1) / 10000) + 
                         " Best Score: " + bestScore);
-                /*
+                
                 System.out.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
@@ -105,7 +105,7 @@ public class Billy implements Trainer {
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());
-            }*/
+            }
         }
         /*
         //SET BEST SCORE

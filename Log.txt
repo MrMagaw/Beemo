@@ -210,7 +210,24 @@ Training
 Symmetries 
 
 TESTING -> Different Weights of Exploration in UCT
-smo3 -> 1000
-smo4 -> 10
-smo5 -> 5
+smo3 -> 1000    result : bad
+smo4 -> 10      result : worse
+smo5 -> 5       result : terrible
 
+2.10.2015 Development Ideas
+Settings printout function to record the exact settings of a player for testing
+Analyzing Symmetry for Bug
+Settings Symmetry Toggle
+Mayybe implementing tree search
+Analyzing UCT
+Train Patterns dynamically in IIMC
+
+2.11.2015 MCTS Implementation
+Implemented V1 of Monte Carlo Tree Search and it has a bevvy of issues:
+    It is very very slow
+    A Structural issue is that many, many nodes are visited redundandtly
+    
+MC Structure addition:
+    Break ties between best nodes randomly using equality threshold
+    (nodes with scores within +- 0.1 of each other are equal)
+    
