@@ -50,6 +50,8 @@ public class BeemoV2 implements PokerSquaresPlayer{
         //TRAIN
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
         
+        //DECODE PATTERN VALUES
+        //PatternPolicy.debug();
         
     }
 

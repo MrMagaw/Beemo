@@ -1,7 +1,9 @@
 package pokersquares.evaluations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Evaluations.colHands;
 import static pokersquares.config.Settings.Evaluations.patternate;
@@ -41,9 +43,9 @@ public class PatternPolicy {
     public static void buildPattern(Hand hand) {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //15 bits / 32 bits
-        int pattern = (hand.isCol ? 4 : 0);
-        pattern += (hand.hasStraight) ? 2 : 0;
-        pattern += (hand.numSuits <= 1 ? 1 : 0);
+        int pattern = (hand.isCol ? 4 : 0); //3rd / 13th Bit
+        pattern += (hand.hasStraight) ? 2 : 0; //2nd / 14th Bit
+        pattern += (hand.numSuits <= 1 ? 1 : 0); //1st / 15th Bit
         
         //Iterates through num CountCounts, 
         //recording a rank identifier for each rank
@@ -55,6 +57,7 @@ public class PatternPolicy {
             pattern <<= 3;
             pattern += hand.rankCountCounts[i];
         }
+        
         
         hand.setPattern(pattern);
     }
@@ -267,5 +270,52 @@ public class PatternPolicy {
         if (hand.hasRoyal && (hand.numSuits == 1) && (hand.numCards == 5)) royalFlushScore = 1;
         
         return royalFlushScore;
+    }
+    
+    public static String decodePattern(int p) {
+        
+        ArrayList <String> patternFlags = new <String> ArrayList();
+        String patternCode;
+        
+        //Flags are stored in reverse order
+        int mask = 1 << 14;
+        int isCol = (p & mask) >> 14; 
+        mask = 1 << 13;
+        int hasStraight = (p & mask) >> 13;
+        mask = 1 << 12;
+        int flushCapable =(p & mask) >> 12;
+        
+        patternCode = "[" + isCol + "][" + hasStraight + "][" + flushCapable + "]";
+        
+        for (int i = 0; i < 4; i++) {
+            mask = 7 << (3 * (3-i));
+            int flag = (p & mask) >> (3 * (3-i));
+            patternCode += "[" + flag + "]";
+            
+        }
+        
+        return patternCode;
+    }
+    
+    public static void debug() {
+        
+        System.out.println("\n" + patternEvaluations.size() + " Pattern Evaluations:");
+        
+        Map <String, Double> sorted = new TreeMap <String, Double> ();
+                
+        //SORT Patterns for at least a little bit of catagorical order
+        for (Integer p : patternEvaluations.keySet()) {
+            double val = patternEvaluations.get(p);
+            
+            String code = decodePattern(p);
+            
+            sorted.put (code, val);
+        }
+        
+        for (String code : sorted.keySet()) {
+            double val = sorted.get(code);
+            
+            System.out.println(code + " " + val);
+        }
     }
 }

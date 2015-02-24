@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Environment.system;
@@ -13,6 +14,7 @@ import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
+import static pokersquares.evaluations.PatternPolicy.decodePattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
 
 public class Billy implements Trainer {
@@ -105,6 +107,8 @@ public class Billy implements Trainer {
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());
+                
+                if (Settings.Training.verbose) debugPatternScores(patternScores);
             }
         }
         /*
@@ -200,6 +204,28 @@ public class Billy implements Trainer {
             boardPatterns.add(new ArrayList <Integer> ());
         
         return boardPatterns;
+    }
+    
+    public void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
+        
+        System.out.println("\n" + patternScores.size() + " Pattern Scores:");
+        
+        Map <String, PatternScore> sorted = new TreeMap <String, PatternScore> ();
+                
+        //SORT Patterns for at least a little bit of catagorical order
+        for (Integer p : patternScores.keySet()) {
+            PatternScore val = patternScores.get(p);
+            
+            String code = decodePattern(p);
+            
+            sorted.put (code, val);
+        }
+        
+        for (String code : sorted.keySet()) {
+            PatternScore val = sorted.get(code);
+            
+            System.out.println(code + " Trials: " + val.numTrials + " Average Score: " + val.totalScore/val.numTrials);
+        }
     }
     
 }
