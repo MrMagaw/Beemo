@@ -231,5 +231,4 @@ MC Structure addition:
     Break ties between best nodes randomly using equality threshold
     (nodes with scores within +- 0.1 of each other are equal)
     
-    
 Research History Heurisitc

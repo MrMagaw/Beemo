@@ -26,6 +26,10 @@ public class Main {
             case AMERICAN:
                 system = PokerSquaresPointSystem.getAmericanPointSystem();
                 break;
+                
+            case AMERITISH:
+                system = (PokerSquaresPointSystem.getAmeritishPointSystem());
+                break;
             
             case BRITISH:
                 system = PokerSquaresPointSystem.getBritishPointSystem();
@@ -65,6 +69,10 @@ public class Main {
             
             case AMERICAN:
                 systems.add(PokerSquaresPointSystem.getAmericanPointSystem());
+                break;
+                
+            case AMERITISH:
+                systems.add(PokerSquaresPointSystem.getAmeritishPointSystem());
                 break;
             
             case BRITISH:
