@@ -42,7 +42,7 @@ public class Billy implements Trainer {
         Random r = new Random();
         
         //long tStart = System.currentTimeMillis();
-        //long tBuffer = millis - 1000; //Some amount of millis to make sure we dont exceed alotted millis
+        long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis
         HashMap <Integer, PatternScore> patternScores = new HashMap();
         
         //SET BENCHMARK
@@ -54,8 +54,8 @@ public class Billy implements Trainer {
         int nextCheck = 8192;
         int nextNextCheck = 65536;
         //double trialScore = 0;
-        //while((System.currentTimeMillis() - tStart) < tBuffer) {
-        while(true){
+        while(System.currentTimeMillis() < tBuffer) {
+        //while(true){
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
