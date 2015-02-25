@@ -1,7 +1,9 @@
 package pokersquares.evaluations;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Evaluations.colHands;
 import static pokersquares.config.Settings.Evaluations.patternate;

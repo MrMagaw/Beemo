@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeMap;
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Environment.system;
@@ -13,6 +14,7 @@ import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
+import static pokersquares.evaluations.PatternPolicy.decodePattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
 
 public class Billy implements Trainer {
