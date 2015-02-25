@@ -39,7 +39,6 @@ public class PatternPolicy {
     }
     
     public static void buildPattern(Hand hand) {
-        //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
         //10 bits / 32 bits
         int pattern = (hand.isCol ? 4 : 0);
@@ -265,5 +264,52 @@ public class PatternPolicy {
         if (hand.hasRoyal && (hand.numSuits == 1) && (hand.numCards == 5)) royalFlushScore = 1;
         
         return royalFlushScore;
+    }
+    
+    public static String decodePattern(int p) {
+        
+        ArrayList <String> patternFlags = new <String> ArrayList();
+        String patternCode;
+        
+        //Flags are stored in reverse order
+        int mask = 1 << 14;
+        int isCol = (p & mask) >> 14; 
+        mask = 1 << 13;
+        int hasStraight = (p & mask) >> 13;
+        mask = 1 << 12;
+        int flushCapable =(p & mask) >> 12;
+        
+        patternCode = "[" + isCol + "][" + hasStraight + "][" + flushCapable + "]";
+        
+        for (int i = 0; i < 4; i++) {
+            mask = 7 << (3 * (3-i));
+            int flag = (p & mask) >> (3 * (3-i));
+            patternCode += "[" + flag + "]";
+            
+        }
+        
+        return patternCode;
+    }
+    
+    public static void debug() {
+        
+        System.out.println("\n" + patternEvaluations.size() + " Pattern Evaluations:");
+        
+        Map <String, Double> sorted = new TreeMap <String, Double> ();
+                
+        //SORT Patterns for at least a little bit of catagorical order
+        for (Integer p : patternEvaluations.keySet()) {
+            double val = patternEvaluations.get(p);
+            
+            String code = decodePattern(p);
+            
+            sorted.put (code, val);
+        }
+        
+        for (String code : sorted.keySet()) {
+            double val = sorted.get(code);
+            
+            System.out.println(code + " " + val);
+        }
     }
 }

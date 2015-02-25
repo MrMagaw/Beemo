@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Algorithms.enableSymmetry;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 import pokersquares.evaluations.PositionRank;
@@ -56,7 +57,7 @@ public class IIMC extends Algorithm{
         for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
         
         //System.out.println(pb.posPatterns.size() + " " + uniquePatterns.size());
-        //positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
+        if (enableSymmetry) positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
         //FOR EACH POSITION available in the board
         for(Integer[] pos : positions){

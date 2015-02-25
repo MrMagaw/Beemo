@@ -26,6 +26,10 @@ public class Main {
             case AMERICAN:
                 system = PokerSquaresPointSystem.getAmericanPointSystem();
                 break;
+                
+            case AMERITISH:
+                system = (PokerSquaresPointSystem.getAmeritishPointSystem());
+                break;
             
             case BRITISH:
                 system = PokerSquaresPointSystem.getBritishPointSystem();
@@ -53,7 +57,7 @@ public class Main {
 
         //Players
         players.add(new BeemoV2());
-        players.add(new GreedyMCPlayer(2));
+        players.add(new GreedyMCPlayer(25));
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();
         PokerSquaresPointSystem.setSeed(Settings.Main.randomPointSystemSeed);
@@ -65,6 +69,10 @@ public class Main {
             
             case AMERICAN:
                 systems.add(PokerSquaresPointSystem.getAmericanPointSystem());
+                break;
+                
+            case AMERITISH:
+                systems.add(PokerSquaresPointSystem.getAmeritishPointSystem());
                 break;
             
             case BRITISH:

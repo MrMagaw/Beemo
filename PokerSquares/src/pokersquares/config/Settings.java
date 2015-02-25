@@ -16,12 +16,12 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 10;
+        public static int games = 1000;
         public static int seed = 0;
         public static boolean verbose = false;
-        public static boolean tournament = false;
-        public static int randomPointSystemSeed = 73484;
-        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static boolean tournament = true;
+        public static int randomPointSystemSeed = 12323120;
+        public static PointSystem pointSystem = PointSystem.HYPERCORNER;
     }
     
     public static class Environment {
@@ -31,10 +31,12 @@ public class Settings {
     public static class Algorithms {
         public static boolean debugUCT = true;
         public static int searchDepth = 2;      //Currently unused.
-        public static int simSampleSize = 1000; 
+        public static int simSampleSize = 2000; 
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
+        public static boolean enableSymmetry = false;
+                
         //UCT
         public static double UCT = 2.5;
         
@@ -42,7 +44,7 @@ public class Settings {
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
     }
     
     public static class BMO {
@@ -50,7 +52,7 @@ public class Settings {
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean genSettings = false;
+        public static boolean genSettings = true;
         public static boolean readPatterns = true;
         public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
         public static String settingsFileIn = "test";
@@ -58,7 +60,8 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 50000;
+        public static long millis = 300000;
+        public static boolean verbose = false; 
         
         public static double policyMax = 1;
         public static double policyMin = -1;
@@ -129,4 +132,5 @@ public class Settings {
             fourOfAKindPolicy = values.get(7);
         }
     }
+    
 }

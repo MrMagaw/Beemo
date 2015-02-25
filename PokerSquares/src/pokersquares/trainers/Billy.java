@@ -38,11 +38,10 @@ public class Billy implements Trainer {
     
     @Override
     public void runSession(long millis) {
-        System.out.print("\nBilly is in your Mind\n");
+		long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
+		System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
         
-        //long tStart = System.currentTimeMillis();
-        long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis
         HashMap <Integer, PatternScore> patternScores = new HashMap();
         
         //SET BENCHMARK
@@ -85,7 +84,7 @@ public class Billy implements Trainer {
                 }
             }
             ++trials;
-            /*trialScore += Settings.Environment.system.getScore(b.getGrid());
+            double trialScore = Settings.Environment.system.getScore(b.getGrid());
             
             if (trials % 10000 == 0) {
                 int tpt = 0;
@@ -97,7 +96,7 @@ public class Billy implements Trainer {
                         "Trials: " + trials + 
                         " Score: " + (Simulator.simulate(new Board(), 10000, millis, 1) / 10000) + 
                         " Best Score: " + bestScore);
-                /*
+                
                 System.out.println(
                         "Trials: " + trials + 
                         " Score: " + trialScore/trials);
@@ -105,7 +104,9 @@ public class Billy implements Trainer {
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());
-            }*/
+                
+                if (Settings.Training.verbose) debugPatternScores(patternScores);
+            }
         }
         /*
         //SET BEST SCORE
@@ -200,6 +201,28 @@ public class Billy implements Trainer {
             boardPatterns.add(new ArrayList <Integer> ());
         
         return boardPatterns;
+    }
+    
+    public void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
+        
+        System.out.println("\n" + patternScores.size() + " Pattern Scores:");
+        
+        Map <String, PatternScore> sorted = new TreeMap <String, PatternScore> ();
+                
+        //SORT Patterns for at least a little bit of catagorical order
+        for (Integer p : patternScores.keySet()) {
+            PatternScore val = patternScores.get(p);
+            
+            String code = decodePattern(p);
+            
+            sorted.put (code, val);
+        }
+        
+        for (String code : sorted.keySet()) {
+            PatternScore val = sorted.get(code);
+            
+            System.out.println(code + " Trials: " + val.numTrials + "   \tAverage Score: " + val.totalScore/val.numTrials);
+        }
     }
     
 }
