@@ -39,7 +39,7 @@ public class IIMC extends Algorithm{
         
         //UNIQUE POSITION PATTERNS
         //SYMMETRY REDUNDANCY
-        Board pb = new Board(board);
+        Board pb = new Board(board); //Peanut Butter
         for (Hand h : pb.hands) if (h.numCards < 5)h.playOpenPos(card);
         
         pb.patternateHands();
@@ -52,11 +52,10 @@ public class IIMC extends Algorithm{
             uniquePatterns.put(posPattern, pos);
         }
         
-        Integer[][] positions = new Integer[uniquePatterns.size()][];
+        Integer[][] positions = new Integer[board.getOpenPos().size()][];
         int i = 0;
         for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
         
-        //System.out.println(pb.posPatterns.size() + " " + uniquePatterns.size());
         if (enableSymmetry) positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
         //FOR EACH POSITION available in the board
@@ -76,10 +75,6 @@ public class IIMC extends Algorithm{
                 bestPos = pos;
             }
         }
-        
-        //UPDATE Position Rank
-        if (Settings.Algorithms.positionRankEnabled)
-            PositionRank.update(board, bestPos); 
         
         return new int[] {bestPos[0], bestPos[1]};
     }

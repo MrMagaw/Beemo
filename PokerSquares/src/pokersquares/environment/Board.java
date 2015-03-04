@@ -32,6 +32,28 @@ public final class Board {
         openPos = new ArrayList(ALL_POS);
         buildHands();
     }
+    
+    public Board(Card[][] grid) {
+        
+        this.grid = grid;
+        deck.addAll(Arrays.asList(Card.getAllCards()));
+        openPos = new ArrayList(ALL_POS);
+        
+        buildHands();
+        
+        //debug();
+        
+        //OFFICIALLY PLAY ALL CARDS IN GRID
+        for (int col = 0; col < 5; ++col) {
+            for (int row = 0; row < 5; ++row) {
+                Card card = grid[row][col];
+                playCard(card , new int[] {row, col});
+                
+                deck.remove(card);
+            }
+        }
+    }
+    
     public Board(Board parent){
         grid = new Card[5][5];
         for(int i = 0; i < 5; ++i) 

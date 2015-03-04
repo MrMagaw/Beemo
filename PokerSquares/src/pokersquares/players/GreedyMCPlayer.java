@@ -2,6 +2,7 @@ package pokersquares.players;
 
 import java.util.ArrayList;
 import java.util.Random;
+import pokersquares.config.Settings;
 import pokersquares.environment.*;
 
 /**
@@ -88,6 +89,8 @@ public class GreedyMCPlayer implements PokerSquaresPlayer {
 			cardIndex++;
 		simDeck[cardIndex] = simDeck[numPlays];
 		simDeck[numPlays] = card;
+                
+                millisRemaining = (long) (millisRemaining * Settings.Greedy.timeRatio);
 		
 		if (numPlays < 24) { // not the forced last play
 			// compute average time per move evaluation

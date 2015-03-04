@@ -232,3 +232,30 @@ MC Structure addition:
     (nodes with scores within +- 0.1 of each other are equal)
     
 Research History Heurisitc
+
+2.24.2015 IIMC Symmetry Tangle
+Ignoring positions with identical position patterns in order to Reduce redundancy is bad logic: two positions with identical patterns (the concatenation of the intersecting hand patterns) are not (as assumed) symmetrical. Think about Two positions where the common row contains two single cards (two High Cards) and the "symmetrical" columns each contains two pairs as follows
+
+col1: 4H 3D 3H 3S --
+col2: 5H 5S 5D 3C -- 
+
+col1 has 0 chance of completing a four of a kind while col2 still has a chance, yet they will be treated equally. Simulations would give col2 a better value than col1. 
+
+2.25.2015 Deck Pattern
+[10 x hand pattern][2 x cards remaining in Primary Rank][2 x Cards Remaining in secondary Rank][2 x cards remaining in suit]
+
+For the 2 bits representing the suit:
+0 => There are not enough cards of the relevant suit left to complete a flush
+1 => There are just enough cards to complete a flush
+2=> There is an excess of cards left to complete a suit
+
+2.26.2015 Race UCT
+Start a thread for each position being simulated
+Keep a constant update of current score for each position/thread 
+Once position score drop below a certain threshold, they are killed off
+
+Problem Outline:
+    1. Determine State Representation
+    2. Train Static State Evaluation
+    3. Monte Carlo Simulation Structure
+

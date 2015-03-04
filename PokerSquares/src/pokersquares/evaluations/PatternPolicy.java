@@ -16,6 +16,10 @@ import pokersquares.environment.Hand;
 public class PatternPolicy {
     public static Map<Integer, Double> patternEvaluations = new java.util.HashMap();
 
+    public PatternPolicy () {
+        
+    }
+    
     public static double evaluate(Board board){
         double evaluation = 0;
         for(int i = 0; i < 5; ++i){
@@ -42,6 +46,8 @@ public class PatternPolicy {
     
     public static void buildPattern(Hand hand) {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
+        //
+        
         //15 bits / 32 bits
         int pattern = (hand.isCol ? 4 : 0); //3rd / 13th Bit
         pattern += (hand.hasStraight) ? 2 : 0; //2nd / 14th Bit

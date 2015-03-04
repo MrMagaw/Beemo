@@ -32,39 +32,18 @@ public class UCT extends Algorithm{
         Integer[] bestPos = {2, 2};
         Double bestScore = Double.NEGATIVE_INFINITY;
         
-        //UNIQUE POSITION PATTERNS
-        //SYMMETRY REDUNDANCY
-        Board pb = new Board(board);
-        for (Hand h : pb.hands) if (h.numCards < 5)h.playOpenPos(card);
-        
-        pb.patternateHands();
-        pb.patternatePositions(card);
-        
-        HashMap <String,Integer[]> uniquePatterns = new HashMap <String, Integer[]>();
-        for (int i = 0; i < pb.posPatterns.size(); ++i) {
-            Integer[] pos = pb.getOpenPos().get(i);
-            String posPattern = pb.posPatterns.get(i);
-            uniquePatterns.put(posPattern, pos);
-        }
-        
-        Integer[][] positions = new Integer[uniquePatterns.size()][];
-        int i = 0;
-        for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
-        
-        //System.out.println(pb.posPatterns.size() + " " + uniquePatterns.size());
-        //positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
+        Integer[][] positions = new Integer[board.getOpenPos().size()][];
+        positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
         //INITIALIZE posValues
         HashMap <Integer, PosVal> posValues = new HashMap <Integer, PosVal> ();
-        int maxSim = simSampleSize * positions.length;
+        int maxSim = simSampleSize/Settings.Evaluations.numThreads * positions.length;
         for (Integer[] p : positions) {
             int ph = p[0]*5 + p[1];
             PosVal pv = new PosVal();
             pv.xy = p;
             posValues.put(ph,pv);
         }
-        
-        
         
         //WHILE there is time remaining, run simulations
         totalSimulations = 0;
@@ -78,18 +57,15 @@ public class UCT extends Algorithm{
             
             b.playCard(card, new int[]{pos[0], pos[1]});
             
-            
             //SIMULATE Games
             double score = Simulator.simulate(b, 1, 1, totalSimulations);
-            //b.debug();
-            //System.out.println(score);
             
             //RECORD Score
             int posHash = pos[0] * 5 + pos[1];
             PosVal pv = posValues.get(posHash);
             
             pv.totalScore += score;
-            ++pv.numSim;
+            pv.numSim += Settings.Evaluations.numThreads;
             
             ++totalSimulations;
             
@@ -97,7 +73,7 @@ public class UCT extends Algorithm{
             
         }
         
-        if (debugUCT) System.out.println("Total Simulations " + totalSimulations);
+        if (debugUCT) System.out.println("Total Simulations " + totalSimulations * 16);
         
         //CHOOSE Best Pos
         for (Integer ph : posValues.keySet()) {

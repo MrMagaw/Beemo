@@ -16,12 +16,12 @@ public class Settings {
     public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
     
     public static class Main {
-        public static int games = 1000;
-        public static int seed = 0;
+        public static int games = 10000;
+        public static int seed = 1;
         public static boolean verbose = false;
         public static boolean tournament = true;
-        public static int randomPointSystemSeed = 12323120;
-        public static PointSystem pointSystem = PointSystem.HYPERCORNER;
+        public static int randomPointSystemSeed = 0;
+        public static PointSystem pointSystem = PointSystem.SINGLEHAND;
     }
     
     public static class Environment {
@@ -29,14 +29,14 @@ public class Settings {
     }
     
     public static class Algorithms {
-        public static boolean debugUCT = true;
+        public static boolean debugUCT = false;
         public static int searchDepth = 2;      //Currently unused.
-        public static int simSampleSize = 2000; 
+        public static int simSampleSize = 1000; 
         public static int playSampleSize = 24;  //Max = 24, Min = 1
         public static int deckSampleMax = 52;   //Currently unused?
         
         public static boolean enableSymmetry = false;
-                
+        
         //UCT
         public static double UCT = 2.5;
         
@@ -45,6 +45,10 @@ public class Settings {
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
                 new Algorithm[] {new OBF(), new IIMC(), new OBF()};
+    }
+    
+    public static class Greedy {
+        public static double timeRatio = 0.05; //ratio of the total alloted time the player will play
     }
     
     public static class BMO {
@@ -60,8 +64,8 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 300000;
-        public static boolean verbose = false; 
+        public static long millis = 60000;
+        public static boolean verbose = true; 
         
         public static double policyMax = 1;
         public static double policyMin = -1;
@@ -84,6 +88,7 @@ public class Settings {
     }
     
     public static class Evaluations {
+        public static int numThreads = 16;
         
         //Pattern Policy
         public static boolean simpleScoring = false;

@@ -50,7 +50,7 @@ public class Simulator {
     
     public void run(){
         //Number of threads used is 16 right now...
-        Gamer[] gamers = new Gamer[16];
+        Gamer[] gamers = new Gamer[Settings.Evaluations.numThreads];
         int simPerThread = numSimulations >> 4;
         int extraThread = numSimulations - (simPerThread << 4);
         
