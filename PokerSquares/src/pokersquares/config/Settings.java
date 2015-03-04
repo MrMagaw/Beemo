@@ -7,9 +7,7 @@ import pokersquares.algorithms.*;
 import pokersquares.environment.*;
 import pokersquares.players.BeemoV2;
 import pokersquares.trainers.Billy;
-import pokersquares.trainers.Jake;
 import pokersquares.trainers.Trainer;
-import pokersquares.trainers.ValueReinforcement;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
@@ -19,9 +17,9 @@ public class Settings {
         public static int games = 1000;
         public static int seed = 0;
         public static boolean verbose = false;
-        public static boolean tournament = true;
-        public static int randomPointSystemSeed = 12323120;
-        public static PointSystem pointSystem = PointSystem.HYPERCORNER;
+        public static boolean tournament = false;
+        public static int randomPointSystemSeed = 1123;
+        public static PointSystem pointSystem = PointSystem.SINGLEHAND;
     }
     
     public static class Environment {
@@ -30,10 +28,7 @@ public class Settings {
     
     public static class Algorithms {
         public static boolean debugUCT = true;
-        public static int searchDepth = 2;      //Currently unused.
-        public static int simSampleSize = 2000; 
-        public static int playSampleSize = 24;  //Max = 24, Min = 1
-        public static int deckSampleMax = 52;   //Currently unused?
+        public static int simSampleSize = 2000;
         
         public static boolean enableSymmetry = false;
                 
@@ -60,7 +55,7 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 300000;
+        public static long millis = 30000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;

@@ -62,7 +62,8 @@ public class Billy implements Trainer {
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-                 Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
+                Card c = b.removeCard(r.nextInt(b.cardsLeft()));
+                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
                 //Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
                 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);

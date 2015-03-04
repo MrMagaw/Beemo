@@ -1,7 +1,6 @@
 package pokersquares.evaluations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import pokersquares.config.Settings;
@@ -10,7 +9,6 @@ import static pokersquares.config.Settings.Evaluations.patternate;
 import static pokersquares.config.Settings.Evaluations.rowHands;
 import static pokersquares.config.Settings.Evaluations.simpleScoring;
 import pokersquares.environment.Board;
-import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 
 public class PatternPolicy {
@@ -43,6 +41,13 @@ public class PatternPolicy {
     public static void buildPattern(Hand hand) {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
         //10 bits / 32 bits
+        
+        //[2x primary rank remain][2x secondary rank][2xcards in suit left]
+        //0->Not possible
+        //1->Barely possible
+        //2->Very possible
+        
+        
         int pattern = (hand.isCol ? 4 : 0);
         pattern += (hand.hasStraight) ? 2 : 0;
         pattern += (hand.numSuits <= 1 ? 1 : 0);

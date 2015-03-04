@@ -8,10 +8,68 @@ import java.util.Objects;
 import pokersquares.config.Settings;
 
 public final class Board {
-
-    private Card[][] grid;
-    private ArrayList<Integer[]> openPos;
-    private final LinkedList<Card> deck = new LinkedList();
+    public static class Deck{
+        private static final long suitMask[] = {0xFFF8000000000L, 0x0007FFC000000L, 0x0000003FFE000, 0x0000000001FFF};
+        private static final long rankMask = 0x0008004002001L;
+        private static final long allCards = 0xFFFFFFFFFFFFFL;
+        
+        private long pattern;
+        private int cardsLeft;
+        
+        public Deck(){
+            pattern = 0xFFFFFFFFFFFFFL;
+            cardsLeft = 52;
+        }
+        public Deck(Deck d){
+            pattern = d.pattern;
+            cardsLeft = d.cardsLeft;
+        }
+        
+        private Card bitToCard(long mask){
+            int suit;
+            for(suit = 0; suit < suitMask.length; ++suit)
+                if((mask&suitMask[suit]) > 0) break;
+            int rank;
+            for(rank = 0; rank < Card.NUM_RANKS; ++rank)
+                if((mask&(rankMask << rank)) > 0) break;
+            return Card.getCard((suit * Card.NUM_RANKS) + rank);
+        }
+        
+        public Card getCard(int index){
+            long i = 1;
+            for(int j = 0; j < index; j += (i&pattern) > 0 ? 1 : 0, i<<=1);
+            return bitToCard(i);
+        }
+        
+        public void removeCard(Card c){
+            --cardsLeft;
+            pattern &= ~(suitMask[c.getSuit()] & (rankMask << c.getRank()));
+        }
+        
+        public int cardsLeft() {
+            return cardsLeft;
+        }
+        
+        public int suitsLeft(int suit){
+            return cardsLeft(suitMask[suit]);
+        }
+        
+        public int ranksLeft(int rank){
+            return cardsLeft(rankMask << rank);
+        }
+        
+        private int cardsLeft(long mask) {
+            long i = (pattern & mask);
+            i = i - ((i >> 1) & 0x5555555555555555L);
+            i = (i & 0x3333333333333333L) + ((i >> 2) & 0x3333333333333333L);
+            return (int)((((i + (i >> 4)) & 0xF0F0F0F0F0F0F0FL) * 0x101010101010101L) >> 56);
+        }
+    }
+    
+    private final Card[][] grid;
+    private final ArrayList<Integer[]> openPos;
+    private final Deck deck;
+    //private final LinkedList<Card> deck = new LinkedList();
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
     public ArrayList <Hand> hands = new ArrayList();
     public ArrayList <String> posPatterns = new ArrayList();
@@ -28,16 +86,16 @@ public final class Board {
     
     public Board(){
         grid = new Card[5][5];
-        deck.addAll(Arrays.asList(Card.getAllCards()));
         openPos = new ArrayList(ALL_POS);
+        deck = new Deck();
+        
         buildHands();
     }
     public Board(Board parent){
         grid = new Card[5][5];
         for(int i = 0; i < 5; ++i) 
             grid[i] = parent.grid[i].clone(); //May have to clone each array
-        deck.clear();
-        deck.addAll(parent.deck);
+        deck = new Deck(parent.deck);
         openPos = new ArrayList(parent.openPos);
         buildHands();
     }
@@ -73,6 +131,7 @@ public final class Board {
     public void playCard(Card card, int[] pos){
         //UPDATE GRID
         grid[pos[0]][pos[1]] = card;
+        
         for(Integer[] i : openPos){
             if(i[0] == pos[0] && i[1] == pos[1]){
                 openPos.remove(i);
@@ -141,10 +200,26 @@ public final class Board {
     
     public int getTurn(){
         return 25 - openPos.size();
-    }   
-    public LinkedList<Card> getDeck(){
-        return deck;
     }
+    
+    public Card getCard(int index){
+        return deck.getCard(index);
+    }
+    
+    public int cardsLeft(){
+        return deck.cardsLeft();
+    }
+    
+    public void removeCard(Card card){
+        deck.removeCard(card);
+    }
+    
+    public Card removeCard(int index){
+        Card c = getCard(index);
+        deck.removeCard(c);
+        return c;
+    }
+    
     public void debug() {
         Settings.Environment.system.printGrid(grid);
         for (Integer[] pos: openPos) System.out.print("(" + pos[0] + ", " + pos[1] + ") ");

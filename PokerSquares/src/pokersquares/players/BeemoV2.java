@@ -62,7 +62,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
 
     @Override
     public int[] getPlay(Card card, long millisRemaining) {
-        board.getDeck().remove(card);
+        board.removeCard(card);
         int[] bestPos = {2, 2}; //2, 2 because 0, 0 isn't good enough.
         
         //First Turn Optimization
