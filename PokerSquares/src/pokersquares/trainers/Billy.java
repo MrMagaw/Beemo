@@ -40,10 +40,10 @@ public class Billy implements Trainer {
     
     @Override
     public void runSession(long millis) {
-        System.out.print("\nBilly is in your Mind\n");
+		long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
+		System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
         
-        long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis
         HashMap <Integer, PatternScore> patternScores = new HashMap();
         
         //SET BENCHMARK
@@ -55,7 +55,7 @@ public class Billy implements Trainer {
         int nextCheck = 8192;
         int nextNextCheck = 65536;
         //double trialScore = 0;
-        while((System.currentTimeMillis()) < tBuffer) {
+        while(System.currentTimeMillis() < tBuffer) {
         //while(true){
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();

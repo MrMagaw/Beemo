@@ -1,4 +1,6 @@
 *.class
+*.pattern
+*.orig
 */nbproject/*
 */build/*
 */dist/*

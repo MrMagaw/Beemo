@@ -45,6 +45,7 @@ public class PatternPolicy {
     }
     
     public static void buildPattern(Hand hand) {
+<<<<<<< HEAD
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][3xnumOfPairs][3xnumOfThreeOfAKind][3xnumOfFourOfAKind]
         //
         
@@ -64,6 +65,21 @@ public class PatternPolicy {
             pattern += hand.rankCountCounts[i];
         }
         
+=======
+        //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
+        //10 bits / 32 bits
+        int pattern = (hand.isCol ? 4 : 0);
+        pattern += (hand.hasStraight) ? 2 : 0;
+        pattern += (hand.numSuits <= 1 ? 1 : 0);
+        pattern <<= 3;
+        pattern += hand.rankCountCounts[1];
+        pattern <<= 3;
+        pattern += hand.rankCountCounts[2];
+        pattern <<= 2;
+        pattern += hand.rankCountCounts[3];
+        pattern <<= 1;
+        pattern += hand.rankCountCounts[4];
+>>>>>>> origin/master
         
         hand.setPattern(pattern);
     }
