@@ -56,12 +56,13 @@ public class TreeNode {
         //A Node's children is the boards resulting from each card in the deck played in every position
         List <TreeNode> childs = new ArrayList <TreeNode> ();
         
-        for (int i = 0; i < b.cardsLeft(); ++i) {
+        for (int i = 0; i < /*b.getDeck().size()*/b.cardsLeft(); ++i) {
             for (int j = 0; j < b.getOpenPos().size(); ++j) {
                 Board nb = new Board(b);
                 Integer[] p = nb.getOpenPos().get(j);
                 int[] arrpos =  {p[0], p[1]};
                 nb.playCard(nb.removeCard(i), arrpos);
+                //nb.playCard(nb.getDeck().remove(i), arrpos);
                 TreeNode tn = new TreeNode(nb);
                 tn.pos = arrpos;
                 childs.add(tn);

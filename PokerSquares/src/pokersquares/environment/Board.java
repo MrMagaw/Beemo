@@ -11,7 +11,6 @@ public final class Board {
     public static class Deck{
         private static final long suitMask[] = {0xFFF8000000000L, 0x0007FFC000000L, 0x0000003FFE000, 0x0000000001FFF};
         private static final long rankMask = 0x0008004002001L;
-        private static final long allCards = 0xFFFFFFFFFFFFFL;
         
         private long pattern;
         private int cardsLeft;
@@ -69,7 +68,7 @@ public final class Board {
     private final Card[][] grid;
     private final ArrayList<Integer[]> openPos;
     private final Deck deck;
-    //private final LinkedList<Card> deck = new LinkedList();
+    private final LinkedList<Card> deck_old = new LinkedList();
     private static final ArrayList<Integer[]> ALL_POS = new ArrayList(25);
     public ArrayList <Hand> hands = new ArrayList();
     public ArrayList <String> posPatterns = new ArrayList();
@@ -88,7 +87,7 @@ public final class Board {
         grid = new Card[5][5];
         openPos = new ArrayList(ALL_POS);
         deck = new Deck();
-        
+        deck_old.addAll(Arrays.asList(Card.getAllCards()));
         buildHands();
     }
     public Board(Board parent){
@@ -96,6 +95,7 @@ public final class Board {
         for(int i = 0; i < 5; ++i) 
             grid[i] = parent.grid[i].clone(); //May have to clone each array
         deck = new Deck(parent.deck);
+        deck_old.addAll(parent.deck_old);
         openPos = new ArrayList(parent.openPos);
         buildHands();
     }
@@ -104,7 +104,7 @@ public final class Board {
         //check each row 
         for (int row = 0; row < 5; ++row) {
             
-            Hand hand = new Hand(false);
+            Hand hand = new Hand(false, this);
             
             for (int col = 0; col < 5; ++col) {
                 //build hand
@@ -117,7 +117,7 @@ public final class Board {
         //check each column
         for (int col = 0; col < 5; ++col) {
             
-            Hand hand = new Hand(true);
+            Hand hand = new Hand(true, this);
             
             for (int row = 0; row < 5; ++row) {
                 //build hand
@@ -208,6 +208,14 @@ public final class Board {
     
     public int cardsLeft(){
         return deck.cardsLeft();
+    }
+    
+    public int suitsLeft(int suit){
+        return deck.suitsLeft(suit);
+    }
+
+    public int ranksLeft(int rank){
+        return deck.ranksLeft(rank);
     }
     
     public void removeCard(Card card){

@@ -9,6 +9,7 @@ import static pokersquares.config.Settings.Evaluations.patternate;
 import static pokersquares.config.Settings.Evaluations.rowHands;
 import static pokersquares.config.Settings.Evaluations.simpleScoring;
 import pokersquares.environment.Board;
+import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
 
 public class PatternPolicy {
@@ -34,7 +35,7 @@ public class PatternPolicy {
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
-        else 
+        else
             return scoreHand(hand);
     }
     
@@ -59,6 +60,37 @@ public class PatternPolicy {
         pattern += hand.rankCountCounts[3];
         pattern <<= 1;
         pattern += hand.rankCountCounts[4];
+        
+        pattern <<= 2;
+        
+        int suitPattern = (hand.numSuits == 1) ? -1 : 0;
+        
+        int usedRank;
+        if(hand.numRanks == 1){
+            usedRank = Integer.MAX_VALUE;
+            pattern <<= 2;
+        }else{
+            usedRank = (hand.numRanks == 2) ? -1 : Integer.MAX_VALUE;
+        }
+        
+        for(Card c : hand.getCards()){
+            if(c != null){
+                if(usedRank == c.getRank()) continue;
+                if(suitPattern == -1){
+                    int numLeft = hand.getBoard().suitsLeft(c.getSuit());
+                    int needed = hand.numOpenPos();
+                    pattern += (numLeft >= needed) ? ((numLeft >= (needed << 2)) ? 2 : 1) : 0;
+                }
+                pattern += hand.getBoard().ranksLeft(c.getRank());
+                if(usedRank != -1) break;
+                pattern <<= 2;
+                usedRank = c.getRank();
+            }
+        }
+        
+        pattern <<= 2;
+        
+        pattern += suitPattern;
         
         hand.setPattern(pattern);
     }

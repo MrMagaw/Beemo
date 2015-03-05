@@ -65,25 +65,6 @@ public class BeemoV2 implements PokerSquaresPlayer{
         board.removeCard(card);
         int[] bestPos = {2, 2}; //2, 2 because 0, 0 isn't good enough.
         
-        //First Turn Optimization
-        if(board.getTurn() == 0){
-            if (Settings.Training.train && needUpdate){
-                Settings.Training.trainer.update();
-                needUpdate = false;
-            }
-            board.playCard(card, bestPos);
-            return bestPos;
-        }
-        //Last Turn Optimization
-        if (board.getTurn() == 24){
-            Integer[] bp = board.getOpenPos().get(0);
-            bestPos = new  int[] { bp[0], bp[1] } ;
-            board.playCard(card, bestPos);
-            return bestPos;
-        }
-        
-        //System.err.println(PatternPolicy.patternEvaluations.size());
-        
         for(int i=0; i<3; ++i){
             if(board.getTurn() <= Settings.BMO.turnSplits[i]){
                 bestPos = Settings.Algorithms.algorithm[i].search(card, board, millisRemaining);
@@ -91,12 +72,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
             }
         }
         
-        if ((bestPos[1] == 2) && bestPos[0] == 2) {
-            System.out.println("Algorithm ERROR");
-        }
-        
         board.playCard(card, bestPos);
-        
         return bestPos;
     }
     

@@ -22,10 +22,10 @@ import java.util.Map;
  */
 public class PatternReader {
     
-    public static void writePatterns(String filename, Map <Integer, Double> patternEvaluations) {
+    public static void writePatterns(Map <Integer, Double> patternEvaluations) {
         //WRITE SETTINGS to file        
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(filename), "utf-8"))){
+            new FileOutputStream(Settings.Training.patternsFileOut), "utf-8"))){
             
             for (Integer p : patternEvaluations.keySet()) {
                 writer.write(p + " " + patternEvaluations.get(p) + "\n");

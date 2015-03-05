@@ -29,7 +29,7 @@ public class Billy implements Trainer {
         bestPatternEvaluations.keySet().stream().forEach((p) -> {
             patternEvaluations.put(p, bestPatternEvaluations.get(p));
         });
-        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);  
+        pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);  
     }
     
     private class PatternScore {
@@ -76,60 +76,47 @@ public class Billy implements Trainer {
             mapScores(b, boardPatterns, patternScores, trials <= 100000);
             
             if (trials % nextCheck == 0) {
+                int patternSize = patternScores.size();
                 double score = refreshScores(patternScores);
                 System.out.println(
                         "Trials: " + trials + 
                         "\tScore: " + score + 
-                        "\tBest Score: " + bestScore);
+                        "\tBest Score: " + bestScore +
+                        "\nNumber of Patterns: " + patternEvaluations.size());
                 if (trials >= nextNextCheck){
                     nextCheck = nextNextCheck;
                     nextNextCheck <<= 3;
                 }
             }
             ++trials;
-            double trialScore = Settings.Environment.system.getScore(b.getGrid());
-            
-            if (trials % 10000 == 0) {
-                int tpt = 0;
-                for (PatternScore ps : patternScores.values()) {
-                    //System.out.println("ps: " + ps.totalScore/ps.numTrials + " pt: " + ps.numTrials);
-                    tpt += ps.numTrials;
-                }
-                System.out.println(
-                        "Trials: " + trials + 
-                        " Score: " + (Simulator.simulate(new Board(), 10000, millis, 1) / 10000) + 
-                        " Best Score: " + bestScore);
-                
-                System.out.println(
-                        "Trials: " + trials + 
-                        " Score: " + trialScore/trials);
-               
-                System.out.println(
-                        "Average Pattern Trials: " + (tpt/patternScores.size()) + 
-                        " Number of Patterns: " + patternScores.size());
-                
-                if (Settings.Training.verbose) debugPatternScores(patternScores);
-            }
-        }
-        /*
-        //SET BEST SCORE
-        patternEvaluations.clear();
-        for (Integer p : bestPatternEvaluations.keySet()) {
-            patternEvaluations.put(p, bestPatternEvaluations.get(p));
         }
         
-        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);
-        */
+        //SET BEST SCORE
+        patternEvaluations.clear();
+        patternEvaluations.putAll(bestPatternEvaluations);
+        
+        pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
+        
     }
     
     private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
         //map all the scores in pattern scores to pattern valuations and 
         //refresh pattern scores
-        patternEvaluations.clear();
+        //patternEvaluations.clear();
         //PUT scores into patternEvaluations
-        for (Integer p : patternScores.keySet()) {
+        int diff = 0;
+        for(Integer p : patternScores.keySet()) {
             PatternScore ps = patternScores.get(p);
+            if(patternEvaluations.containsKey(p))
+                diff += patternEvaluations.get(p) / (ps.totalScore / ps.numTrials);
             patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+        }
+        
+        diff /= patternScores.size();
+        
+        for(Integer p : patternEvaluations.keySet()) {
+            if(!patternScores.containsKey(p))
+                patternEvaluations.put(p, patternEvaluations.get(p) * diff);
         }
         
         //TEST CURRENT SCORES
@@ -138,14 +125,12 @@ public class Billy implements Trainer {
             System.out.print("*");
             bestScore = score;
             bestPatternEvaluations.clear();
-            for (Integer p : patternScores.keySet()) {
-                bestPatternEvaluations.put(p,patternEvaluations.get(p));
-            }
-            pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);
+            bestPatternEvaluations.putAll(patternEvaluations);
+            pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
         }
         
         //CLEAR patternScores
-        patternScores.clear();
+        //patternScores.clear();
         return score;
     }
     
@@ -172,8 +157,9 @@ public class Billy implements Trainer {
                 ++ps.numTrials;
                 
                 //Update Pattern Evaluations
-                if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
-                //if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                //if (!(hand.isCol && (hand.numSuits > 1)) && update)
+                //    patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
             }
             
         }
@@ -206,7 +192,7 @@ public class Billy implements Trainer {
         return boardPatterns;
     }
     
-    public void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
+    private void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
         
         System.out.println("\n" + patternScores.size() + " Pattern Scores:");
         

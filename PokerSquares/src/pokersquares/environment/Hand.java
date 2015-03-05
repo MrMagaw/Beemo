@@ -9,6 +9,7 @@ import pokersquares.evaluations.PatternPolicy;
 public class Hand {
     private final Card[] cards;
     private Integer pattern = -1;
+    private final Board board;
     public boolean 
             isCol,
             hasStraight,
@@ -17,6 +18,7 @@ public class Hand {
             numCards,
             numRanks,
             numSuits,
+            primeSuit,
             hiCard = -1,
             loCard = -1,
             loCard2 = -1;
@@ -50,12 +52,14 @@ public class Hand {
         this.hiCard = hand.hiCard;
         this.loCard = hand.loCard;
         this.loCard2 = hand.loCard2;
+        this.board = hand.board;
     }
     
-    public Hand(boolean isCol) {
+    public Hand(boolean isCol, Board b) {
         this.cards = new Card[5];
         this.isCol = isCol;
         this.openPos.addAll(allPos);
+        this.board = b;
     }
     
     public void placeCard(int i, Card c){
@@ -130,6 +134,7 @@ public class Hand {
     
     public void playOpenPos(Card card) { placeCard(openPos.getFirst(), card); } 
     public boolean hasOpenPos(){ return !openPos.isEmpty(); } 
+    public int numOpenPos(){ return openPos.size(); } 
     public double evaluate() { return PatternPolicy.evaluate(this); } 
     public void patternate() { PatternPolicy.buildPattern(this); } 
     public boolean hasPattern(){ return (pattern != -1); } 
@@ -137,4 +142,5 @@ public class Hand {
     public void setPattern(int pattern) { this.pattern = pattern; } 
     public Card getCard(int i) { return cards[i]; }
     public Card[] getCards() { return cards; }
+    public Board getBoard() { return board; }
 }
