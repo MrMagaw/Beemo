@@ -11,15 +11,24 @@ import pokersquares.trainers.Trainer;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
-    public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
+    public enum PointSystem {
+        RANDOM(true), AMERICAN(false), AMERITISH(true), 
+        BRITISH(false), HYPERCORNER(true), SINGLEHAND(true);
+        private final boolean isRandom;
+        private PointSystem(boolean isRandom){
+            this.isRandom = isRandom;
+        }
+        public boolean isRandom(){return isRandom;}
+    };
     
     public static class Main {
-        public static int games = 1000;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 1123;
-        public static PointSystem pointSystem = PointSystem.SINGLEHAND;
+        //1123=High Card
+        public static PointSystem pointSystem = PointSystem.AMERICAN;
     }
     
     public static class Environment {
@@ -39,7 +48,7 @@ public class Settings {
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
+                new Algorithm[] {new OBF(), new OBF(), new OBF()};
     }
     
     public static class BMO {
@@ -48,20 +57,26 @@ public class Settings {
         
         //SETTINGS
         public static boolean genSettings = true;
-        public static boolean readPatterns = true;
-        public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
+        public static boolean readPatterns = false;
+        public static String patternsFileIn = 
+                Main.pointSystem.name() + 
+                (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
+                ".pattern";
         public static String settingsFileIn = "test";
     }
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 30000;
+        public static long millis = 60000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;
         public static double policyMin = -1;
         public static boolean randomize = false;
-        public static String patternsFileOut = Main.pointSystem.name() + ".pattern";
+        public static String patternsFileOut = 
+                Main.pointSystem.name() + 
+                (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
+                ".pattern";
         public static String settingsFileOut = "test";
         public static boolean updateBest = true;
     
