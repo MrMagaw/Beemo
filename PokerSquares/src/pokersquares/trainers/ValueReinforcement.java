@@ -266,7 +266,7 @@ public class ValueReinforcement implements Trainer {
         //RESET patterns, so as not to retain old, bad evaluations
         pokersquares.evaluations.PatternPolicy.patternEvaluations = new java.util.HashMap();
         //SIMULATE Games
-        return Simulator.simulate(new Board(), numSimulations, 10000, 1) / (double)(numGames+1);
+        return Simulator.simulate(new Board(), numSimulations, 10000, 1);
     }
 
     @Override

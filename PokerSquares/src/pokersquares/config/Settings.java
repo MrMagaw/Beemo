@@ -18,7 +18,7 @@ public class Settings {
     
     public static class Main {
         public static int games = 10000;
-        public static int seed = 20000;
+        public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 1123;

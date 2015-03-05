@@ -1,5 +1,6 @@
 package pokersquares.players;
 
+import pokersquares.algorithms.Simulator;
 import pokersquares.config.*;
 import pokersquares.config.AdaptiveSettings;
 import static pokersquares.config.Settings.BMO.genSettings;
@@ -84,9 +85,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
             return bestPos;
         }
         
-        //System.err.println(PatternPolicy.patternEvaluations.size());
-        
-        for(int i=0; i<3; ++i){
+        for(int i=0; i<Settings.BMO.turnSplits.length; ++i){
             if(board.getTurn() <= Settings.BMO.turnSplits[i]){
                 bestPos = Settings.Algorithms.algorithm[i].search(card, board, millisRemaining);
                 break;

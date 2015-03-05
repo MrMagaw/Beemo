@@ -12,6 +12,7 @@ public class Simulator {
         private final int offset;
         private int numSimulations;
         private double totalScore = 0;
+        private int simsRun = 0;
         
         public Gamer(Board board, int numSimulations, int offset){
             this.board = board;
@@ -28,6 +29,7 @@ public class Simulator {
                     int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
+                simsRun++;
                 totalScore += Settings.Environment.system.getScore(b.getGrid());
             }
         }
@@ -37,6 +39,7 @@ public class Simulator {
     private final int numSimulations, variator;
     private final long millisRemaining;
     
+    public int simsRun = 0;
     private double totalScore = 0;
     public final List<Board> allBoards = new ArrayList();
     public final List<Board> allFinalBoards = new ArrayList();
@@ -62,7 +65,8 @@ public class Simulator {
             try{
                 gamers[i].join();
                 totalScore += gamers[i].totalScore;
-            }catch(InterruptedException ex){System.err.println("Simulator interrupted!");}
+                simsRun += gamers[i].simsRun;
+            }catch(InterruptedException ex){System.err.println("Simulator Interrupted!");}
         }
     }
     
@@ -73,7 +77,7 @@ public class Simulator {
         
         Simulator sim = new Simulator(tb, numSimulations, millisRemaining, variator, false);
         sim.run();
-        return sim.totalScore;
+        return sim.totalScore / sim.simsRun;
         /*
         double score = 0;
         numSimulations += variator;

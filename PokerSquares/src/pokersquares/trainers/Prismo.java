@@ -177,6 +177,7 @@ public class Prismo implements Trainer{
                 
                 //Update Pattern Evaluations WHY IS THAT FIRST IF NEEDED??????? Wats going yo
                 patternEvaluations.put(p, ps.getPatternScore());
+                //if (!(hand.isCol && (hand.numSuits > 1))) patternEvaluations.put(p, ps.getPatternScore());
                 //if (update) patternEvaluations.put(p, uctScore);
                 //else patternEvaluations.put(p, ps.getPatternScore());
                 //if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, ps.getPatternScore());
