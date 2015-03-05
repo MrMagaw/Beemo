@@ -33,7 +33,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
-        new PatternPolicy();
+        //new PatternPolicy();
         Settings.Environment.system = system;
         
         int[] scores = system.getScoreTable();

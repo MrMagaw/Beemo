@@ -13,15 +13,21 @@ import static pokersquares.config.Settings.Environment.system;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
+import pokersquares.evaluations.PatternPolicy;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.decodePattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
+import static pokersquares.trainers.Prismo.epsilon;
 
 public class Billy implements Trainer {
     
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
+    double maxHandScore = Double.NEGATIVE_INFINITY;
+    int trials = 0;
+    
+    boolean mapUCT = true;
     
     @Override
     public void update() {
@@ -47,14 +53,19 @@ public class Billy implements Trainer {
         
         HashMap <Integer, PatternScore> patternScores = new HashMap();
         
+        //DETERMINE Highest Hand Score
+        for (Integer score : system.getScoreTable())
+            maxHandScore = (score > maxHandScore) ? score : maxHandScore;
+        
         //SET BENCHMARK
         bestScore = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
         bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
         
         //SIMULATE Games
-        int trials = 0 ;
-        int nextCheck = 8192;
-        int nextNextCheck = 65536;
+        //int nextCheck = 8192;
+        //int nextNextCheck = 65536;
+        int nextCheck = 10000;
+        int nextNextCheck = Integer.MAX_VALUE;
         //double trialScore = 0;
         
         while(System.currentTimeMillis() < tBuffer) {
@@ -111,6 +122,7 @@ public class Billy implements Trainer {
                         " Number of Patterns: " + patternScores.size());
                 
                 if (Settings.Training.verbose) debugPatternScores(patternScores);
+                if (Settings.Training.verbose) PatternPolicy.debug();
             }
         }
         /*
@@ -144,10 +156,11 @@ public class Billy implements Trainer {
                 bestPatternEvaluations.put(p,patternEvaluations.get(p));
             }
             pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);
-        }
+        } 
         
         //CLEAR patternScores
         patternScores.clear();
+        
         return score;
     }
     
@@ -174,8 +187,15 @@ public class Billy implements Trainer {
                 ++ps.numTrials;
                 
                 
+                double uctScore =     //average simulation value of a node scaled to the continuous range {0,1}
+                    score * 1 / (maxHandScore + epsilon) 
+                    //uct term
+                    +1 * Math.sqrt( Math.abs(Math.log(trials + epsilon)) / (ps.numTrials + epsilon));
+                
                 //Update Pattern Evaluations
-                if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                if (!(hand.isCol && (hand.numSuits > 1))) if (update) 
+                    if (mapUCT) patternEvaluations.put(p, uctScore);
+                    else patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
             }
         }
     } 

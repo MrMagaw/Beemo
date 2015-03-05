@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
 package pokersquares.trainers;
 
@@ -18,59 +13,62 @@ import static pokersquares.config.Settings.Environment.system;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
+import pokersquares.evaluations.PatternPolicy;
 import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.decodePattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
 import static pokersquares.trainers.Billy.bestPatternEvaluations;
 
-/**
- *
- * @author karo
- */
 public class Prismo implements Trainer{
     //Prismo Uses (roughly) the same system as Billy but also uses UCT to better distribute the plays
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
     int trials;
     double maxHandScore = Double.NEGATIVE_INFINITY;
-    static double epsilon = 0.000000001; //Some Small Number
-    static double scoreRetentionRatio = 2/3;
+    static double epsilon = 0.00000001; //Some Small Number
+    int tpt = 0;
+    
+    static double scoreDropRate = 3;
     
     private class PatternScore {
         public ArrayList <Double> scores = new ArrayList <Double> ();
         public double totalScore = 0;
         public int numTrials = 0;
-        public double uct;
+        public int iNextDroppedScore = 0;
         public Hand h;
         
-        public double getPatternScore() {
-            double ts = 0;
+        public void add(double score) {
+            scores.add(score);
+            numTrials = scores.size();
+            totalScore += score;
+            ++ tpt;
             
-            
-            for (int i = 1; i < getNumRelevantScores(); i++) {
-                ts += scores.get(scores.size() - i);
+            if ((numTrials > 0) && !(numTrials % scoreDropRate == 0)){
+                totalScore -= scores.get(iNextDroppedScore);
+                ++iNextDroppedScore;
+                --tpt;
             }
-            
-            return ts / getNumRelevantScores();
         }
         
-        public double getNumRelevantScores() { return numTrials * scoreRetentionRatio; }
+        public double getPatternScore() {
+            return totalScore / getNumRelevantScores();
+        }
+        
+        public double getNumRelevantScores() { return numTrials - iNextDroppedScore + epsilon; }
         
     }
     
     @Override
     public void update() {
-        patternEvaluations.clear();
-        bestPatternEvaluations.keySet().stream().forEach((p) -> {
-            patternEvaluations.put(p, bestPatternEvaluations.get(p));
-        });
-        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);  
+        
+        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, patternEvaluations);  
+        
     }
     
     @Override
     public void runSession(long millis) {
         long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
-	System.out.print("\nPrismo's Got You\n");
+	System.out.print("\nPrismo Forever\n");
         Random r = new Random();
         
         HashMap <Integer, PatternScore> patternScores = new HashMap();
@@ -79,21 +77,17 @@ public class Prismo implements Trainer{
         for (Integer score : system.getScoreTable())
             maxHandScore = (score > maxHandScore) ? score : maxHandScore;
         
-        //SET BENCHMARK
-        bestScore = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
-        bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
-        
         //SIMULATE Games
         trials = 0 ;
-        int nextCheck = 8192;
-        int nextNextCheck = 65536;
+        double sampleScore = 0;
+        int reportInterval = 1000;
         
         //WHILE time remains to train
         while(System.currentTimeMillis() < tBuffer) {
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
-            //Simulate a Game
+            //RUN trial
             while (b.getTurn() < 25) {
                  Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
                 
@@ -105,45 +99,28 @@ public class Prismo implements Trainer{
             }
             
             //SCORE and UPDATE Pattern Scores
-            mapScores(b, boardPatterns, patternScores, trials <= 50000);
-            
-            if (trials % nextCheck == 0) {
-                double score = refreshScores(patternScores);
-                System.out.println(
-                        "Trials: " + trials + 
-                        "\tScore: " + score + 
-                        "\tBest Score: " + bestScore);
-                if (trials >= nextNextCheck){
-                    nextCheck = nextNextCheck;
-                    nextNextCheck <<= 3;
-                }
-            }
+            mapScores(b, boardPatterns, patternScores, trials <= 500000);
             
             ++trials;
-            double trialScore = Settings.Environment.system.getScore(b.getGrid());
+            sampleScore += Settings.Environment.system.getScore(b.getGrid());
             
-            if (trials % 10000 == 0) {
-                int tpt = 0;
-                for (PatternScore ps : patternScores.values()) {
-                    //System.out.println("ps: " + ps.totalScore/ps.numTrials + " pt: " + ps.numTrials);
-                    tpt += ps.numTrials;
-                }
+            if (trials % reportInterval == 0) {
                 System.out.println(
                         "Trials: " + trials + 
-                        " Score: " + (Simulator.simulate(new Board(), 10000, millis, 1) / 10000) + 
-                        " Best Score: " + bestScore);
+                        " Score: " + (sampleScore / reportInterval));
                 
-                System.out.println(
-                        "Trials: " + trials + 
-                        " Score: " + trialScore/trials);
-               
+                sampleScore = 0;
+                
                 System.out.println(
                         "Average Pattern Trials: " + (tpt/patternScores.size()) + 
                         " Number of Patterns: " + patternScores.size());
                 
-                if (Settings.Training.verbose) debugPatternScores(patternScores);
+                if (Settings.Training.verbose) {
+                    debugPatternScores(patternScores);
+                    PatternPolicy.debug();
+                }
+                
             }
-            
         }
     }
     
@@ -190,48 +167,22 @@ public class Prismo implements Trainer{
                     patternScores.put(p, ps);
                 } else ps = patternScores.get(p);
         
-                ps.scores.add(score);
-                ps.totalScore += score;
-                ++ps.numTrials;
-                
+                ps.add(score);
                 
                 double uctScore =     //average simulation value of a node scaled to the continuous range {0,1}
-                    score * 1 / (maxHandScore + epsilon)
+                    //ps.getPatternScore() * 1 / (maxHandScore + epsilon)
+                    ps.getPatternScore()    
                     //uct term
-                    + 20 * Math.sqrt( Math.abs(Math.log(trials+epsilon)) / (ps.numTrials+epsilon));
+                    + maxHandScore * 0.5 * Math.sqrt( Math.abs(Math.log(trials + epsilon)) / (ps.getNumRelevantScores() + epsilon));
                 
-                //Update Pattern Evaluations
-                if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, uctScore);
+                //Update Pattern Evaluations WHY IS THAT FIRST IF NEEDED??????? Wats going yo
+                patternEvaluations.put(p, ps.getPatternScore());
+                //if (update) patternEvaluations.put(p, uctScore);
+                //else patternEvaluations.put(p, ps.getPatternScore());
+                //if (!(hand.isCol && (hand.numSuits > 1))) if (update) patternEvaluations.put(p, ps.getPatternScore());
             }
         }
     } 
-    
-    private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
-        //map all the scores in pattern scores to pattern valuations and 
-        //refresh pattern scores
-        patternEvaluations.clear();
-        //PUT scores into patternEvaluations
-        for (Integer p : patternScores.keySet()) {
-            PatternScore ps = patternScores.get(p);
-            patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
-        }
-        
-        //TEST CURRENT SCORES
-        double score = Simulator.simulate(new Board(), 10000, 10000, trials) / 10000;
-        if (score > bestScore) {
-            System.out.print("*");
-            bestScore = score;
-            bestPatternEvaluations.clear();
-            for (Integer p : patternScores.keySet()) {
-                bestPatternEvaluations.put(p,patternEvaluations.get(p));
-            }
-            pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, bestPatternEvaluations);
-        }
-        
-        //CLEAR patternScores
-        patternScores.clear();
-        return score;
-    }
     
     public void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
         
@@ -251,7 +202,7 @@ public class Prismo implements Trainer{
         for (String code : sorted.keySet()) {
             PatternScore val = sorted.get(code);
             
-            System.out.println(code + " Trials: " + val.numTrials + "   \tAverage Score: " + val.totalScore/val.numTrials);
+            System.out.println(code + "\tTrials: " + val.numTrials + "\tRelevant Trials: " + val.getNumRelevantScores() + "\tAverage Score: " + val.getPatternScore());
         }
     }
     

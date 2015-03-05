@@ -18,7 +18,7 @@ public class Settings {
     
     public static class Main {
         public static int games = 10000;
-        public static int seed = 1;
+        public static int seed = 20000;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 1123;
@@ -65,8 +65,8 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 60000;
-        public static boolean verbose = true; 
+        public static long millis = 30000;
+        public static boolean verbose = false; 
         
         public static double policyMax = 1;
         public static double policyMin = -1;
@@ -82,8 +82,8 @@ public class Settings {
         public static List <double[]> bestValues = new ArrayList ();
         public static double bestScore = Double.NEGATIVE_INFINITY;
         
-        public static Trainer trainer = new Prismo();
-        //public static Trainer trainer = new Billy();
+        //public static Trainer trainer = new Prismo();
+        public static Trainer trainer = new Billy();
         //public static Trainer trainer = new Jake();
         //public static Trainer trainer = new ValueReinforcement();
         
