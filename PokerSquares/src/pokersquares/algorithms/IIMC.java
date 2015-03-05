@@ -56,7 +56,7 @@ public class IIMC extends Algorithm{
         int i = 0;
         for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
         
-        if (enableSymmetry) positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
+        positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
         //FOR EACH POSITION available in the board
         for(Integer[] pos : positions){

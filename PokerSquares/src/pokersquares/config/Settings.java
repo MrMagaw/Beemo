@@ -8,6 +8,7 @@ import pokersquares.environment.*;
 import pokersquares.players.BeemoV2;
 import pokersquares.trainers.Billy;
 import pokersquares.trainers.Jake;
+import pokersquares.trainers.Prismo;
 import pokersquares.trainers.Trainer;
 import pokersquares.trainers.ValueReinforcement;
 
@@ -19,9 +20,9 @@ public class Settings {
         public static int games = 10000;
         public static int seed = 1;
         public static boolean verbose = false;
-        public static boolean tournament = true;
-        public static int randomPointSystemSeed = 0;
-        public static PointSystem pointSystem = PointSystem.SINGLEHAND;
+        public static boolean tournament = false;
+        public static int randomPointSystemSeed = 1123;
+        public static PointSystem pointSystem = PointSystem.AMERICAN;
     }
     
     public static class Environment {
@@ -44,7 +45,7 @@ public class Settings {
         
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
+                new Algorithm[] {new OBF(), new OBF(), new OBF()};
     }
     
     public static class Greedy {
@@ -57,7 +58,7 @@ public class Settings {
         
         //SETTINGS
         public static boolean genSettings = true;
-        public static boolean readPatterns = true;
+        public static boolean readPatterns = false;
         public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
         public static String settingsFileIn = "test";
     }
@@ -81,7 +82,8 @@ public class Settings {
         public static List <double[]> bestValues = new ArrayList ();
         public static double bestScore = Double.NEGATIVE_INFINITY;
         
-        public static Trainer trainer = new Billy();
+        public static Trainer trainer = new Prismo();
+        //public static Trainer trainer = new Billy();
         //public static Trainer trainer = new Jake();
         //public static Trainer trainer = new ValueReinforcement();
         

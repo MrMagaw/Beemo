@@ -58,7 +58,6 @@ public class OBF extends Algorithm{
                 bestPos = pos;
             }
         }
-        //System.out.println(Arrays.toString(bestPos) + ": " + bestScore);
         return bestPos;  
     }
     

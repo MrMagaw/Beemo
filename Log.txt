@@ -258,4 +258,21 @@ Problem Outline:
     1. Determine State Representation
     2. Train Static State Evaluation
     3. Monte Carlo Simulation Structure
+    
+3.4.2015 Exploration / Exploitation in Training
+
+UCT Training 
+Use a function that encourages Exploration in Training
+
+Billy VS Prismo Train-Off 30s
+
+Billy:  114.19  113.63  106.8   113.76  113.16  115.51  AVG: 112.84
+Prismo: 115.49  115.49  114.54  115.32  116.70  117.00  AVG: 115.76
+
+Billy VS Prismo Train-Off 60s
+
+Billy:  113.07  116.79  113.87  114.11  115.58  116.02  AVG: 114.91
+Prismo: 115.83  115.35  118.34  118.56  117.79  118.53  AVG: 117.40
+
+
 
