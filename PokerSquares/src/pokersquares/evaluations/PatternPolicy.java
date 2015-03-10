@@ -45,15 +45,7 @@ public class PatternPolicy {
         //0->Not possible
         //1->Barely possible
         //2->Very possible
-        
-        //checkStraight() {
-        if (hand.numRanks == hand.numCards) {
-            if ((hand.hiCard - hand.loCard) < 5) 
-                hand.hasStraight = true;
-            else if ((hand.loCard == 0) && ((13 - hand.loCard2) < 5)) 
-                hand.hasStraight = true;
-        } else hand.hasStraight = false;
-    
+            
         //buildRankCounts(){
         hand.rankCountCounts = new int[6];
         for(int i = 0; i < Card.NUM_RANKS; ++i)

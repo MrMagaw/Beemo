@@ -17,11 +17,7 @@ public class Hand {
     public int
             numCards,
             numRanks,
-            numSuits,
-            primeSuit,
-            hiCard = -1,
-            loCard = -1,
-            loCard2 = -1;
+            numSuits;
             
     public int[] 
             rankCountCounts = new int[6],
@@ -49,9 +45,6 @@ public class Hand {
         System.arraycopy(hand.cards, 0, this.cards, 0, hand.cards.length);
         System.arraycopy(hand.rankCounts, 0, this.rankCounts, 0, hand.rankCounts.length);
         System.arraycopy(hand.suitCounts, 0, this.suitCounts, 0, hand.suitCounts.length);
-        this.hiCard = hand.hiCard;
-        this.loCard = hand.loCard;
-        this.loCard2 = hand.loCard2;
         this.board = hand.board;
     }
     
@@ -65,7 +58,6 @@ public class Hand {
     public void placeCard(int i, Card c){
         //reset pattern
         pattern = -1;
-        hasStraight = false;
         //update hand data
         if(cards[i] == null){
             openPos.remove(openPos.indexOf(i));
@@ -88,8 +80,11 @@ public class Hand {
         cards[i] = c;
         //HiLo
         if(numCards == 0)
-            loCard = loCard2 = hiCard = -1;
+            hasStraight = true;
+        else if (numRanks != numCards)
+            hasStraight = false;
         else{
+            int loCard = -1, loCard2 = -1, highCard = -1;
             for(int j = 0, k = 0; j < rankCounts.length && k < 2 && k < numCards; ++j){
                 if(rankCounts[j] != 0)
                     switch(k++){
@@ -99,10 +94,14 @@ public class Hand {
             }
             for(int j = rankCounts.length-1; j >= 0; --j){
                 if(rankCounts[j] != 0){
-                    hiCard = j;
+                    highCard = j;
                     break;
                 }
             }
+            
+            if (((highCard - loCard) < 5) || 
+                    ((loCard == 0) && ((13 - loCard2) < 5))) 
+                hasStraight = true;
         }
     }
     
@@ -114,7 +113,7 @@ public class Hand {
         }
         System.out.println("\n" + pattern + ", " + isCol + ", " + openPos + " hasStraight: " + hasStraight);
         System.out.println("numCards: " + numCards + " numRanks: " + numRanks + " numSuits: " + numSuits );
-        System.out.println(Arrays.toString(rankCountCounts) + " Hi: " + hiCard + " Lo: " + loCard + " Lo2: " + loCard2 + "\n");
+        System.out.println(Arrays.toString(rankCountCounts) + "\n");
     }
     
     public void playOpenPos(Card card) { placeCard(openPos.getFirst(), card); } 
