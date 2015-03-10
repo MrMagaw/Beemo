@@ -23,15 +23,6 @@ public class Billy implements Trainer {
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
-
-    @Override
-    public void update() {
-        patternEvaluations.clear();
-        bestPatternEvaluations.keySet().stream().forEach((p) -> {
-            patternEvaluations.put(p, bestPatternEvaluations.get(p));
-        });
-        pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);  
-    }
     
     private class PatternScore {
         public double totalScore = 0;
@@ -63,7 +54,7 @@ public class Billy implements Trainer {
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-                Card c = b.removeCard(r.nextInt(b.cardsLeft()));                
+                Card c = b.removeCard(r.nextInt(b.cardsLeft()));
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -99,7 +90,7 @@ public class Billy implements Trainer {
             PatternScore ps = e.getValue();
             Double score = ps.totalScore / ps.numTrials;
             if(patternEvaluations.containsKey(p))
-                diff += score != 0.0 ? patternEvaluations.get(p) / score : 0;
+                diff += score != 0.0 ? patternEvaluations.get(p) / score : 0.0;
             patternEvaluations.put(p, score);
         }
         
@@ -117,6 +108,8 @@ public class Billy implements Trainer {
             bestPatternEvaluations.clear();
             bestPatternEvaluations.putAll(patternEvaluations);
             pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
+        }else{
+            patternEvaluations.putAll(bestPatternEvaluations);
         }
         
         //CLEAR patternScores
@@ -162,8 +155,6 @@ public class Billy implements Trainer {
         for (int h = 0; h < 10; ++h) {
             Hand hand  = b.hands.get(h);
             
-            hand.buildRankCounts();
-            hand.checkStraight();
             buildPattern(hand);
             if (!bp.get(h).contains(hand.getPattern()))
                 bp.get(h).add(hand.getPattern());
@@ -174,10 +165,10 @@ public class Billy implements Trainer {
     }
     
     private List initBoardPatterns() {
-        List <List> boardPatterns = new ArrayList <List> ();
+        List <List> boardPatterns = new ArrayList();
         
         for (int i = 0; i < 10; ++i)
-            boardPatterns.add(new ArrayList <Integer> ());
+            boardPatterns.add(new ArrayList());
         
         return boardPatterns;
     }
@@ -186,22 +177,22 @@ public class Billy implements Trainer {
         
         System.out.println("\n" + patternScores.size() + " Pattern Scores:");
         
-        Map <String, PatternScore> sorted = new TreeMap <String, PatternScore> ();
+        Map <String, PatternScore> sorted = new TreeMap();
                 
         //SORT Patterns for at least a little bit of catagorical order
-        for (Integer p : patternScores.keySet()) {
+        patternScores.keySet().stream().forEach((p) -> {
             PatternScore val = patternScores.get(p);
             
             String code = decodePattern(p);
             
             sorted.put (code, val);
-        }
+        });
         
-        for (String code : sorted.keySet()) {
+        sorted.keySet().stream().forEach((code) -> {
             PatternScore val = sorted.get(code);
             
             System.out.println(code + " Trials: " + val.numTrials + "   \tAverage Score: " + val.totalScore/val.numTrials);
-        }
+        });
     }
     
 }

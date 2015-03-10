@@ -29,7 +29,6 @@ import pokersquares.evaluations.PatternPolicy;
 
 public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
-    private boolean needUpdate = true;
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){

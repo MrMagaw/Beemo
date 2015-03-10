@@ -80,45 +80,30 @@ public class Hand {
             openPos.add(i);
             --numCards;
         }else{
-            //track Hi & Lo Cards
-            int cRank = c.getRank();
-        
-            if (hiCard == -1) hiCard = cRank;
-            else if (cRank > hiCard) hiCard = cRank;
-        
-            if (loCard == -1) loCard = cRank;
-            else if (cRank < loCard) {
-                loCard2 = loCard;
-                loCard = cRank;
-            }
-            
-            if (loCard2 == -1) loCard2 = cRank;
-            else if ((cRank < loCard2) && (cRank > loCard)) loCard2 = cRank;
-            else if ((loCard2 == loCard) && (cRank > loCard)) loCard2 = cRank;
-            
             if(++rankCounts[c.getRank()] == 1)
                 ++numRanks;
             if(++suitCounts[c.getSuit()] == 1)
                 ++numSuits;
         }
         cards[i] = c;
-    }
-    
-    public void checkStraight() {
-        //if there are no card multiples
-        int dHiLo = 0, dHiLo2 = 0;
-        if (numRanks == numCards) {
-            dHiLo = hiCard - loCard;
-            dHiLo2 = 13 - loCard2;
-            if (dHiLo < 5) hasStraight = true;
-            if ((loCard == 0) && (dHiLo2 < 5)) hasStraight = true;
-        } else hasStraight = false;
-    }
-    
-    public void buildRankCounts(){
-        rankCountCounts = new int[6];
-        for(int i = 0; i < Card.NUM_RANKS; ++i)
-            ++rankCountCounts[rankCounts[i]];
+        //HiLo
+        if(numCards == 0)
+            loCard = loCard2 = hiCard = -1;
+        else{
+            for(int j = 0, k = 0; j < rankCounts.length && k < 2 && k < numCards; ++j){
+                if(rankCounts[j] != 0)
+                    switch(k++){
+                        case 0: loCard = j;
+                        case 1: loCard2 = j;
+                    }
+            }
+            for(int j = rankCounts.length-1; j >= 0; --j){
+                if(rankCounts[j] != 0){
+                    hiCard = j;
+                    break;
+                }
+            }
+        }
     }
     
     public void debug() {

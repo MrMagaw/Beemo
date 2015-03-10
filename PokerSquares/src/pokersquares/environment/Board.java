@@ -144,12 +144,9 @@ public final class Board {
         hands.get(pos[1] + 5).placeCard(pos[0], card);
     }
     public void patternateHands() {
-        
-        for (Hand hand : hands) {
-            hand.buildRankCounts();
-            hand.checkStraight();
+        hands.stream().forEach((hand) -> {
             hand.patternate();
-        }
+        });
     }
     public void patternatePositions(Card card) {
         posPatterns.clear();

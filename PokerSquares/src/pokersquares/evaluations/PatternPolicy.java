@@ -25,10 +25,6 @@ public class PatternPolicy {
     }
     
     public static double evaluate(Hand hand) {
-        //Generate rankCountCounts... What a weird place to put this.
-        hand.buildRankCounts();
-        hand.checkStraight();
-        
         if(!hand.hasPattern() && patternate){
             buildPattern(hand);
         }
@@ -50,6 +46,18 @@ public class PatternPolicy {
         //1->Barely possible
         //2->Very possible
         
+        //checkStraight() {
+        if (hand.numRanks == hand.numCards) {
+            if ((hand.hiCard - hand.loCard) < 5) 
+                hand.hasStraight = true;
+            else if ((hand.loCard == 0) && ((13 - hand.loCard2) < 5)) 
+                hand.hasStraight = true;
+        } else hand.hasStraight = false;
+    
+        //buildRankCounts(){
+        hand.rankCountCounts = new int[6];
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
         
         int pattern = (hand.isCol ? 4 : 0);
         pattern += (hand.hasStraight) ? 2 : 0;

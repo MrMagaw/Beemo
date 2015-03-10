@@ -25,7 +25,6 @@ public class Simulator {
                 Board b = new Board(board);
                 while (b.getTurn() < 25) {
                     Card c = b.removeCard(numSimulations % b.cardsLeft());
-                    //Card c = b.getDeck().remove(numSimulations % b.getDeck().size());
                     int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
