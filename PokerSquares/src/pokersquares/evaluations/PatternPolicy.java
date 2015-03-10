@@ -43,6 +43,8 @@ public class PatternPolicy {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
         //10 bits / 32 bits
         
+        //Merge Suits left into flushCapable?
+        
         //[2x primary rank remain][2x secondary rank][2xcards in suit left]
         //0->Not possible
         //1->Barely possible

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
 import pokersquares.algorithms.Simulator;
@@ -40,8 +41,8 @@ public class Billy implements Trainer {
     
     @Override
     public void runSession(long millis) {
-		long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
-		System.out.print("\nBilly is in your Mind\n");
+        long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
+        System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
         
         HashMap <Integer, PatternScore> patternScores = new HashMap();
@@ -51,7 +52,7 @@ public class Billy implements Trainer {
         bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
         
         //SIMULATE Games
-        int trials = 0 ;
+        int trials = 0;
         int nextCheck = 8192;
         int nextNextCheck = 65536;
         //double trialScore = 0;
@@ -62,10 +63,7 @@ public class Billy implements Trainer {
             
             //Simulate a Game
             while (b.getTurn() < 25) {
-                Card c = b.removeCard(r.nextInt(b.cardsLeft()));
-                //Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
-                //Card c = b.getDeck().remove((trials + 52) % b.getDeck().size()); 
-                
+                Card c = b.removeCard(r.nextInt(b.cardsLeft()));                
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
                 
@@ -75,8 +73,7 @@ public class Billy implements Trainer {
             //SCORE and UPDATE Pattern Scores
             mapScores(b, boardPatterns, patternScores, trials <= 100000);
             
-            if (trials % nextCheck == 0) {
-                int patternSize = patternScores.size();
+            if (++trials % nextCheck == 0) {
                 double score = refreshScores(patternScores);
                 System.out.println(
                         "Trials: " + trials + 
@@ -88,15 +85,7 @@ public class Billy implements Trainer {
                     nextNextCheck <<= 3;
                 }
             }
-            ++trials;
-        }
-        
-        //SET BEST SCORE
-        patternEvaluations.clear();
-        patternEvaluations.putAll(bestPatternEvaluations);
-        
-        pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
-        
+        }        
     }
     
     private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
@@ -104,21 +93,22 @@ public class Billy implements Trainer {
         //refresh pattern scores
         //patternEvaluations.clear();
         //PUT scores into patternEvaluations
-        int diff = 0;
-        for(Integer p : patternScores.keySet()) {
-            PatternScore ps = patternScores.get(p);
+        Double diff = 0.0;
+        for(Entry<Integer, PatternScore> e : patternScores.entrySet()) {
+            Integer p = e.getKey();
+            PatternScore ps = e.getValue();
+            Double score = ps.totalScore / ps.numTrials;
             if(patternEvaluations.containsKey(p))
-                diff += patternEvaluations.get(p) / (ps.totalScore / ps.numTrials);
-            patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                diff += score != 0.0 ? patternEvaluations.get(p) / score : 0;
+            patternEvaluations.put(p, score);
         }
         
         diff /= patternScores.size();
-        
+
         for(Integer p : patternEvaluations.keySet()) {
             if(!patternScores.containsKey(p))
                 patternEvaluations.put(p, patternEvaluations.get(p) * diff);
         }
-        
         //TEST CURRENT SCORES
         double score = Simulator.simulate(new Board(), 10000, 10000, 1) / 10000;
         if (score > bestScore) {
