@@ -26,8 +26,7 @@ public class UCT extends Algorithm{
     public int[] internalSearch(final Card card, final Board board, long millisRemaining) {
         if (debugUCT) System.out.println("\nUCT");
         
-        long tStart = System.currentTimeMillis();
-        long tBuffer = millisRemaining - 1000; //Some amount of millis to make sure we dont exceed alotted millis
+        long tBuffer = millisRemaining - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis
         
         Integer[] bestPos = {2, 2};
         Double bestScore = Double.NEGATIVE_INFINITY;
@@ -68,8 +67,8 @@ public class UCT extends Algorithm{
         
         //WHILE there is time remaining, run simulations
         totalSimulations = 0;
-        while((System.currentTimeMillis() - tStart) < (tBuffer)) {
-            
+        while(System.currentTimeMillis() < tBuffer) {
+            int gamesPer = 160;
             //GET next pos
             Integer[] pos = bestUCTPos(positions, posValues);
             
@@ -80,7 +79,7 @@ public class UCT extends Algorithm{
             
             
             //SIMULATE Games
-            double score = Simulator.simulate(b, 1, 1, totalSimulations);
+            double score = Simulator.simulate(b, gamesPer, 1, totalSimulations);
             //b.debug();
             //System.out.println(score);
             
@@ -89,9 +88,9 @@ public class UCT extends Algorithm{
             PosVal pv = posValues.get(posHash);
             
             pv.totalScore += score;
-            ++pv.numSim;
+            pv.numSim += gamesPer;
             
-            ++totalSimulations;
+            totalSimulations += gamesPer;
             
             if (totalSimulations >= maxSim) break;
             
