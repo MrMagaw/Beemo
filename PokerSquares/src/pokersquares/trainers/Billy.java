@@ -111,7 +111,7 @@ public class Billy implements Trainer {
                 Map place = new HashMap <Integer, Double> (patternEvaluations);
                 patternEvaluations = new HashMap <Integer, Double> (bestPatternEvaluations);
                 
-                System.out.println(Simulator.simulate(new Board(), 10000, 10000, trials));
+                //System.out.println(Simulator.simulate(new Board(), 10000, 10000, trials));
                 
                 patternEvaluations = new HashMap <Integer, Double> (place);
                 
