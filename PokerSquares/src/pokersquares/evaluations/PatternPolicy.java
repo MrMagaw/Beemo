@@ -1,7 +1,6 @@
 package pokersquares.evaluations;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
 import pokersquares.config.Settings;
@@ -30,23 +29,32 @@ public class PatternPolicy {
     }
     
     public static double evaluate(Hand hand) {
-        //Generate rankCountCounts... What a weird place to put this.
-        hand.buildRankCounts();
-        hand.checkStraight();
-        
         if(!hand.hasPattern() && patternate){
             buildPattern(hand);
         }
         
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
-        else 
+        else
             return scoreHand(hand);
     }
     
     public static void buildPattern(Hand hand) {
         //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
         //10 bits / 32 bits
+        
+        //Merge Suits left into flushCapable?
+        
+        //[2x primary rank remain][2x secondary rank][2xcards in suit left]
+        //0->Not possible
+        //1->Barely possible
+        //2->Very possible
+            
+        //buildRankCounts()
+        hand.rankCountCounts = new int[6];
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
+        
         int pattern = (hand.isCol ? 4 : 0);
         pattern += (hand.hasStraight) ? 2 : 0;
         pattern += (hand.numSuits <= 1 ? 1 : 0);
@@ -58,6 +66,37 @@ public class PatternPolicy {
         pattern += hand.rankCountCounts[3];
         pattern <<= 1;
         pattern += hand.rankCountCounts[4];
+        
+        pattern <<= 2;
+        
+        int suitPattern = (hand.numSuits == 1) ? -1 : 0;
+        
+        int usedRank;
+        if(hand.numRanks == 1){
+            usedRank = Integer.MAX_VALUE;
+            pattern <<= 2;
+        }else{
+            usedRank = (hand.numRanks == 2) ? -1 : Integer.MAX_VALUE;
+        }
+        
+        for(Card c : hand.getCards()){
+            if(c != null){
+                if(usedRank == c.getRank()) continue;
+                if(suitPattern == -1){
+                    int numLeft = hand.getBoard().suitsLeft(c.getSuit());
+                    int needed = hand.numOpenPos();
+                    pattern += (numLeft >= needed) ? ((numLeft >= (needed << 2)) ? 2 : 1) : 0;
+                }
+                pattern += hand.getBoard().ranksLeft(c.getRank());
+                if(usedRank != -1) break;
+                pattern <<= 2;
+                usedRank = c.getRank();
+            }
+        }
+        
+        pattern <<= 2;
+        
+        pattern += suitPattern;
         
         hand.setPattern(pattern);
     }

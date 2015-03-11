@@ -3,13 +3,13 @@ package pokersquares;
 import java.util.ArrayList;
 import pokersquares.config.Settings;
 import pokersquares.environment.*;
+import pokersquares.environment.Board.Deck;
 import pokersquares.environment.PokerSquares;
 import pokersquares.players.*;
 
 public class Main {
     
     public static void main(String[] args) {
-        
         //pokersquares.config.Settings.Algorithms.UCT = Double.parseDouble(args[0]);
         
         if (!Settings.Main.tournament) {

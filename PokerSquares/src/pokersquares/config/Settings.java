@@ -7,14 +7,20 @@ import pokersquares.algorithms.*;
 import pokersquares.environment.*;
 import pokersquares.players.BeemoV2;
 import pokersquares.trainers.Billy;
-import pokersquares.trainers.Jake;
 import pokersquares.trainers.Prismo;
 import pokersquares.trainers.Trainer;
-import pokersquares.trainers.ValueReinforcement;
 
 public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
-    public enum PointSystem {RANDOM, AMERICAN, AMERITISH, BRITISH, HYPERCORNER, SINGLEHAND };
+    public enum PointSystem {
+        RANDOM(true), AMERICAN(false), AMERITISH(true), 
+        BRITISH(false), HYPERCORNER(true), SINGLEHAND(true);
+        private final boolean isRandom;
+        private PointSystem(boolean isRandom){
+            this.isRandom = isRandom;
+        }
+        public boolean isRandom(){return isRandom;}
+    };
     
     public static class Main {
         public static int games = 10000;
@@ -30,11 +36,8 @@ public class Settings {
     }
     
     public static class Algorithms {
-        public static boolean debugUCT = false;
-        public static int searchDepth = 2;      //Currently unused.
-        public static int simSampleSize = 1000; 
-        public static int playSampleSize = 24;  //Max = 24, Min = 1
-        public static int deckSampleMax = 52;   //Currently unused?
+        public static boolean debugUCT = true;
+        public static int simSampleSize = 2000;
         
         public static boolean enableSymmetry = false;
         
@@ -46,6 +49,7 @@ public class Settings {
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
                 new Algorithm[] {new OBF(), new OBF(), new OBF()};
+
     }
     
     public static class Greedy {
@@ -59,7 +63,10 @@ public class Settings {
         //SETTINGS
         public static boolean genSettings = true;
         public static boolean readPatterns = false;
-        public static String patternsFileIn = Main.pointSystem.name() + ".pattern";
+        public static String patternsFileIn = 
+                Main.pointSystem.name() + 
+                (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
+                ".pattern";
         public static String settingsFileIn = "test";
     }
     
@@ -71,7 +78,10 @@ public class Settings {
         public static double policyMax = 1;
         public static double policyMin = -1;
         public static boolean randomize = false;
-        public static String patternsFileOut = Main.pointSystem.name() + ".pattern";
+        public static String patternsFileOut = 
+                Main.pointSystem.name() + 
+                (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
+                ".pattern";
         public static String settingsFileOut = "test";
         public static boolean updateBest = true;
     
@@ -90,7 +100,7 @@ public class Settings {
     }
     
     public static class Evaluations {
-        public static int numThreads = 16;
+        public static int numThreads = 1;
         
         //Pattern Policy
         public static boolean simpleScoring = false;

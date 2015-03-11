@@ -59,13 +59,6 @@ public class Prismo implements Trainer{
     }
     
     @Override
-    public void update() {
-        
-        pokersquares.config.PatternReader.writePatterns(Settings.Training.patternsFileOut, patternEvaluations);  
-        
-    }
-    
-    @Override
     public void runSession(long millis) {
         long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
 	System.out.print("\nPrismo Forever\n");
@@ -89,7 +82,7 @@ public class Prismo implements Trainer{
             
             //RUN trial
             while (b.getTurn() < 25) {
-                 Card c = b.getDeck().remove(r.nextInt(b.getDeck().size())); 
+                Card c = b.removeCard(r.nextInt(b.cardsLeft())); 
                 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);
@@ -129,8 +122,6 @@ public class Prismo implements Trainer{
         //classify hands 
         for (int h = 0; h < 10; ++h) {
             Hand hand  = b.hands.get(h);
-            hand.buildRankCounts();
-            hand.checkStraight();
             buildPattern(hand);
             if (!bp.get(h).contains(hand.getPattern()))
                 bp.get(h).add(hand.getPattern());
