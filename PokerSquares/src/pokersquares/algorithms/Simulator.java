@@ -28,7 +28,7 @@ public class Simulator {
         public void run() {
             Random r = new Random(Settings.Main.seed + offset);
             
-            /*
+            
             Settings.Training.train = false;
             PokerSquares ps = new PokerSquares(new BeemoV2(), system);
             ps.verboseScores = false;
@@ -36,20 +36,21 @@ public class Simulator {
             ps.verboseScores = true;
             totalScore = ps.getScoreMean() * numSimulations;
             simsRun = numSimulations;
-            */
             
+            /*
             System.out.println(numSimulations + " " + offset);
             while(numSimulations-- > offset){
                 Board b = new Board(board);
                 while (b.getTurn() < 25) {
-                    Card c = b.removeCard(numSimulations % b.cardsLeft());
-                    //Card c = b.removeCard(r.nextInt(b.cardsLeft()));
+                    //Card c = b.removeCard(numSimulations % b.cardsLeft());
+                    Card c = b.removeCard(r.nextInt(b.cardsLeft()));
                     int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millisRemaining);
                     b.playCard(c, p);
                 }
                 simsRun++;
                 totalScore += Settings.Environment.system.getScore(b.getGrid());
             }
+            */
             
             
         }
@@ -74,10 +75,10 @@ public class Simulator {
     public void run(){
         //Number of threads used is 16 right now...
         Gamer[] gamers = new Gamer[Settings.Evaluations.numThreads];
-        //int simPerThread = numSimulations >> 4;
-        //int extraThread = numSimulations - (simPerThread << 4);
-        int simPerThread = numSimulations;
-        int extraThread = numSimulations - (simPerThread);
+        int simPerThread = numSimulations >> 4;
+        int extraThread = numSimulations - (simPerThread << 4);
+        //int simPerThread = numSimulations;
+        //int extraThread = numSimulations - (simPerThread);
         
         for(int i = 0; i < gamers.length; ++i){
             gamers[i] = new Gamer(board, (i < extraThread) ? simPerThread : simPerThread + 1, (i * simPerThread) + variator);

@@ -100,7 +100,7 @@ public class Settings {
     }
     
     public static class Evaluations {
-        public static int numThreads = 1;
+        public static int numThreads = 16;
         
         //Pattern Policy
         public static boolean simpleScoring = false;

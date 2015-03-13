@@ -5,7 +5,6 @@ public abstract class Algorithm {
         int[] bestPos = {2, 2}; //2, 2 because 0, 0 isn't good enough.
         //First Turn Optimization
         if(board.getTurn() == 0){
-            
             board.playCard(card, bestPos);
             return bestPos;
         }
