@@ -33,10 +33,6 @@ public class Billy implements Trainer {
     
     boolean mapUCT = true;
     
-    public Billy() {
-        new PatternPolicy();
-    }
-    
     private class PatternScore {
         public double totalScore = 0;
         public int numTrials = 0;
@@ -143,7 +139,7 @@ public class Billy implements Trainer {
         //TEST CURRENT SCORES
         double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
         
-        System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
+        //System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
         
         bestPatternEvaluations.putAll(patternEvaluations);
         pokersquares.config.PatternReader.writePatterns(patternEvaluations);
@@ -186,7 +182,6 @@ public class Billy implements Trainer {
                 
                 ps.totalScore += score;
                 ++ps.numTrials;
-                
                 
                 double uctScore =     //average simulation value of a node scaled to the continuous range {0,1}
                     score * 1 / (maxHandScore + epsilon) 

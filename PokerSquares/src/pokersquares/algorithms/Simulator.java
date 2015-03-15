@@ -28,7 +28,7 @@ public class Simulator {
         public void run() {
             Random r = new Random(Settings.Main.seed + offset);
             
-            
+            /*
             Settings.Training.train = false;
             PokerSquares ps = new PokerSquares(new BeemoV2(), system);
             ps.verboseScores = false;
@@ -36,9 +36,7 @@ public class Simulator {
             ps.verboseScores = true;
             totalScore = ps.getScoreMean() * numSimulations;
             simsRun = numSimulations;
-            
-            /*
-            System.out.println(numSimulations + " " + offset);
+            */
             while(numSimulations-- > offset){
                 Board b = new Board(board);
                 while (b.getTurn() < 25) {
@@ -49,11 +47,8 @@ public class Simulator {
                 }
                 simsRun++;
                 totalScore += Settings.Environment.system.getScore(b.getGrid());
-            }
-            */
-            
-            
-        }
+            } 
+       }
     }
     
     private final Board board;
@@ -77,13 +72,14 @@ public class Simulator {
         Gamer[] gamers = new Gamer[Settings.Evaluations.numThreads];
         int simPerThread = numSimulations >> 4;
         int extraThread = numSimulations - (simPerThread << 4);
-        //int simPerThread = numSimulations;
-        //int extraThread = numSimulations - (simPerThread);
         
         for(int i = 0; i < gamers.length; ++i){
             gamers[i] = new Gamer(board, (i < extraThread) ? simPerThread : simPerThread + 1, (i * simPerThread) + variator);
             gamers[i].start();
         }
+        
+        totalScore = 0;
+        
         for(int i = 0; i < gamers.length; ++i){
             try{
                 gamers[i].join();
@@ -100,7 +96,6 @@ public class Simulator {
         
         Simulator sim = new Simulator(tb, numSimulations, millisRemaining, variator, false);
         sim.run();
-        System.out.println("sims run: " + sim.simsRun);
         return sim.totalScore / sim.simsRun;
         /*
         double score = 0;

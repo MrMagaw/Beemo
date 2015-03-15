@@ -23,12 +23,12 @@ public class Settings {
     };
     
     public static class Main {
-        public static int games = 10000;
+        public static int games = 100;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 1123;
-        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static PointSystem pointSystem = PointSystem.SINGLEHAND;
     }
     
     public static class Environment {
@@ -101,6 +101,9 @@ public class Settings {
     
     public static class Evaluations {
         public static int numThreads = 16;
+        
+        //Optimality Testing
+        public static boolean testOptimality = true;
         
         //Pattern Policy
         public static boolean simpleScoring = false;

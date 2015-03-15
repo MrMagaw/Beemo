@@ -9,6 +9,7 @@ import static pokersquares.config.Settings.Training.bestValues;
 import static pokersquares.config.Settings.Training.updateBest;
 import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
+import pokersquares.evaluations.Optimality;
 import pokersquares.evaluations.PatternPolicy;
 
 /**
@@ -30,6 +31,8 @@ import pokersquares.evaluations.PatternPolicy;
 
 public class BeemoV2 implements PokerSquaresPlayer{
     private Board board;
+    public int gamesPlayed = 0;
+    public double totalOptimality = 0;
     
     @Override
     public void setPointSystem(PokerSquaresPointSystem system, long millis){
@@ -58,7 +61,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
 
     @Override
     public void init() {
-        
+        ++gamesPlayed;
         board = new Board();
     }
 
@@ -75,6 +78,14 @@ public class BeemoV2 implements PokerSquaresPlayer{
         }
         
         board.playCard(card, bestPos);
+        
+        if ((Settings.Evaluations.testOptimality) && (board.getTurn() == 25)) {
+            //System.out.println(gamesPlayed);
+            double optimalScore = Optimality.scoreBestHands(board);
+            totalOptimality += Settings.Environment.system.getScore(board.getGrid())/optimalScore;
+            System.out.println("Optimal Score: " + optimalScore + "\tMean Optimality: " + totalOptimality/gamesPlayed);
+        }
+        
         return bestPos;
     }
     

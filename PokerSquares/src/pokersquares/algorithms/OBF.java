@@ -21,14 +21,7 @@ public class OBF extends Algorithm{
             board.patternatePositions(card);
             if (PositionRank.contains(board)){
                 bestPos = PositionRank.getBestPos(board);
-                //DEBUG for duplicate patterns
-                /*
-                if (!(A[0] == B[0]) && (A[1] == B[1])) {
-                    System.out.println("Duplicate Pattern ERROR");
-                    board.debug();
-                    System.out.println("( "+A[0] + ", " + A[1] + " )" +"( "+B[0] + ", " + B[1] + " )");
-                }
-                */   
+                
             }else{
                 bestPos = getBestPos(board, preEvaluations, postEvaluations);
             }
