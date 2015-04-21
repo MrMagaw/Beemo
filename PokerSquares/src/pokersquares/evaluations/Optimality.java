@@ -24,11 +24,8 @@ public class Optimality {
         
         
         //GET Played Cards
-        for (int i = 0; i < 25; ++i) {
-            
+        for (int i = 0; i < 25; ++i) 
             cards.add(b.getGrid()[i%5][i/5]);
-            
-        }
         
         //GET 5 best Hands
         for (int i = 0; i < 5; ++i) {

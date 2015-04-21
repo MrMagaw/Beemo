@@ -44,7 +44,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
         
         //DEBUG PATTERN VALUES
-        //PatternPolicy.debug();
+        if (Settings.BMO.debugPatterns)PatternPolicy.debug();
         
     }
 
@@ -68,6 +68,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         board.playCard(card, bestPos);
         
+        //TEST OPTIMALITY
         if ((Settings.Evaluations.testOptimality) && (board.getTurn() == 25)) {
             //System.out.println(gamesPlayed);
             double optimalScore = Optimality.scoreBestHands(board);

@@ -58,6 +58,7 @@ public class Settings {
         
         //SETTINGS
         public static boolean readPatterns = false;
+        public static boolean debugPatterns = false;
         public static String patternsFileIn = 
                 Main.pointSystem.name() + 
                 (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
@@ -66,7 +67,7 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 3000;
+        public static long millis = 30000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;
@@ -78,7 +79,7 @@ public class Settings {
                 ".pattern";
         
         //public static Trainer trainer = new Prismo();
-        public static Trainer trainer = new Prismo();
+        public static Trainer trainer = new Billy();
     }
     
     public static class Evaluations {

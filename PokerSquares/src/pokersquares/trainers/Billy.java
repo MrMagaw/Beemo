@@ -52,12 +52,10 @@ public class Billy implements Trainer {
             maxHandScore = (score > maxHandScore) ? score : maxHandScore;
         
         //SET BENCHMARK
-        bestScore = Simulator.simulate(new Board(), 10000, 10000, 1);
+        //bestScore = Simulator.simulate(new Board(), 10000, 10000, 1);
         bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
         
         //SIMULATE Games
-        //int nextCheck = 8192;
-        //int nextNextCheck = 65536;
         int nextCheck = 10000;
         int nextNextCheck = Integer.MAX_VALUE;
         //double trialScore = 0;
@@ -139,7 +137,8 @@ public class Billy implements Trainer {
         }
         */
         //TEST CURRENT SCORES
-        double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
+        //double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
+        double score = 0;
         
         //System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
         
