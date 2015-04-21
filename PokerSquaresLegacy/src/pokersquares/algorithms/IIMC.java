@@ -1,144 +1,81 @@
 package pokersquares.algorithms;
 
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import pokersquares.players.Beemo;
-import pokersquares.Card;
-import pokersquares.Play;
-import pokersquares.montecarlo.ElapsedTimer;
+import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Algorithms.enableSymmetry;
+import pokersquares.environment.*;
+import pokersquares.evaluations.PatternPolicy;
+import pokersquares.evaluations.PositionRank;
 
-/**
- *
- * @author newuser
- */
 public class IIMC extends Algorithm{
-
-    public IIMC(Beemo parent) {
-        super(parent);
+    private static class Filter implements Comparator<Integer[]>{
+        //Compartor class to filter positions by their static evaluation value 
+        private final Card card;
+        private final Board board;
+        @Override
+        public int compare(Integer[] o1, Integer[] o2) {
+            //o1-o2
+            Board tb = new Board(board); 
+            //Optimize by building, evaluating and comparing only at corresponding hands, not the entire board
+            
+            tb.playCard(card, new int[]{o2[0], o2[1]});
+            double s1 = PatternPolicy.evaluate(tb);
+            tb = new Board(board);
+            tb.playCard(card, new int[]{o1[0], o1[1]});
+            return ((int)(s1 * 1000)) - ((int)(PatternPolicy.evaluate(tb) * 1000));
+        }
+        public Filter(Board b, Card c){
+            card = c;
+            board = b;
+        }
     }
     
     @Override
-    public int[] search(Card card, long millisRemaining) {
-        //MONTE CARLO TREE SEARCH 
-        //Based on Buro and Furtak's IIMC algorithm
-        //Imperfect Information Monte Carlo
+    public int[] internalSearch(final Card card, final Board board, long millisRemaining) {
+        Integer[] bestPos = {2, 2};
+        Double bestScore = Double.NEGATIVE_INFINITY;
         
-        int[] bestPos = new int[2];
+        //UNIQUE POSITION PATTERNS
+        //SYMMETRY REDUNDANCY
+        Board pb = new Board(board); //Peanut Butter
+        for (Hand h : pb.hands) if (h.numCards < 5)h.playOpenPos(card);
         
-        /*
-        //OPTIMIZATION always play the first card in the center
-        if (BMO.getTurn() == 0) {
-            bestPos[0] = 2;
-            bestPos[1] = card.getSuit();
-            return bestPos;
+        pb.patternateHands();
+        pb.patternatePositions(card);
+        
+        HashMap <String,Integer[]> uniquePatterns = new HashMap <String, Integer[]>();
+        for (int i = 0; i < pb.posPatterns.size(); ++i) {
+            Integer[] pos = pb.getOpenPos().get(i);
+            String posPattern = pb.posPatterns.get(i);
+            uniquePatterns.put(posPattern, pos);
         }
-        */
         
-        //ROOT PLAY
-        Play root = new Play(BMO);
-        root.buildAndEvaluateHands();
-        root.evaluatePlay();
+        Integer[][] positions = new Integer[board.getOpenPos().size()][];
+        int i = 0;
+        for (Integer[] pos : uniquePatterns.values()) positions[i++] = pos;
         
-        //GENERATE PLAYS
-        LinkedList <Play> moves =  new LinkedList();
-        genPlays(card, root, moves);
+        positions = board.getOpenPos().toArray(positions); //COMMENT to use symmetry optimization
         
-        //RUN SIMULATIONS
-        //IN <- moves, timeRemaining
-        bestPos = runSimulations(moves, millisRemaining);
-        //OUT -> BESTPOS
-        
-        return bestPos;
-    }
-    
-    public List genPlays(Card card, Play play, List generatedPlays) {
-        
-        //FOR EACH POS
-        LinkedList <Play> topPlays = new LinkedList();
-        for (Integer pos : BMO.getPlayPos()) {
+        //FOR EACH POSITION available in the board
+        for(Integer[] pos : positions){
+            if(pos == null) break;
+            int numSimulations = Settings.Algorithms.simSampleSize;
+            double score = 0;
             
-            //SKIP PLAYED POS
-            if (!play.getPlayedPositions().contains(pos)) {
-                //DECODE pos
-                int row = pos/5;
-                int col = pos%5;
-                
-                //MAKE A NEW PLAY
-                Play newPlay = new Play(play);
-                        
-                //RECORD PLAY + EVALUATE
-                newPlay.recordPlayPos(card, pos);
-                newPlay.evaluateHands(row, col);
-                newPlay.updateEvaluation(row, col);
-                
-                topPlays.add(newPlay); 
-                
+            Board tb = new Board(board);
+            tb.playCard(card, new int[]{pos[0], pos[1]});
+            
+            //SIMULATE Games
+            score = Simulator.simulate(tb, numSimulations, millisRemaining, 1);
+            
+            if(score > bestScore){
+                bestScore = score;
+                bestPos = pos;
             }
         }
         
-        Collections.sort(topPlays);
-        
-        for (int i = 0; i < BMO.getPlaySampleSize(); i++) {
-            if (topPlays.size() == 0) break;
-            generatedPlays.add(topPlays.removeFirst());
-            //System.out.println(((Play) generatedPlays.get(i)).getPlayedPositions().get(0));
-        }
-        
-        return generatedPlays;
+        return new int[] {bestPos[0], bestPos[1]};
     }
-    
-    public int[] runSimulations(List <Play>  moves, long millisRemaining) {
-        int[] bestPos;
-        boolean timeLeft = true;
-        Collections.sort(moves);
-        
-        //WHILE TIME IS LEFT
-        while(timeLeft) {
-            //FOR EACH MOVE
-            for (Play move : moves) {
-                //RECORD RESULT OF SIMULATION
-                //move.simulateGBFGame(t.elapsed());
-                //move.simulateRandomGame(BMO.getTimer().elapsed());
-                //move.simulateFlushGame(BMO.getTimer().elapsed());
-                //move.simulateRBGame(BMO.getTimer().elapsed());
-                move.simulateRB2Game(BMO.getTimer().elapsed());
-                //move.simulateOXGame(BMO.getTimer().elapsed());
-                //move.simulateGame("grb",BMO.getTimer().elapsed());
-                
-                //TERMINATION CONDITIONS
-                
-                //TIME RUNS OUT
-                //if (BMO.getTimer().elapsed() > ((BMO.getTimeCoefficient() * millisRemaining*0.4)-150)) timeLeft = false; //Negative Concave Time
-                //if (BMO.getTimer().elapsed() > (BMO.getTimeCoefficient() * (BMO.getTotalMillis()/(15+(BMO.getTurn()%25)))-100)) timeLeft = false; //Flat Time
-                
-                //TARGET SAMPLE SIZE REACHED
-                if (move.getNumSimulations() >= BMO.getMonteCarloSampleSize()) timeLeft = false;
-            }
-        }
-        
-        //UPDATE EVALUATION
-        //as the average of all simulations from that move
-        for (Play move : moves) {
-            move.updateSimAve();
-        }
-        
-        //CHOOSE BEST MOVE
-        Collections.sort(moves);
-        Play best = moves.get(0);
-        
-        //EVALUATE SAMPLING
-        /*
-        //print num sim and their corresponding evalutions
-        for (Play move : moves) {
-            System.out.println("numSim: " + move.getNumSimulations() + " sum: " + move.getSimulationSum());
-            System.out.println(move.getEvaluation() +" "+ move.getStaticEval()+" " + move.getSimEval()+" "+ move.getPlayedPositions().get(0));
-        }
-        */
-        
-        bestPos = best.getPos();
-        
-        return bestPos;
-    }    
 }

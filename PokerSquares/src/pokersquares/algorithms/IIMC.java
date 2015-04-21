@@ -7,7 +7,6 @@ import pokersquares.config.Settings;
 import static pokersquares.config.Settings.Algorithms.enableSymmetry;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
-import pokersquares.evaluations.PositionRank;
 
 public class IIMC extends Algorithm{
     private static class Filter implements Comparator<Integer[]>{

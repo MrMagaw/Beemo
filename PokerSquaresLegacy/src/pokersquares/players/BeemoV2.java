@@ -2,10 +2,12 @@ package pokersquares.players;
 
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.*;
+import pokersquares.config.AdaptiveSettings;
 import static pokersquares.config.Settings.BMO.genSettings;
 import static pokersquares.config.Settings.Evaluations.updateSettings;
 import static pokersquares.config.Settings.Training.bestValues;
 import static pokersquares.config.Settings.Training.updateBest;
+import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
 import pokersquares.evaluations.Optimality;
 import pokersquares.evaluations.PatternPolicy;
@@ -37,12 +39,17 @@ public class BeemoV2 implements PokerSquaresPlayer{
         //new PatternPolicy();
         Settings.Environment.system = system;
         
-        //SET POINT SYSTEM
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
         
         //READ PATTERNS
         if (Settings.BMO.readPatterns) pokersquares.evaluations.PatternPolicy.patternEvaluations = pokersquares.config.PatternReader.readPatterns(Settings.BMO.patternsFileIn);
+        
+        //READ SETTINGS
+        if (Settings.BMO.readSettings) SettingsReader.readSettings(Settings.BMO.settingsFileIn);
+        
+        //GENERATE SETTINGS
+        if (genSettings) AdaptiveSettings.generateSettings();
         
         //TRAIN
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);

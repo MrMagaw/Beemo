@@ -1,350 +1,362 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package pokersquares.evaluations;
 
-import pokersquares.Card;
-import pokersquares.PokerSquares;
-import pokersquares.players.Beemo;
-import java.util.*;
-import static pokersquares.PokerSquares.SIZE;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
+import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Evaluations.colHands;
+import static pokersquares.config.Settings.Evaluations.patternate;
+import static pokersquares.config.Settings.Evaluations.rowHands;
+import static pokersquares.config.Settings.Evaluations.simpleScoring;
+import pokersquares.environment.Board;
+import pokersquares.environment.Card;
+import pokersquares.environment.Hand;
 
-/**
- *
- * @author newuser
- */
 public class PatternPolicy {
-    //Beemo
-    Beemo BMO;
+    public static Map<Integer, Double> patternEvaluations = new java.util.HashMap();
+
+    public PatternPolicy () {
+        
+    }
     
-    //Policy Exponents
-    private double p = 1; //pair
-    private double tp = 1; //two pair (optimal at 1)
-    private double t = 1; //three of a kind (optimal at 1) 2.2
-    private double s = 0.647; //straight
-    private double f = 0.95; //flush (optimal at 0.95) 0.8
-    private double fh = 1.2; //row full house
-    private double fk = 1.18; //four of a kind
-    private double sf = 1.1; //straight flush
-    private double rf = 1.1; //royal flush
-    
-    //Hand Analysis
-    private String pattern;
-    private boolean straight = false;
-    private boolean royal = false;
-    private double numCards = 0;
-    private double handWeight = 0;
-    private double numSuits = 0;
-    private double numRanks = 0;
-    private int maxRank = 0;
-    private double maxOfAKind = 0;
-    private int[] suitCounts = new int[Card.NUM_SUITS];
-    private int[] rankCounts = new int[Card.NUM_RANKS];
-    private int[] rankCountCounts = new int[PokerSquares.SIZE + 1];
-    private Card suitRep;
-    
-    
-    //Evaluation
-    double evaluation = 0;
-    
-    public double evaluate(Beemo BMO, Card[] hand, int n, boolean col) {
-        
-        //n is the respective number of the hand, then nth col or row
-        
-        //An Evaluation based on the genetic combination of weighted policies
-        
-        //Genetic Policy Scores
-        //plays positions based on the weighted influences of hand policies
-        //policy scores reflect the extent to which a policy is satisfied and the worth of a policy
-        
-        this.BMO = BMO;
-        
-        //ANALYZE 
-        analyzeHand(hand);
-        
-        //PATTERNATE
-        buildPattern(hand, col);
-        
-        //EVALUATE
-        //if pattern scores contains the current hand's pattern
-        if (BMO.containsPattern((String) pattern)) getPatternEvaluation();
-        //otherwise score the hand
-        else scoreHand(hand, n, col);
-        
-        if (false) {
-            System.out.println("mr " + (maxRank+1));
-            PokerSquares.printHand(hand, evaluation);
-            System.out.println(pattern);
+    public static double evaluate(Board board){
+        double evaluation = 0;
+        for(int i = 0; i < 5; ++i){
+            evaluation += evaluate(board.hands.get(i));
+            evaluation += evaluate(board.hands.get(i+5));
         }
-        
-        //Every Position receives a score that is the sum of the scores from each policy
-        //The positions that receives the best score from all policies is chosen
-        
         return evaluation;
     }
     
-    private void buildSimplePattern(Card[] hand, boolean col) {
-        //build pattern by sorting string reps of cards in a hand
-        
-        LinkedList <String> cardStrings = new LinkedList <String> ();
-        for (Card card : hand) {
-            if (card != null) cardStrings.add(card.toString());
+    public static double evaluate(Hand hand) {
+        if(!hand.hasPattern() && patternate){
+            buildPattern(hand);
         }
         
-        Collections.sort(cardStrings);
-        
-        if (col) pattern = "col ";
-        else pattern = "row ";
-        
-        for (String strCard : cardStrings) {
-            pattern = pattern + strCard;
-        }
+        if (patternEvaluations.containsKey(hand.getPattern()))
+            return patternEvaluations.get(hand.getPattern());
+        else
+            return scoreHand(hand);
     }
     
-    private void buildPattern(Card[] hand, boolean col) {
-        //PATTERN NOTE 
-        //Current Pattern builds based on the assumption that 
-        //only suits are dealt with in columns 
-        //and only ranks are dealt with in rows 
+    public static void buildPattern(Hand hand) {
+        //[isCol][hasStraight][flushCapable][3xnumOfHighCards][2xnumOfPairs][numOfThreeOfAKind][numOfFourOfAKind]
+        //10 bits / 32 bits
         
-        //if col build suit pattern
-        if (col) {
-            if (numCards > 0)
-                if (numSuits == 1)
-                    if (numCards == 1) pattern = pattern + "a";
-                    else if (numCards == 2) pattern = pattern + "aa";
-                    else if (numCards == 3) pattern = pattern + "aaa";
-                    else if (numCards == 4) pattern = pattern + "aaaa";
-                    else if (numCards == 5) pattern = pattern + "aaaaa";
+        //Merge Suits left into flushCapable?
+        
+        //[2x primary rank remain][2x secondary rank][2xcards in suit left]
+        //0->Not possible
+        //1->Barely possible
+        //2->Very possible
+            
+        //buildRankCounts()
+        hand.rankCountCounts = new int[6];
+        for(int i = 0; i < Card.NUM_RANKS; ++i)
+            ++hand.rankCountCounts[hand.rankCounts[i]];
+        
+        int pattern = (hand.isCol ? 4 : 0);
+        pattern += (hand.hasStraight) ? 2 : 0;
+        pattern += (hand.numSuits <= 1 ? 1 : 0);
+        pattern <<= 3;
+        pattern += hand.rankCountCounts[1];
+        pattern <<= 3;
+        pattern += hand.rankCountCounts[2];
+        pattern <<= 2;
+        pattern += hand.rankCountCounts[3];
+        pattern <<= 1;
+        pattern += hand.rankCountCounts[4];
+        
+        pattern <<= 2;
+        
+        int suitPattern = (hand.numSuits == 1) ? -1 : 0;
+        
+        int usedRank;
+        if(hand.numRanks == 1){
+            usedRank = Integer.MAX_VALUE;
+            pattern <<= 2;
+        }else{
+            usedRank = (hand.numRanks == 2) ? -1 : Integer.MAX_VALUE;
         }
-        //if row build rank pattern
-        else {
-            
-            String [] nums = {"1", "2", "3", "4", "5" };
-            int iNums = 0;
-            
-            //Iterates through num CountCounts, 
-            //recording a rank identifier for each rank
-            
-            if (numCards > 0)
-                //for the maximum number of rank multiples
-                for (int i = 5; i > 0; i--) {
-                    //for each rank multiple occuring at least once
-                    //System.out.println(pattern + " " + rankCountCounts[i] + " " + nums[iNums] + "HERE");
-                    if (rankCountCounts[i] > 0) {
-                        //for each occurance of a rank multiple
-                        for (int j = 0; j < rankCountCounts[i]; j++) {
-                            for (int k = 0; k < i; k++) {
-                                pattern = pattern + nums[iNums];
-                            }
-                            iNums++;
-                        }
+        
+        for(Card c : hand.getCards()){
+            if(c != null){
+                if(usedRank == c.getRank()) continue;
+                if(suitPattern == -1){
+                    int numLeft = hand.getBoard().suitsLeft(c.getSuit());
+                    int needed = hand.numOpenPos();
+                    pattern += (numLeft >= needed) ? ((numLeft >= (needed << 2)) ? 2 : 1) : 0;
+                }
+                pattern += hand.getBoard().ranksLeft(c.getRank());
+                if(usedRank != -1) break;
+                pattern <<= 2;
+                usedRank = c.getRank();
+            }
+        }
+        
+        pattern <<= 2;
+        
+        pattern += suitPattern;
+        
+        hand.setPattern(pattern);
+    }
+    
+    private static synchronized double scoreHand(Hand hand) {
+        //Policy Scores should relate to probability, 
+        //They are currently assigned by gut,
+        //The probability shousld be calculated or else learned 
+        if(hand.numCards == 0) return 0;
+        
+        if (!Settings.BMO.readSettings) return 0;
+        
+        double handScore = 0;
+        
+        if (simpleScoring) {
+            if (hand.isCol) {
+                for (int i = 0; i < colHands.length; ++i) {
+                    if (colHands[i]) {
+                        if (i == 0) handScore += scoreSuitPolicy(hand);
+                        if (i == 1) handScore += scoreRankPolicy(hand);
                     }
                 }
-                
+            }else {
+                for (int i = 0; i < rowHands.length; ++i) {
+                    if (rowHands[i]) {
+                        if (i == 0) handScore += scoreSuitPolicy(hand);
+                        if (i == 1) handScore += scoreRankPolicy(hand);
+                    }
+                }
+            }
+        }
+        else {
+            if (hand.isCol) {
+                for (int i = 0; i < colHands.length; ++i) {
+                    if (colHands[i]) {
+                        handScore += selectScorePolicy(hand, i);
+                    }
+                }
+            }else {
+                for (int i = 0; i < rowHands.length; ++i) {
+                    if (rowHands[i]) {
+                        handScore += selectScorePolicy(hand, i);
+                    }
+                }
+            }
         }
         
+        if (patternate) patternEvaluations.put(hand.getPattern(), handScore);
+        
+        return handScore;
     }
     
-    private void getPatternEvaluation() {
-        evaluation = BMO.getPatternEvaluation(pattern);
+    private static double selectScorePolicy(Hand hand, int i) {
+        //Policy Value Score Product
+        
+        if (i == 0) //High Card
+            return Settings.Evaluations.handScores[0] * scoreHighCardPolicy(hand);
+        else if (i == 1)  //One Pair
+            return Settings.Evaluations.handScores[1] * scorePairPolicy(hand);
+        else if (i == 2) //Two Pair
+            return Settings.Evaluations.handScores[2] * scoreTwoPairPolicy(hand);
+        else if (i == 3) //Three of a Kind
+            return Settings.Evaluations.handScores[3] * scoreThreeOfAKindPolicy(hand);
+        else if (i == 4) //Straight
+            return Settings.Evaluations.handScores[4] * scoreStraightPolicy(hand);
+        else if (i == 5) //Flush
+            return Settings.Evaluations.handScores[5] * scoreFlushPolicy(hand);
+        else if (i == 6) //Full House
+            return Settings.Evaluations.handScores[6] * scoreFullHousePolicy(hand);
+        else if (i == 7) //Four of a Kind
+            return Settings.Evaluations.handScores[7] * scoreFourOfAKindPolicy(hand);
+        else if (i == 8) //Straight Flush
+            return Settings.Evaluations.handScores[8] * scoreStraightFlushPolicy(hand);
+        else if (i == 9) //Royal Flush
+            return Settings.Evaluations.handScores[9] * scoreRoyalFlushPolicy(hand);
+        else return 0;
     }
     
-    private void scoreHand(Card[] hand, int n, boolean col) {
-        double[] handScores = {0,0,0,0,0,0,0,0,0}; //records a score for each poker hand from pair [0] to royal flush [8]
+    private static double scoreSuitPolicy(Hand hand) {
+        //essentially the same as the flush policy
         
-        //Policy Scores should relate to probability, 
-        //They are currently assigned by intuition,
-        //The probability should be calculated or else learned 
-        
-        //if (!col) handScores[0] = 2 * Math.pow(scorePairPolicy(hand, n), p);
-        if (!col) handScores[1] = 5 * Math.pow(scoreTwoPairPolicy(hand, n), tp);
-        if (!col) handScores[2] = 10 * Math.pow(scoreThreeOfAKindPolicy(hand, n), t);
-        //if (!col) handScores[3] = 15 * Math.pow(scoreStraightPolicy(), s);
-        if (col) handScores[4] = 20 * Math.pow(scoreFlushPolicy(hand, n), f);
-        if (!col) handScores[5] = 25 * Math.pow(scoreFullHousePolicy(hand, n), fh);
-        if (!col) handScores[6] = 50 * Math.pow(scoreFourOfAKindPolicy(hand, n), fk);
-        //handScores[7] = 75 * Math.pow(scoreStraightFlushPolicy(hand, n), sf);
-        //handScores[8] = 100 * Math.pow(scoreRoyalFlushPolicy(hand, n), sf);
-        
-        //the evaluation is the highest policy score
-        evaluation = handScores[0];
-        for (int i = 0; i < 9; i++) if (handScores[i] > evaluation) evaluation = handScores[i];
-        
-        //map pattern to evaluation 
-        if (pattern != null) BMO.mapPattern(pattern, evaluation);
+        //If there is no possibility of a flush
+        if(hand.numSuits > 1) return Settings.Evaluations.flushPolicy[0];
+        //if there is a flush
+        if(hand.numCards == 5) return Settings.Evaluations.flushPolicy[1];
+        //if there is a possibility of a flush
+        return Settings.Evaluations.flushPolicy[hand.numCards + 1];
+            
     }
     
-    private double scorePairPolicy(Card hand[], int n) {
-        double pairScore = 0;
+    private static double scoreRankPolicy(Hand hand) {
+        //all possible combinations of ranks
         
+        //where there are no rank multiples and a possiblitity of a straight
+        if (hand.numRanks == hand.numCards &&hand.hasStraight) 
+            return Settings.Evaluations.straightPolicy[hand.numCards-1]; //5
+        //where there are no rank multiples (no doubles, triples, etc.)
+        if (hand.numRanks == hand.numCards) 
+            return Settings.Evaluations.highCardPolicy[hand.numCards-1]; //5
+        //where there is one pair and no other multiples
+        if ((hand.rankCountCounts[2] == 1) && ((hand.rankCountCounts[1] + 2) == hand.numCards))
+            return Settings.Evaluations.pairPolicy[hand.numRanks-1]; //4
+        //where there is a twoPair 
+        if ((hand.rankCountCounts[2] == 2) && ((hand.rankCountCounts[1] + 4) == hand.numCards))
+            return Settings.Evaluations.twoPairPolicy[hand.numRanks-2]; //3
+        //where there is a three of a kind
+        if ((hand.rankCountCounts[3] == 1) && ((hand.rankCountCounts[1] + 3) == hand.numCards))
+            return Settings.Evaluations.twoPairPolicy[hand.numRanks-1]; //4
+        //where there is a full house
+        if ((hand.rankCountCounts[3] == 1) && (hand.rankCountCounts[2] == 1))
+            return Settings.Evaluations.twoPairPolicy[0]; //1
+        //where there is a four of a kind
+        if (hand.rankCountCounts[4] == 1)
+            return Settings.Evaluations.fourOfAKindPolicy[0]; //1
+            
+        return 0;
+    }
+    
+    private static double scoreHighCardPolicy(Hand hand) {
+        //if there is no possibility of a high card
+        if(hand.numCards != hand.numRanks) return 0;
+        //if there is a high card
+        if(hand.numCards == 5) return 1;
+        //if there is a possibility of a high card
+        return Settings.Evaluations.highCardPolicy[hand.numCards];
+    }
+    
+    private static double scorePairPolicy(Hand hand) {
         //if there is a pair
-        if (rankCountCounts[2] == 1) pairScore = 1;
-        //if there is a possibility of a pair
-        else if (numCards < 5) pairScore = 0.1;
+        if (hand.rankCountCounts[2] == 1) {
+            if(hand.numCards == 5 && (hand.rankCountCounts[3] == 1 || hand.numSuits == 1)) 
+                return 0; //If we have a full house || flush
+            return 1; //We have it!
+        }
+        //if there is no possibility of a pair
+        if(hand.rankCountCounts[3] == 1 || hand.rankCountCounts[4] == 1 //We have three or four of a kind
+                || hand.numCards == 5) return 0; //Or a full hand
         
-        return pairScore;
+        return Settings.Evaluations.pairPolicy[hand.numCards - 1];
     }
     
-    private double scoreTwoPairPolicy(Card hand[], int n) {
-        double twoPairScore = 0;
-        
-        //if there is a two pair
-        if (rankCountCounts[2] == 2) twoPairScore = 1;
-        //if there is the possibility of a two pair
-        else if ((rankCountCounts[2] == 1) && (numCards < 5))twoPairScore = 0.5;
-        else if (numCards < 4) twoPairScore = 0.1;
-        //if the hand has no chance of a two pair
-        else if (numCards > 3) twoPairScore = -0.1;
-        
-        return twoPairScore;
+    private static double scoreTwoPairPolicy(Hand hand) {
+        if(hand.rankCountCounts[3] == 1) return 0; //Can't get two pair when we have three of a kind.
+        if(hand.rankCountCounts[2] == 2) return 1; //We already have it
+        if(hand.numCards == 5) return 0; //Hand is full.
+        if(hand.rankCountCounts[2] == 1) return Settings.Evaluations.twoPairPolicy[hand.numCards - 2]; //0, 1, 2, 3
+        if(hand.numCards > 3) return 0;
+        return Settings.Evaluations.twoPairPolicy[hand.numCards + 3]; //4, 5, 6
     }
     
-    private double scoreThreeOfAKindPolicy(Card hand[], int n) {
-        double threeOfAKindScore = 0;
-        
-        //if there is a three of a kind
-        if (rankCountCounts[3] == 1) threeOfAKindScore = 1;
-        //if there is the possibility of a three of a kind
-        else if ((rankCountCounts[2] == 1) && (numCards < 5)) threeOfAKindScore = 0.7 - Math.pow((numCards/10),2);
-        else if (numCards < 4) threeOfAKindScore = 0.5 - Math.pow((numCards/10),31);
-        
-        //System.out.println(numCards + " " + n + " " + threeOfAKindScore);
-        
-        return threeOfAKindScore;
+    private static double scoreThreeOfAKindPolicy(Hand hand) {
+        if(hand.rankCountCounts[3] == 1)
+            if(hand.rankCountCounts[2] == 1) return 0; //Already have full house
+            else return 1; //Have three of a kind
+        if(hand.numCards == 5) return 0; //Hand is full
+        if(hand.rankCountCounts[2] == 1) return Settings.Evaluations.threeOfAKindPolicy[hand.numCards - 2];
+        if(hand.numCards > 3) return 0; //Can't make a three of a kind.
+        return Settings.Evaluations.threeOfAKindPolicy[hand.numCards + 2];
     }
     
-    private double scoreStraightPolicy() {
-        double straightScore = 0;
-        
-        if (straight) straightScore = numCards / 5;
-        
-        return straightScore;
+    private static double scoreStraightPolicy(Hand hand) {
+        return 0;
     }
     
-    private double scoreFlushPolicy(Card hand[], int n) {
-        double flushScore = 0;
-        
-        //this still works amazingly but I dont know 
-        if ((numSuits == 1) && (numCards <= 5)) flushScore = ((double)Math.pow(handWeight, 1/2))*handWeight*handWeight;
-        
-        return flushScore;
+    private static double scoreFlushPolicy(Hand hand) {
+        if(hand.numSuits > 1) return 0;
+        if(hand.numCards == 5) return 1;
+        return Settings.Evaluations.flushPolicy[hand.numCards];
     }
     
-    private double scoreFullHousePolicy(Card hand[], int n) {
-        double fullHouseScore = 0;
-        
-        if ((rankCountCounts[3] == 1) && (rankCountCounts[2] == 1)) fullHouseScore = 1;
-        //if there is the possibility of a Full House
-        else if ((rankCountCounts[2] == 2) && (numCards == 4)) fullHouseScore = 0.7;
-        else if ((rankCountCounts[3] == 1) && (numCards == 4)) fullHouseScore = 0.7;
-        else if ((rankCountCounts[3] == 1) && (numCards == 3)) fullHouseScore = 0.8;
-        else if ((rankCountCounts[2] == 1) && (numCards == 3)) fullHouseScore = 0.55;
-        else if ((rankCountCounts[2] == 1) && (numCards == 2)) fullHouseScore = 0.6;
-        else if (numCards == 2) fullHouseScore = 0.4;
-        else if (numCards == 1) fullHouseScore = 0.4;
-        else fullHouseScore = 0.0;
-        
-        return fullHouseScore;
+    private static double scoreFullHousePolicy(Hand hand) {
+        if(hand.rankCountCounts[3] == 1){
+            if(hand.rankCountCounts[2] == 1) return 1; //We has it.
+            if(hand.numCards == 5) return 0; //We can't get it
+            return Settings.Evaluations.fullHousePolicy[0];
+        }
+        if(hand.numCards == 5) return 0; //Hand is full
+        if(hand.rankCountCounts[2] == 2) return Settings.Evaluations.fullHousePolicy[1];
+        if(hand.rankCountCounts[2] == 1){
+            if(hand.numCards > 3) return 0; //Can't get it
+            return Settings.Evaluations.fullHousePolicy[hand.numCards];
+        }
+        if(hand.numCards > 2) return 0; //Can't get it
+        return Settings.Evaluations.fullHousePolicy[hand.numCards + 3];
     }
     
-    private double scoreFourOfAKindPolicy(Card hand[], int n) {
-        double fourOfAKindScore = 0;
-        
-        if (rankCountCounts[4] == 1) fourOfAKindScore = 1;
-        //if there is a possibility of a four of a kind
-        else if ((rankCountCounts[3] == 1) && (numCards == 4)) fourOfAKindScore = 0.466;
-        else if ((rankCountCounts[3] == 1) && (numCards == 3)) fourOfAKindScore = 0.51;
-        else if ((rankCountCounts[2] == 1) && (numCards == 3)) fourOfAKindScore = 0.01;
-        else if ((rankCountCounts[2] == 1) && (numCards == 2)) fourOfAKindScore = 0.01;
-        else if ((numCards == 1)) fourOfAKindScore = 0.01;
-        else fourOfAKindScore = 0.0;
-        
-        return fourOfAKindScore;
+    private static double scoreFourOfAKindPolicy(Hand hand) {
+        if(hand.rankCountCounts[4] == 1) return 1;
+        if(hand.numCards == 5) return 0;
+        if(hand.rankCountCounts[3] == 1)
+            return Settings.Evaluations.fourOfAKindPolicy[hand.numCards - 3]; //0-1
+        if(hand.numCards > 3) return 0;
+        if(hand.rankCountCounts[2] == 1)
+            return Settings.Evaluations.fourOfAKindPolicy[hand.numCards]; //2-3
+        if(hand.numCards > 2) return 0;
+        return Settings.Evaluations.fourOfAKindPolicy[hand.numCards + 3];
     }
     
-    private double scoreStraightFlushPolicy(Card hand[], int n) {
+    private static double scoreStraightFlushPolicy(Hand hand) {
         double straightFlushScore = 0;
         
         //if there is a StraightFlush
-        if (straight && (numSuits == 1) && (numCards == 5)) straightFlushScore = 1;
+        if (hand.hasStraight && (hand.numSuits == 1) && (hand.numCards == 5)) straightFlushScore = 1;
         
         return straightFlushScore;
     }
     
-    private double scoreRoyalFlushPolicy(Card hand[], int n) {
+    private static double scoreRoyalFlushPolicy(Hand hand) {
         double royalFlushScore = 0;
         
         //if there is a StraightFlush
-        if (royal && (numSuits == 1) && (numCards == 5)) royalFlushScore = 1;
+        if (hand.hasRoyal && (hand.numSuits == 1) && (hand.numCards == 5)) royalFlushScore = 1;
         
         return royalFlushScore;
     }
     
-    private void analyzeHand(Card[] hand) {
+    public static String decodePattern(int p) {
         
-        //TRY to combine all for loops
+        ArrayList <String> patternFlags = new <String> ArrayList();
+        String patternCode;
         
-        //Count suits, ranks, cards
-        for (Card card : hand) {
-            if (card != null) {
-		suitCounts[card.getSuit()]++;
-                rankCounts[card.getRank()]++;
-                numCards++;
-                suitRep = card;
-            }
-        }
+        //Flags are stored in reverse order
+        int mask = 1 << 14;
+        int isCol = (p & mask) >> 14; 
+        mask = 1 << 13;
+        int hasStraight = (p & mask) >> 13;
+        mask = 1 << 12;
+        int flushCapable =(p & mask) >> 12;
         
-        //Count number of ranks occuring multiple times,
-        //number of ranks, suits
-	for (int i = 0; i < Card.NUM_RANKS; i++) {
-            rankCountCounts[rankCounts[i]]++;
-            if (rankCounts[i] > maxOfAKind) {
-                maxOfAKind = rankCounts[i];
-                maxRank = i;
-            }
+        patternCode = "[" + isCol + "][" + hasStraight + "][" + flushCapable + "]";
+        
+        for (int i = 0; i < 4; i++) {
+            mask = 7 << (3 * (3-i));
+            int flag = (p & mask) >> (3 * (3-i));
+            patternCode += "[" + flag + "]";
             
-            if (rankCounts[i] > 0) {
-                numRanks ++;
-            }
+        }
+        
+        return patternCode;
+    }
+    
+    public static void debug() {
+        
+        System.out.println("\n" + patternEvaluations.size() + " Pattern Evaluations:");
+        
+        Map <String, Double> sorted = new TreeMap <String, Double> ();
+                
+        //SORT Patterns for at least a little bit of catagorical order
+        for (Integer p : patternEvaluations.keySet()) {
+            double val = patternEvaluations.get(p);
             
-            if (i < Card.NUM_SUITS) {
-                if (suitCounts[i] > 0) {
-                    numSuits ++;
-                }
-            }
+            String code = decodePattern(p);
+            
+            sorted.put (code, val);
         }
         
-        //STRAIGHT AND ROYAL CHECKING 
-        /*
-        double nullCards = SIZE - numCards;
-        int lowestRankedCard = rankCounts[0];
-        int highestRankedCard = rankCounts[0];
-	for (int i = 0; i < Card.NUM_RANKS; ++i) {
-            if (rankCounts[i] > highestRankedCard) highestRankedCard = rankCounts[i];
-            if (rankCounts[i] < lowestRankedCard) lowestRankedCard = rankCounts[i];
+        for (String code : sorted.keySet()) {
+            double val = sorted.get(code);
+            
+            System.out.println(code + " " + val);
         }
-        
-        //check partial straight
-        if ((rankCountCounts[4] == 0) && (rankCountCounts[3] == 0) && (rankCountCounts[2] == 0) //if there are no pairs
-                && (lowestRankedCard <= (Card.NUM_RANKS-(4-nullCards)))
-                && (highestRankedCard <= (lowestRankedCard + 4))){
-            straight = true;
-            for (int i = 0; i < Card.NUM_RANKS; i++) {
-                if ((rankCounts[i] == 1) && !((i <= highestRankedCard) && (i >= lowestRankedCard))){
-                    straight = false;
-                }
-            }
-        }
-        
-        if (rankCounts[0] == 1 && rankCounts[12] == 1 && rankCounts[11] == 1 && rankCounts[10] == 1 && rankCounts[9] == 1) {
-            if (numCards == 5) straight = royal = true;
-        }
-        */
-        
-        handWeight = numCards / 5;
     }
 }

@@ -9,6 +9,7 @@ import static pokersquares.config.Settings.Algorithms.debugUCT;
 import static pokersquares.config.Settings.Algorithms.simSampleSize;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
+import pokersquares.evaluations.PositionRank;
 
 public class UCT extends Algorithm{
     static double epsilon = 0.000000001; //Some Small Number

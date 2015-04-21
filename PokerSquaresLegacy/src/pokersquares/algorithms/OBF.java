@@ -5,6 +5,7 @@ import pokersquares.config.Settings;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
+import pokersquares.evaluations.PositionRank;
 
 public class OBF extends Algorithm{
     @Override
@@ -16,7 +17,17 @@ public class OBF extends Algorithm{
         
         evaluate(card, board, preEvaluations, postEvaluations);
         
-        bestPos = getBestPos(board, preEvaluations, postEvaluations);
+        if (Settings.Algorithms.positionRankEnabled) {
+            board.patternatePositions(card);
+            if (PositionRank.contains(board)){
+                bestPos = PositionRank.getBestPos(board);
+                
+            }else{
+                bestPos = getBestPos(board, preEvaluations, postEvaluations);
+            }
+        }else{
+            bestPos = getBestPos(board, preEvaluations, postEvaluations);
+        }
         
         return new int[] {bestPos[0], bestPos[1]};
     }

@@ -2,8 +2,10 @@ package pokersquares.players;
 
 import java.util.ArrayList;
 import java.util.Random;
+import pokersquares.config.AdaptiveSettings;
 import pokersquares.config.Settings;
 import static pokersquares.config.Settings.BMO.genSettings;
+import pokersquares.config.SettingsReader;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 
@@ -231,6 +233,12 @@ public class GreedyMCPatternPlayer implements PokerSquaresPlayer {
 
                 //READ PATTERNS
                 if (Settings.BMO.readPatterns) pokersquares.evaluations.PatternPolicy.patternEvaluations = pokersquares.config.PatternReader.readPatterns(Settings.BMO.patternsFileIn);
+
+                //READ SETTINGS
+                SettingsReader.readSettings(Settings.BMO.settingsFileIn);
+
+                //GENERATE SETTINGS
+                if (genSettings) AdaptiveSettings.generateSettings();
 
                 //TRAIN
                 if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
