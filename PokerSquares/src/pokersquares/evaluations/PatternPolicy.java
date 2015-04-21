@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 import pokersquares.config.Settings;
-import static pokersquares.config.Settings.Evaluations.colHands;
 import static pokersquares.config.Settings.Evaluations.patternate;
-import static pokersquares.config.Settings.Evaluations.rowHands;
-import static pokersquares.config.Settings.Evaluations.simpleScoring;
 import pokersquares.environment.Board;
 import pokersquares.environment.Card;
 import pokersquares.environment.Hand;
@@ -15,10 +12,6 @@ import pokersquares.environment.Hand;
 public class PatternPolicy {
     public static Map<Integer, Double> patternEvaluations = new java.util.HashMap();
 
-    public PatternPolicy () {
-        
-    }
-    
     public static double evaluate(Board board){
         double evaluation = 0;
         for(int i = 0; i < 5; ++i){

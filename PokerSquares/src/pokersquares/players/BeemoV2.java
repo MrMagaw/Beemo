@@ -2,10 +2,6 @@ package pokersquares.players;
 
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.*;
-import static pokersquares.config.Settings.BMO.genSettings;
-import static pokersquares.config.Settings.Evaluations.updateSettings;
-import static pokersquares.config.Settings.Training.bestValues;
-import static pokersquares.config.Settings.Training.updateBest;
 import pokersquares.environment.*;
 import pokersquares.evaluations.Optimality;
 import pokersquares.evaluations.PatternPolicy;

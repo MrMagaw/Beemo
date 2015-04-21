@@ -36,20 +36,16 @@ public class Settings {
     }
     
     public static class Algorithms {
-        public static boolean debugUCT = true;
-        public static int simSampleSize = 1000;
-        
-        public static boolean enableSymmetry = false;
-        
-        //UCT
-        public static double UCT = 2.5;
-        
-        public static boolean positionRankEnabled = false;
-        
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
                 new Algorithm[] {new OBF(), new OBF(), new OBF()};
-
+        
+        //MC
+        public static int simSampleSize = 1000;
+        
+        //UCT
+        public static double UCT = 2.5;
+        public static boolean debugUCT = true;
     }
     
     public static class Greedy {
@@ -61,19 +57,16 @@ public class Settings {
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean genSettings = false;
-        public static boolean readSettings = false;
         public static boolean readPatterns = false;
         public static String patternsFileIn = 
                 Main.pointSystem.name() + 
                 (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
                 ".pattern";
-        public static String settingsFileIn = "test";
     }
     
     public static class Training {
         public static boolean train = true;
-        public static long millis = 30000;
+        public static long millis = 3000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;
@@ -83,21 +76,9 @@ public class Settings {
                 Main.pointSystem.name() + 
                 (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
                 ".pattern";
-        public static String settingsFileOut = "test";
-        public static boolean updateBest = true;
-    
-        //VALUES to be adjusted
-        public static List <double[]> values = new ArrayList();
-        public static double score = Double.NEGATIVE_INFINITY;
-
-        public static List <double[]> bestValues = new ArrayList ();
-        public static double bestScore = Double.NEGATIVE_INFINITY;
         
         //public static Trainer trainer = new Prismo();
-        public static Trainer trainer = new Billy();
-        //public static Trainer trainer = new Jake();
-        //public static Trainer trainer = new ValueReinforcement();
-        
+        public static Trainer trainer = new Prismo();
     }
     
     public static class Evaluations {
@@ -107,50 +88,14 @@ public class Settings {
         public static boolean testOptimality = false;
         
         //Pattern Policy
-        public static boolean simpleScoring = false;
         public static boolean patternate = true;
-        //public static String pattern = "A"; //A,B,C
         
         public static double[] handScores = new double[10];
         
-        public static boolean[] rowHands;
-        public static boolean[] colHands;
-        
-        //array hold exponents for values of hands in american order
-        
-        public static double[] highCardPolicy;
-        public static double[] pairPolicy;
-        public static double[] twoPairPolicy;
-        public static double[] threeOfAKindPolicy;
-        public static double[] straightPolicy;
-        public static double[] flushPolicy;
-        public static double[] fullHousePolicy;
-        public static double[] fourOfAKindPolicy;
         
         public static void debug () {
             System.err.println("Settings");
             System.err.println("Hand Scores: " + Arrays.toString(handScores));
-            System.err.println("Row Hands: " + Arrays.toString(rowHands));
-            System.err.println("Col Hands: " + Arrays.toString(colHands));
-            System.err.println("High Card Policy: " + Arrays.toString(highCardPolicy));
-            System.err.println("Pair Policy: " + Arrays.toString(pairPolicy));
-            System.err.println("Two Pair Policy: " + Arrays.toString(twoPairPolicy));
-            System.err.println("Three Of A Kind Policy : " + Arrays.toString(threeOfAKindPolicy));
-            System.err.println("Straight Policy: " + Arrays.toString(straightPolicy));
-            System.err.println("Flush Policy: " + Arrays.toString(flushPolicy));
-            System.err.println("Full House Policy: " + Arrays.toString(fullHousePolicy));
-            System.err.println("Four Of A Kind Policy: " + Arrays.toString(fourOfAKindPolicy));
-        }
-        
-        public static void updateSettings(List <double[]> values) {
-            highCardPolicy = values.get(0);
-            pairPolicy = values.get(1);
-            twoPairPolicy = values.get(2);
-            threeOfAKindPolicy = values.get(3);
-            straightPolicy = values.get(4);
-            flushPolicy = values.get(5);
-            fullHousePolicy = values.get(6);
-            fourOfAKindPolicy = values.get(7);
         }
     }
     

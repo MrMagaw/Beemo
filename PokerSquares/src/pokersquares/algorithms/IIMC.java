@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import pokersquares.config.Settings;
-import static pokersquares.config.Settings.Algorithms.enableSymmetry;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 

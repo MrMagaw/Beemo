@@ -3,7 +3,6 @@ package pokersquares.players;
 import java.util.ArrayList;
 import java.util.Random;
 import pokersquares.config.Settings;
-import static pokersquares.config.Settings.BMO.genSettings;
 import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 
