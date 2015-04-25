@@ -22,6 +22,7 @@ import static pokersquares.evaluations.PatternPolicy.buildPattern;
 import static pokersquares.evaluations.PatternPolicy.decodePattern;
 import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
 import pokersquares.players.BeemoV2;
+import static pokersquares.trainers.Prismo.bestPatternEvaluations;
 import static pokersquares.trainers.Prismo.epsilon;
 
 public class Billy implements Trainer {
@@ -29,10 +30,10 @@ public class Billy implements Trainer {
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
+    HashMap <Integer, PatternScore> patternScores;
 
     double maxHandScore = Double.NEGATIVE_INFINITY;
     int trials = 0;
-    
     boolean mapUCT = true;
     
     private class PatternScore {
@@ -42,31 +43,41 @@ public class Billy implements Trainer {
     }
     
     @Override
+    public String getName () { return "Billy"; }
+    
+    @Override
+    public Map getBestPatterns () { return bestPatternEvaluations; }
+    
+    @Override
     public void runSession(long millis) {
         long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
 	System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
-        //Random r = new Random(0);
         
-        HashMap <Integer, PatternScore> patternScores = new HashMap();
+        patternScores = new HashMap();
         
         //DETERMINE Highest Hand Score
         for (Integer score : system.getScoreTable())
             maxHandScore = (score > maxHandScore) ? score : maxHandScore;
         
         //SET BENCHMARK
-        //bestScore = Simulator.simulate(new Board(), 10000, 10000, 1);
+        bestScore = Simulator.simulate(new Board(), 10000, 10000, 1);
+ 
+        System.out.println("Best Score: " + bestScore);
         bestPatternEvaluations = new java.util.HashMap(patternEvaluations);
+        patternEvaluations.clear();
+        patternScores.clear();
         
         //SIMULATE Games
         int nextCheck = 10000;
         int nextNextCheck = Integer.MAX_VALUE;
+        //int nextNextCheck = nextCheck * 2;
         
         while(System.currentTimeMillis() < tBuffer) {
+            
+            //SIMULATE a Game
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
-            
-            //Simulate a Game
             //SHUFFLE deck
             Stack<Card> deck = new Stack<Card>();
             for (Card card : Card.getAllCards())
@@ -85,89 +96,28 @@ public class Billy implements Trainer {
                 classifyHands(b, boardPatterns);
             }
             
-            
-            
             //SCORE and UPDATE Pattern Scores
-            mapScores(b, boardPatterns, patternScores, trials <= 100000);
+            mapScores(b, boardPatterns, patternScores, trials <= 10000000);
             if ((++trials % nextCheck) == 0) {
                 double score = refreshScores(patternScores);
-                if (score == -1)
-                    return;
-                
                 System.out.println(
                         "Trials: " + trials + 
+                        "\tPatterns: " + patternScores.size() +
                         "\tScore: " + score + 
                         "\tBest Score: " + bestScore);
                 
-                Map place = new HashMap <Integer, Double> (patternEvaluations);
-                
-                patternEvaluations = new HashMap <Integer, Double> (bestPatternEvaluations);
-                
-                patternEvaluations = new HashMap <Integer, Double> (place);
+                patternEvaluations.clear();
+                patternScores.clear();
                 
                 if (trials >= nextNextCheck){
                     nextCheck = nextNextCheck;
-                    nextNextCheck <<= 3;
+                    nextNextCheck *= 2;
                 }
             }
             
-            if (trials % 10000 == 0) {
-                if (Settings.Training.verbose) debugPatternScores(patternScores);
-                if (Settings.Training.verbose) PatternPolicy.debug();
-            }
-        }
-    }
-    
-    private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
-        //map all the scores in pattern scores to pattern valuations and 
-        //refresh pattern scores
-        patternEvaluations.clear();
-        //PUT scores into patternEvaluations
-        //Double diff = 0.0;
-        for(Entry<Integer, PatternScore> e : patternScores.entrySet()) {
-            Integer p = e.getKey();
-            PatternScore ps = e.getValue();
-            Double score = ps.totalScore / ps.numTrials;
-            /*
-            if(patternEvaluations.containsKey(p))
-                diff += score != 0.0 ? patternEvaluations.get(p) / score : 0.0;
-            */
-            patternEvaluations.put(p, score);
-        }
-        /*
-        diff /= patternScores.size();
-
-        for(Integer p : patternEvaluations.keySet()) {
-            if(!patternScores.containsKey(p))
-                patternEvaluations.put(p, patternEvaluations.get(p) * diff);
-        }
-        */
-        //TEST CURRENT SCORES
-        //double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
-        double score = 0;
-        
-        System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
-        
-        bestPatternEvaluations.putAll(patternEvaluations);
-        pokersquares.config.PatternReader.writePatterns(patternEvaluations);
-        
-        if (true) return -1;
-        
-        if (score > bestScore) {
-            System.out.print("*");
-            bestScore = score;
-            
-            bestPatternEvaluations.clear();
-            bestPatternEvaluations.putAll(patternEvaluations);
-            pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
-        }else{
-            patternEvaluations.putAll(bestPatternEvaluations);
         }
         
-        //CLEAR patternScores
-        patternScores.clear();
-        return score;
-                
+        patternEvaluations.putAll(bestPatternEvaluations);
     }
     
     private void mapScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores, boolean update) {
@@ -204,6 +154,36 @@ public class Billy implements Trainer {
             }
         }
     } 
+    
+    private double refreshScores(HashMap <Integer,PatternScore> patternScores) { 
+        //map all the scores in pattern scores to pattern evaluations and 
+        //refresh pattern scores
+        patternEvaluations.clear();
+        //PUT scores into patternEvaluations
+        for(Entry<Integer, PatternScore> e : patternScores.entrySet()) {
+            Integer p = e.getKey();
+            PatternScore ps = e.getValue();
+            Double score = ps.totalScore / ps.numTrials;
+            patternEvaluations.put(p, score);
+        }
+        
+        //TEST CURRENT SCORES
+        double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
+        if (score > bestScore) {
+            System.out.print("*");
+            bestScore = score;
+            bestPatternEvaluations.clear();
+            bestPatternEvaluations.putAll(patternEvaluations);
+            pokersquares.config.PatternReader.writePatterns(bestPatternEvaluations);
+        }
+        
+        //CLEAR Scores
+        patternEvaluations = new HashMap();
+        patternScores = new HashMap();
+        patternEvaluations.clear();
+        patternScores.clear();
+        return score;
+    }
     
     private List classifyHands(Board b, List <List> bp) {
         

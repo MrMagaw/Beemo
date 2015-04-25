@@ -23,7 +23,7 @@ public class Settings {
    };
     
     public static class Main {
-        public static int games = 10000;
+        public static int games = 5;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -57,7 +57,7 @@ public class Settings {
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean readPatterns = false;
+        public static boolean readPatterns = true;
         public static boolean debugPatterns = false;
         public static String patternsFileIn = 
                 Main.pointSystem.name() + 
@@ -67,6 +67,7 @@ public class Settings {
     
     public static class Training {
         public static boolean train = true;
+        public static boolean inheritTrainMillis = false;
         public static long millis = 30000;
         public static boolean verbose = false; 
         

@@ -58,8 +58,6 @@ public class Simulator {
                 }
                 simsRun++;
                 totalScore += Settings.Environment.system.getScore(b.getGrid());
-                //System.out.println(Settings.Environment.system.getScore(b.getGrid()));
-                //totalScore += 100;
             } 
                     
        }
@@ -85,10 +83,10 @@ public class Simulator {
     
     public void run(){
         //Number of threads used is 16 right now...
-        //Gamer[] gamers = new Gamer[this.numThreads];
-        Gamer[] gamers = new Gamer[1];
-        int simPerThread = numSimulations >> 4;
-        int extraThread = numSimulations - (simPerThread << 4);
+        Gamer[] gamers = new Gamer[this.numThreads];
+        //Gamer[] gamers = new Gamer[1];
+        int simPerThread = numSimulations/gamers.length;
+        int extraThread = numSimulations - (simPerThread / gamers.length);
         
         for(int i = 0; i < gamers.length; ++i){
             gamers[i] = new Gamer(board, (i < extraThread) ? simPerThread : simPerThread + 1, (i * simPerThread) + variator);
@@ -110,7 +108,7 @@ public class Simulator {
         
         Simulator sim = new Simulator(tb, numSimulations, millisRemaining, variator, false);
         sim.run();
-        System.out.println(sim.totalScore  + " " + sim.simsRun );
+        //System.out.println(sim.totalScore + " " + sim.simsRun);
         return sim.totalScore / sim.simsRun;
     }
 }

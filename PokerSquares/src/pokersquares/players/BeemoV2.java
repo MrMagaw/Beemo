@@ -5,6 +5,8 @@ import pokersquares.config.*;
 import pokersquares.environment.*;
 import pokersquares.evaluations.Optimality;
 import pokersquares.evaluations.PatternPolicy;
+import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
+import static pokersquares.trainers.Billy.bestPatternEvaluations;
 
 /**
  *
@@ -33,6 +35,9 @@ public class BeemoV2 implements PokerSquaresPlayer{
         //new PatternPolicy();
         Settings.Environment.system = system;
         
+        //INHERIT COMPETITION TIME
+        if (Settings.Training.inheritTrainMillis) Settings.Training.millis = PokerSquares.POINT_SYSTEM_MILLIS;
+        
         //SET POINT SYSTEM
         int[] scores = system.getScoreTable();
         for (int i = 0; i < 10; ++i) Settings.Evaluations.handScores[i] = scores[i];
@@ -42,6 +47,7 @@ public class BeemoV2 implements PokerSquaresPlayer{
         
         //TRAIN
         if (Settings.Training.train) Settings.Training.trainer.runSession(Settings.Training.millis);
+        if (Settings.Training.train) patternEvaluations.putAll(Settings.Training.trainer.getBestPatterns());
         
         //DEBUG PATTERN VALUES
         if (Settings.BMO.debugPatterns)PatternPolicy.debug();

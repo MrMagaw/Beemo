@@ -61,6 +61,12 @@ public class Prismo implements Trainer{
     }
     
     @Override
+    public String getName () { return "Prismo"; }
+    
+    @Override
+    public Map getBestPatterns () { return bestPatternEvaluations; }
+    
+    @Override
     public void runSession(long millis) {
         long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
 	System.out.print("\nPrismo Forever\n");

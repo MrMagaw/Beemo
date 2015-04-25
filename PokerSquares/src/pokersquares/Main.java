@@ -59,7 +59,8 @@ public class Main {
         //Players
         //players.add(new BeemoV2());
         players.add(new BeemoV2());
-        players.add(new GreedyMCPatternPlayer(1));
+        //players.add(new GreedyMCPatternPlayer(1));
+        players.add(new GreedyMCPlayer(4));
         
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();

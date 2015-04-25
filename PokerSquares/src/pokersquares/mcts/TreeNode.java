@@ -62,7 +62,6 @@ public class TreeNode {
                 Integer[] p = nb.getOpenPos().get(j);
                 int[] arrpos =  {p[0], p[1]};
                 nb.playCard(nb.removeCard(i), arrpos);
-                //nb.playCard(nb.getDeck().remove(i), arrpos);
                 TreeNode tn = new TreeNode(nb);
                 tn.pos = arrpos;
                 childs.add(tn);
