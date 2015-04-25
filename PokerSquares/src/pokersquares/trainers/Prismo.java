@@ -2,10 +2,12 @@
 package pokersquares.trainers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Stack;
 import java.util.TreeMap;
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.Settings;
@@ -80,9 +82,16 @@ public class Prismo implements Trainer{
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
+            //SHUFFLE deck
+            Stack<Card> deck = new Stack<Card>();
+            for (Card card : Card.getAllCards())
+                    deck.push(card);
+            Collections.shuffle(deck, r);
+            
             //RUN trial
             while (b.getTurn() < 25) {
-                Card c = b.removeCard(r.nextInt(b.cardsLeft())); 
+                Card c = deck.pop();
+                b.removeCard(c);
                 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 b.playCard(c, p);

@@ -2,11 +2,13 @@
 package pokersquares.trainers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Stack;
 import java.util.TreeMap;
 import pokersquares.algorithms.Simulator;
 import pokersquares.config.Settings;
@@ -44,6 +46,7 @@ public class Billy implements Trainer {
         long tBuffer = millis - 1000 + System.currentTimeMillis(); //Some amount of millis to make sure we dont exceed alotted millis        
 	System.out.print("\nBilly is in your Mind\n");
         Random r = new Random();
+        //Random r = new Random(0);
         
         HashMap <Integer, PatternScore> patternScores = new HashMap();
         
@@ -58,16 +61,21 @@ public class Billy implements Trainer {
         //SIMULATE Games
         int nextCheck = 10000;
         int nextNextCheck = Integer.MAX_VALUE;
-        //double trialScore = 0;
         
         while(System.currentTimeMillis() < tBuffer) {
-        //while(true){
             Board b = new Board();
             List <List> boardPatterns = initBoardPatterns();
             
             //Simulate a Game
+            //SHUFFLE deck
+            Stack<Card> deck = new Stack<Card>();
+            for (Card card : Card.getAllCards())
+                    deck.push(card);
+            Collections.shuffle(deck, r);
+            
             while (b.getTurn() < 25) {
-                Card c = b.removeCard(r.nextInt(b.cardsLeft()));
+                Card c = deck.pop();
+                b.removeCard(c);
                 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
                 //int[] p = { b.getOpenPos().get(0)[0] , b.getOpenPos().get(0)[1] }; //Random
@@ -76,6 +84,9 @@ public class Billy implements Trainer {
                 //CLASSIFY Hands
                 classifyHands(b, boardPatterns);
             }
+            
+            
+            
             //SCORE and UPDATE Pattern Scores
             mapScores(b, boardPatterns, patternScores, trials <= 100000);
             if ((++trials % nextCheck) == 0) {
@@ -88,16 +99,11 @@ public class Billy implements Trainer {
                         "\tScore: " + score + 
                         "\tBest Score: " + bestScore);
                 
-                //System.out.println(Simulator.simulate(new Board(), 10000, 10000, trials));
-                
                 Map place = new HashMap <Integer, Double> (patternEvaluations);
+                
                 patternEvaluations = new HashMap <Integer, Double> (bestPatternEvaluations);
                 
-                //System.out.println(Simulator.simulate(new Board(), 10000, 10000, trials));
-                
                 patternEvaluations = new HashMap <Integer, Double> (place);
-                
-                //System.out.println(Simulator.simulate(new Board(), 10000, 10000, trials));
                 
                 if (trials >= nextNextCheck){
                     nextCheck = nextNextCheck;
@@ -140,7 +146,7 @@ public class Billy implements Trainer {
         //double score = Simulator.simulate(new Board(), 10000, 10000, 10000);
         double score = 0;
         
-        //System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
+        System.out.println("Isolated Score: " + Simulator.simulate(new Board(), 10000, 10000, 0));
         
         bestPatternEvaluations.putAll(patternEvaluations);
         pokersquares.config.PatternReader.writePatterns(patternEvaluations);

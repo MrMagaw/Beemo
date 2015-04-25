@@ -19,11 +19,11 @@ public class Settings {
         private PointSystem(boolean isRandom){
             this.isRandom = isRandom;
         }
-        public boolean isRandom(){return isRandom;}
-    };
+        public boolean isRandom(){return isRandom;} 
+   };
     
     public static class Main {
-        public static int games = 1000;
+        public static int games = 10000;
         public static int seed = 0;
         public static boolean verbose = false;
         public static boolean tournament = false;
@@ -78,8 +78,8 @@ public class Settings {
                 (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
                 ".pattern";
         
-        //public static Trainer trainer = new Prismo();
         public static Trainer trainer = new Billy();
+        //public static Trainer trainer = new Prismo();
     }
     
     public static class Evaluations {
