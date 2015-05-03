@@ -23,9 +23,9 @@ public class Settings {
    };
     
     public static class Main {
-        public static int games = 5;
+        public static int games = 1;
         public static int seed = 0;
-        public static boolean verbose = false;
+        public static boolean verbose = true;
         public static boolean tournament = false;
         public static int randomPointSystemSeed = 1123;
         public static PointSystem pointSystem = PointSystem.AMERICAN;
@@ -38,10 +38,10 @@ public class Settings {
     public static class Algorithms {
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
         
         //MC
-        public static int simSampleSize = 1000;
+        public static int simSampleSize = 200000;
         
         //UCT
         public static double UCT = 2.5;
@@ -49,7 +49,7 @@ public class Settings {
     }
     
     public static class Greedy {
-        public static double timeRatio = 0.05; //ratio of the total alloted time the player will play
+        public static double timeRatio = 1; //ratio of the total alloted time the player will play
     }
     
     public static class BMO {
@@ -66,7 +66,7 @@ public class Settings {
     }
     
     public static class Training {
-        public static boolean train = true;
+        public static boolean train = false;
         public static boolean inheritTrainMillis = false;
         public static long millis = 30000;
         public static boolean verbose = false; 
