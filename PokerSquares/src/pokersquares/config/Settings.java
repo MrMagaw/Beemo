@@ -14,7 +14,7 @@ public class Settings {
     //Holds all CONSTANTS for all classes for easy reference and tweaking
     public enum PointSystem {
         RANDOM(true), AMERICAN(false), AMERITISH(true), 
-        BRITISH(false), HYPERCORNER(true), SINGLEHAND(true);
+        BRITISH(false), HYPERCORNER(true), SINGLEHAND(true), CUSTOM(false);
         private final boolean isRandom;
         private PointSystem(boolean isRandom){
             this.isRandom = isRandom;
@@ -23,12 +23,14 @@ public class Settings {
    };
     
     public static class Main {
-        public static int games = 1;
-        public static int seed = 0;
-        public static boolean verbose = true;
+        public static int games = 10;
+        public static int seed = 3;
+        public static boolean verbose = false;
         public static boolean tournament = false;
-        public static int randomPointSystemSeed = 1123;
-        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static boolean test = false;
+        public static long randomPointSystemSeed = 3L;  //1123 : High Card
+        public static PointSystem pointSystem = PointSystem.BRITISH;
+        public static int[] customPointSystem = new int[] {-128, 11, -126, 118, 16, -102, -64, 32, -55, -23};
     }
     
     public static class Environment {
@@ -41,7 +43,7 @@ public class Settings {
                 new Algorithm[] {new OBF(), new IIMC(), new OBF()};
         
         //MC
-        public static int simSampleSize = 200000;
+        public static int simSampleSize = 1000;
         
         //UCT
         public static double UCT = 2.5;
@@ -53,11 +55,11 @@ public class Settings {
     }
     
     public static class BMO {
-        public static int[] turnSplits = new int[]{5, 25, 25};
+        public static int[] turnSplits = new int[]{4, 25, 25};
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean readPatterns = true;
+        public static boolean readPatterns = false;
         public static boolean debugPatterns = false;
         public static String patternsFileIn = 
                 Main.pointSystem.name() + 
@@ -68,7 +70,7 @@ public class Settings {
     public static class Training {
         public static boolean train = false;
         public static boolean inheritTrainMillis = false;
-        public static long millis = 30000;
+        public static long millis = 20000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;

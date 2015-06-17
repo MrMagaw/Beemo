@@ -2,15 +2,21 @@ package pokersquares;
 
 import java.util.ArrayList;
 import pokersquares.config.Settings;
+import static pokersquares.config.Settings.Main.customPointSystem;
+import static pokersquares.config.Settings.Main.test;
 import pokersquares.environment.*;
 import pokersquares.environment.Board.Deck;
+import pokersquares.environment.EarlyPPSTesting;
 import pokersquares.environment.PokerSquares;
 import pokersquares.players.*;
 
 public class Main {
     
     public static void main(String[] args) {
-        //pokersquares.config.Settings.Algorithms.UCT = Double.parseDouble(args[0]);
+        if (test) {
+            EarlyPPSTesting.testPPS();
+            return;
+        }
         
         if (!Settings.Main.tournament) {
         // Demonstration of batch game play (30 seconds per game)
@@ -42,6 +48,9 @@ public class Main {
             case SINGLEHAND:
                 system = PokerSquaresPointSystem.getSingleHandPointSystem();
                 break;
+            case CUSTOM:
+                system = new PokerSquaresPointSystem(customPointSystem);
+                
         }
         
         System.out.println("\n\nSingle Player Game Sequence:");
@@ -94,5 +103,7 @@ public class Main {
 
         PokerSquares.playTournament(players, systems, Settings.Main.games, Settings.Main.seed ); // use fewer games per system for faster testing
         }
+    
     }
+    
 }

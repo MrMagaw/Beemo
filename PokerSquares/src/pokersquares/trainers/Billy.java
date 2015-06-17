@@ -26,14 +26,15 @@ import static pokersquares.trainers.Prismo.bestPatternEvaluations;
 import static pokersquares.trainers.Prismo.epsilon;
 
 public class Billy implements Trainer {
-    
     //Billy uses hand classification and monte carlo sampling to assign hands an average value
     public static Map<Integer, Double> bestPatternEvaluations = new java.util.HashMap();
     double bestScore = Double.NEGATIVE_INFINITY;
     HashMap <Integer, PatternScore> patternScores;
 
     double maxHandScore = Double.NEGATIVE_INFINITY;
+    double minHandScore = Double.POSITIVE_INFINITY;
     int trials = 0;
+    int trainingInterval = 5000;
     boolean mapUCT = true;
     
     private class PatternScore {
@@ -56,9 +57,11 @@ public class Billy implements Trainer {
         
         patternScores = new HashMap();
         
-        //DETERMINE Highest Hand Score
-        for (Integer score : system.getScoreTable())
+        //DETERMINE Max and Min Hand Scores
+        for (Integer score : system.getScoreTable()) {
             maxHandScore = (score > maxHandScore) ? score : maxHandScore;
+            minHandScore = (score < minHandScore) ? score : minHandScore;
+        }
         
         //SET BENCHMARK
         bestScore = Simulator.simulate(new Board(), 10000, 10000, 1);
@@ -69,7 +72,7 @@ public class Billy implements Trainer {
         patternScores.clear();
         
         //SIMULATE Games
-        int nextCheck = 10000;
+        int nextCheck = trainingInterval;
         int nextNextCheck = Integer.MAX_VALUE;
         //int nextNextCheck = nextCheck * 2;
         
@@ -89,7 +92,6 @@ public class Billy implements Trainer {
                 b.removeCard(c);
                 
                 int[] p = Settings.Algorithms.simAlgorithm.search(c, b, millis);
-                //int[] p = { b.getOpenPos().get(0)[0] , b.getOpenPos().get(0)[1] }; //Random
                 b.playCard(c, p);
                 
                 //CLASSIFY Hands
@@ -114,7 +116,6 @@ public class Billy implements Trainer {
                     nextNextCheck *= 2;
                 }
             }
-            
         }
         
         patternEvaluations.putAll(bestPatternEvaluations);
@@ -142,15 +143,20 @@ public class Billy implements Trainer {
                 ps.totalScore += score;
                 ++ps.numTrials;
                 
-                double uctScore =     //average simulation value of a node scaled to the continuous range {0,1}
-                    score * 1 / (maxHandScore + epsilon) 
-                    //uct term
-                    + 1 * Math.sqrt( Math.abs(Math.log(trials + epsilon)) / (ps.numTrials + epsilon));
+                //average simulation value of a node scaled to the continuous range {0,1}
+                double uctScore = scale(score);
+                //uct term (AMERICAN:small coeff, FLUSH: 0 coeff, STRAIGHT: 0, FH: .01, )
+                double uctTerm; 
+                //SOMETIMES 0.001 is ideal, sometimes 0 is ideal
                 
-                //Update Pattern Evaluations
-                if (!(hand.isCol && (hand.numSuits > 1))) if (update) 
-                    if (mapUCT) patternEvaluations.put(p, uctScore);
-                    else patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                int trialSector = (int) Math.floor(trials/trainingInterval)%3;
+                if (trialSector < 2) uctTerm =  0.0001 * Math.pow( Math.abs(Math.log(trials%trainingInterval + epsilon)) / (ps.numTrials + epsilon), 0.5);
+                else uctTerm = 0;
+                uctScore += uctTerm;
+                
+                if (trialSector == 2) patternEvaluations.put(p, (ps.totalScore / ps.numTrials));
+                else if (!(hand.isCol && (hand.numSuits > 1))) patternEvaluations.put(p, uctScore);
+                
             }
         }
     } 
@@ -207,6 +213,11 @@ public class Billy implements Trainer {
         return boardPatterns;
     }
     
+    private double scale(double x ){
+        //scales x in the range of [min, max] hand scores to [0,1]
+        return ((x - minHandScore) / (maxHandScore - minHandScore + epsilon));
+    }
+    
     private void debugPatternScores(HashMap <Integer,PatternScore> patternScores) {
         
         System.out.println("\n" + patternScores.size() + " Pattern Scores:");
@@ -228,5 +239,4 @@ public class Billy implements Trainer {
             System.out.println(code + " Trials: " + val.numTrials + "   \tAverage Score: " + val.totalScore/val.numTrials);
         });
     }
-    
 }

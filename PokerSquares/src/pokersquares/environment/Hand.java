@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import pokersquares.evaluations.PatternPolicy;
+import static pokersquares.evaluations.PatternPolicy.patternEvaluations;
 
 public class Hand {
     private final Card[] cards;
@@ -100,8 +101,9 @@ public class Hand {
             }
             
             if (((highCard - loCard) < 5) || 
-                    ((loCard == 0) && ((13 - loCard2) < 5))) 
+                    ((loCard == 0) && ((13 - loCard2) < 5))) {
                 hasStraight = true;
+            } else hasStraight = false;
         }
     }
     
@@ -111,7 +113,7 @@ public class Hand {
             else System.out.print(card.toString());
             System.out.print(" / ");
         }
-        System.out.println("\n" + pattern + ", " + isCol + ", " + openPos + " hasStraight: " + hasStraight);
+        System.out.println("\n" + pattern + ":"+patternEvaluations.get(pattern)+", " + isCol + ", " + openPos + " hasStraight: " + hasStraight);
         System.out.println("numCards: " + numCards + " numRanks: " + numRanks + " numSuits: " + numSuits );
         System.out.println(Arrays.toString(rankCountCounts) + "\n");
     }

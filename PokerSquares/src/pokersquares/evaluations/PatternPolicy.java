@@ -42,7 +42,7 @@ public class PatternPolicy {
         //0->Not possible
         //1->Barely possible
         //2->Very possible
-            
+        
         //buildRankCounts()
         hand.rankCountCounts = new int[6];
         for(int i = 0; i < Card.NUM_RANKS; ++i)
