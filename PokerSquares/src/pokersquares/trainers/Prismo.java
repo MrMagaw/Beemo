@@ -31,7 +31,7 @@ public class Prismo implements Trainer{
     static double epsilon = 0.00000001; //Some Small Number
     public static boolean mapUCT = false;
     
-    static double sampleRatio = 0.66; //the latest (trials * sR ) scores are kept
+    static double sampleRatio = 0.4; //the latest (trials * sR ) scores are kept
     
     private class SummedMap {
         //Keep track of pattern scores within the current range

@@ -56,7 +56,6 @@ public class Main {
         System.out.println("\n\nSingle Player Game Sequence:");
         System.out.println(system);
         new PokerSquares(new BeemoV2(), system)
-        //new PokerSquares(new GreedyMCPatternPlayer(), system)
                 .playSequence(Settings.Main.games, Settings.Main.seed, Settings.Main.verbose);
         }
         else {
@@ -68,8 +67,8 @@ public class Main {
         //Players
         //players.add(new BeemoV2());
         players.add(new BeemoV2());
-        //players.add(new GreedyMCPatternPlayer(1));
-        players.add(new GreedyMCPlayer(4));
+        players.add(new GreedyMCPatternPlayer(1));
+        //players.add(new ParamMCTSPlayer());
         
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();

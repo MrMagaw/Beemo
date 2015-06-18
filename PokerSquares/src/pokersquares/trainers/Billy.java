@@ -148,7 +148,6 @@ public class Billy implements Trainer {
                 //uct term (AMERICAN:small coeff, FLUSH: 0 coeff, STRAIGHT: 0, FH: .01, )
                 double uctTerm; 
                 //SOMETIMES 0.001 is ideal, sometimes 0 is ideal
-                
                 int trialSector = (int) Math.floor(trials/trainingInterval)%3;
                 if (trialSector < 2) uctTerm =  0.0001 * Math.pow( Math.abs(Math.log(trials%trainingInterval + epsilon)) / (ps.numTrials + epsilon), 0.5);
                 else uctTerm = 0;

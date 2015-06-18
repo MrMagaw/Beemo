@@ -27,7 +27,7 @@ public class Settings {
         public static int seed = 3;
         public static boolean verbose = false;
         public static boolean tournament = false;
-        public static boolean test = false;
+        public static boolean test = true;
         public static long randomPointSystemSeed = 3L;  //1123 : High Card
         public static PointSystem pointSystem = PointSystem.BRITISH;
         public static int[] customPointSystem = new int[] {-128, 11, -126, 118, 16, -102, -64, 32, -55, -23};
@@ -43,7 +43,7 @@ public class Settings {
                 new Algorithm[] {new OBF(), new IIMC(), new OBF()};
         
         //MC
-        public static int simSampleSize = 1000;
+        public static int simSampleSize = 1500;
         
         //UCT
         public static double UCT = 2.5;
@@ -68,9 +68,9 @@ public class Settings {
     }
     
     public static class Training {
-        public static boolean train = false;
+        public static boolean train = true;
         public static boolean inheritTrainMillis = false;
-        public static long millis = 20000;
+        public static long millis = 120000;
         public static boolean verbose = false; 
         
         public static double policyMax = 1;
