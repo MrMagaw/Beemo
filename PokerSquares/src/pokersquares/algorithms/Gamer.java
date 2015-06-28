@@ -6,7 +6,9 @@
 
 package pokersquares.algorithms;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 import pokersquares.config.Settings;
@@ -36,15 +38,33 @@ public class Gamer extends Thread {
             //Random r = new Random(Settings.Main.seed + offset);
             Random r = new Random();
             
+            Stack<Card> masterDeck = new Stack<Card>();
+            List<Card> playedCards = new ArrayList<Card>();
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 5; j++) {
+                    Card c = board.getCard(i,j);
+                    if (c != null){
+                        playedCards.add(c);
+                    }
+                }
+            }
+            
+            for (Card c : Card.getAllCards()) 
+                if (!playedCards.contains(c)) masterDeck.push(c);
+            
+            Collections.shuffle(masterDeck, r);
+            
             //PLAY Game
             while(numSimulations-- > offset){
                 //SHUFFLE deck
                 Stack<Card> deck = new Stack<Card>();
-                for (Card card : Card.getAllCards())
+                for (Card card : masterDeck)
                         deck.push(card);
                 Collections.shuffle(deck, r);
                 
+                
                 Board b = new Board(board);
+                 //System.out.println(b.)
                 while (b.getTurn() < 25) {
                     Card c = deck.pop();
                     b.removeCard(c);
