@@ -23,14 +23,14 @@ public class Settings {
    };
     
     public static class Main {
-        public static int games = 10000;
-        public static int seed = 3;
+        public static int games = 100000;
+        public static int seed = 10;
         public static boolean verbose = false;
         public static boolean tournament = false;
         public static boolean test = false;
-        public static long randomPointSystemSeed = 3L;  //1123 : High Card
-        public static PointSystem pointSystem = PointSystem.BRITISH;
-        public static int[] customPointSystem = new int[] {-128, 11, -126, 118, 16, -102, -64, 32, -55, -23};
+        public static long randomPointSystemSeed = 4L;  //1123 : High Card
+        public static PointSystem pointSystem = PointSystem.AMERICAN;
+        public static int[] customPointSystem = new int[] { -128, 11, -126, 118, 16, -102, -64, 32, -55, -23};
     }
     
     public static class Environment {
@@ -40,10 +40,10 @@ public class Settings {
     public static class Algorithms {
         public static Algorithm simAlgorithm = new OBF();
         public static Algorithm[] algorithm = 
-                new Algorithm[] {new OBF(), new OBF(), new OBF()};
+                new Algorithm[] {new OBF(), new IIMC(), new OBF()};
         
         //MC
-        public static int simSampleSize = 1000;
+        public static int simSampleSize = 100000;
         
         //UCT
         public static double UCT = 0.9;
@@ -59,7 +59,7 @@ public class Settings {
         public static BeemoV2 BMO;
         
         //SETTINGS
-        public static boolean readPatterns = false;
+        public static boolean readPatterns = true;
         public static boolean debugPatterns = false;
         public static String patternsFileIn = 
                 Main.pointSystem.name() + 
@@ -70,12 +70,9 @@ public class Settings {
     public static class Training {
         public static boolean train = true;
         public static boolean inheritTrainMillis = false;
-        public static long millis = 30000;
+        public static long millis = 300000;
         public static boolean verbose = false; 
         
-        public static double policyMax = 1;
-        public static double policyMin = -1;
-        public static boolean randomize = false;
         public static String patternsFileOut = 
                 Main.pointSystem.name() + 
                 (Main.pointSystem.isRandom() ? Main.randomPointSystemSeed : "") + 
@@ -94,11 +91,11 @@ public class Settings {
         
         public static double[] handScores = new double[10];
         
-        
         public static void debug () {
             System.err.println("Settings");
             System.err.println("Hand Scores: " + Arrays.toString(handScores));
         }
+        
     }
     
 }

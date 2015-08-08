@@ -9,27 +9,6 @@ import pokersquares.environment.*;
 import pokersquares.evaluations.PatternPolicy;
 
 public class IIMC extends Algorithm{
-    private static class Filter implements Comparator<Integer[]>{
-        //Compartor class to filter positions by their static evaluation value 
-        private final Card card;
-        private final Board board;
-        @Override
-        public int compare(Integer[] o1, Integer[] o2) {
-            //o1-o2
-            Board tb = new Board(board); 
-            //Optimize by building, evaluating and comparing only at corresponding hands, not the entire board
-            
-            tb.playCard(card, new int[]{o2[0], o2[1]});
-            double s1 = PatternPolicy.evaluate(tb);
-            tb = new Board(board);
-            tb.playCard(card, new int[]{o1[0], o1[1]});
-            return ((int)(s1 * 1000)) - ((int)(PatternPolicy.evaluate(tb) * 1000));
-        }
-        public Filter(Board b, Card c){
-            card = c;
-            board = b;
-        }
-    }
     
     @Override
     public int[] internalSearch(final Card card, final Board board, long millisRemaining) {

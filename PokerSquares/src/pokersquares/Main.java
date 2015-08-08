@@ -65,10 +65,7 @@ public class Main {
         ArrayList<PokerSquaresPlayer> players = new ArrayList();
 
         //Players
-        //players.add(new BeemoV2());
         players.add(new BeemoV2());
-        players.add(new GreedyMCPatternPlayer(1));
-        //players.add(new ParamMCTSPlayer());
         
 
         ArrayList<PokerSquaresPointSystem> systems = new ArrayList();

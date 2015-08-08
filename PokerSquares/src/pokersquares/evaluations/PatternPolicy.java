@@ -25,7 +25,6 @@ public class PatternPolicy {
         if(!hand.hasPattern() && patternate){
             buildPattern(hand);
         }
-        
         if (patternEvaluations.containsKey(hand.getPattern()))
             return patternEvaluations.get(hand.getPattern());
         else
@@ -95,6 +94,7 @@ public class PatternPolicy {
     }
     
     public static String decodePattern(int p) {
+        //BROKEN
         
         String patternCode;
         
@@ -112,10 +112,10 @@ public class PatternPolicy {
             mask = 7 << (3 * (3-i));
             int flag = (p & mask) >> (3 * (3-i));
             patternCode += "[" + flag + "]";
-            
         }
         
-        return patternCode;
+        //return patternCode;
+        return "BROKEN";
     }
     
     public static void debug() {

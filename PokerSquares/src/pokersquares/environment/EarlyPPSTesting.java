@@ -6,7 +6,6 @@ import pokersquares.environment.PokerSquares;
 import pokersquares.environment.PokerSquaresPointSystem;
 import pokersquares.players.BeemoV2;
 import pokersquares.players.PokerSquaresPlayer;
-import pokersquares.players.RandomPlayer;
 
 
 public class EarlyPPSTesting {
