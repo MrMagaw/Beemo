@@ -123,6 +123,8 @@ public class Billy implements Trainer {
     
     private void mapScores(Board b, List <List> bp, HashMap <Integer,PatternScore> patternScores, boolean update) {
         
+        int trialSector = (int) Math.floor(trials/trainingInterval) % 3;
+        
         //SCORE and UPDATE hands 
         for (int h = 0; h < 10; ++h) {
             Hand hand  = b.hands.get(h);
@@ -149,7 +151,7 @@ public class Billy implements Trainer {
                 double uctTerm; 
                 
                 //SOMETIMES 0.001 is ideal, sometimes 0 is ideal
-                int trialSector = (int) Math.floor(trials/trainingInterval)%3;
+                
                 if (trialSector < 2) uctTerm =  0.0001 * Math.pow( Math.abs(Math.log(trials%trainingInterval + epsilon)) / (ps.numTrials + epsilon), 0.5);
                 else uctTerm = 0;
                 uctScore += uctTerm;
